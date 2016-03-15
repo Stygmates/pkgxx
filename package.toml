@@ -1,0 +1,26 @@
+
+# A test package. Will be moved at a later time.
+
+name = "nano"
+version = "2.5.3"
+sources = [ "http://www.nano-editor.org/dist/v2.5/nano-2.5.3.tar.gz" ]
+
+#configure = [
+#	"cd %{name}-%{version}",
+#	"./configure --prefix=/usr"
+#]
+
+#build = [
+#	"cd %{name}-%{version}",
+#	"make",
+#]
+
+#install = [
+#	"cd %{name}-%{version}",
+#	"make DESTDIR='%{pkg}' install"
+#]
+
+# Splits not working. Here for future reference.
+[splits.nano-doc]
+files = [ "/usr/share/doc", "/usr/share/man" ]
+

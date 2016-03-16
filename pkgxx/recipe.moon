@@ -26,6 +26,8 @@ class
 		@name = recipe.name
 		@version = recipe.version
 		@release = recipe.release or 1
+		@summary = recipe.summary
+		@description = recipe.description
 		@dirname = @dirname or "#{@name}-#{@version}"
 
 		@dependencies = recipe.dependencies or {}
@@ -119,6 +121,11 @@ class
 			@release = diff.release
 		if diff.dependencies
 			@dependencies = diff.dependencies
+
+		if diff.summary
+			@summary = diff.summary
+		if diff.description
+			@description = diff.description
 
 		if diff.class
 			@class = diff.class

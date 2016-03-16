@@ -40,9 +40,14 @@ lfs = require "lfs"
 	dir: lfs.dir,
 
 	execute: (arg) =>
+		exports = ""
+
+		for key, value in pairs @context.exports
+			exports = exports .. "export #{key}='#{value}';"
+
 		if @context.configuration.verbosity < 5
 			logfile = "#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
-			arg = "(#{arg}) 2>> #{logfile} >> #{logfile} "
+			arg = "#{exports} (#{arg}) 2>> #{logfile} >> #{logfile} "
 
 		os.execute arg
 }

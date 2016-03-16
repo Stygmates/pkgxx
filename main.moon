@@ -37,13 +37,20 @@ parser = with argparse "pkgxx", "Packages builder."
 
 args = parser\parse!
 
-ui.setVerbosity ((4 + ((args.verbosity or 0) - (args.quiet or 0))) or
+ui.setVerbosity ((4 + ((args.verbosity and 1 or 0) - (args.quiet or 0))) or
 	config.verbosity or 4)
 
 context = pkgxx.newContext config
 
 if args.architecture
 	context.architecture = args.architecture
+
+for variable in *{
+	"CFLAGS", "CPPFLAGS", "CXXFLAGS", "FFLAGS", "LDFLAGS",
+	"MAKEFLAGS"
+}
+	if config[variable]
+		context.exports[variable] = config[variable]
 
 recipe = context\openRecipe "package.toml"
 

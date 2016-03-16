@@ -7,7 +7,7 @@ list = (a) ->
 
 	for i = 1, #a
 		if i != #a
-			str = str .. ", " .. tostring a[i]
+			str = str .. tostring a[i] .. ", "
 		else
 			str = str .. tostring a[i]
 
@@ -20,12 +20,24 @@ debarch = (arch) ->
 		else
 			arch
 
+paragraph = (text) ->
+	text = text\gsub "\n$", ""
+	text = text\gsub "\n\n", "\n.\n"
+	text = text\gsub "\n", "\n  "
+	text = text\gsub "\t", " "
+
+	return " " .. text
+
 control = (dest) =>
 	file = io.open dest, "w"
 
 	file\write "Package: #{@name\gsub "_", "-"}\n"
 	file\write "Version: #{@version}\n"
-	file\write "Description: #{@description}\n"
+	file\write "Description: #{@summary}\n"
+
+	if @description
+		file\write (paragraph @description), "\n"
+
 	file\write "Maintainer: #{@maintainer}\n"
 	file\write "Architecture: #{debarch @architecture}\n"
 	file\write "Depends: #{list @dependencies}\n"

@@ -27,6 +27,10 @@ class
 
 		@compressionMethod = "gz"
 
+		-- An associative array of stuff to export when running
+		-- external commands in order to build softwares.
+		@exports = {}
+
 		-- Setting default architecture based on the machine’s real
 		-- architecture.
 		p = io.popen "uname -m"

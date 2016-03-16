@@ -42,7 +42,7 @@ class
 			build: recipe.build,
 			install: recipe.install
 
-		@\applyDistributionRules!
+		@\applyDistributionRules recipe
 
 	parseSources: (recipe) =>
 		local sources
@@ -71,20 +71,19 @@ class
 
 		if recipe.splits
 			for split, data in pairs recipe.splits
+				if not data.name
+					data.name = split
+
 				-- Splits will need much more data than this.
 				splits[#splits+1] = setmetatable {
-					name: split,
-					version: data.version,
-					release: data.release,
-
-					class: data.split,
-
 					files: data.files
 				}, __index: @
 
+				@@.applyDiff splits[#splits], data
+
 		splits
 
-	applyDistributionRules: =>
+	applyDistributionRules: (recipe) =>
 		distribution = @context.configuration.distribution
 		module = @context.modules[distribution]
 
@@ -96,6 +95,29 @@ class
 				"'#{distribution}'."
 			ui.warning "Your package is very unlike to comply to " ..
 				"your OS’ packaging guidelines."
+
+		-- Not very elegant.
+		if recipe.os and recipe.os[distribution]
+			@@.applyDiff @, recipe.os[distribution]
+
+		for split in *@splits
+			os = recipe.splits[split.name].os
+
+			if os and os[distribution]
+				@@.applyDiff split, os[distribution]
+
+	applyDiff: (diff) =>
+		if diff.name
+			@name = diff.name
+		if diff.version
+			@version = diff.version
+		if diff.release
+			@release = diff.release
+		if diff.dependencies
+			@dependencies = diff.dependencies
+
+		if diff.class
+			@class = diff.class
 
 	buildingDirectory: =>
 		"#{@context.buildingDirectory}/src/" ..

@@ -29,6 +29,9 @@ class = "binary"
 class = "documentation"
 files = [ "/usr/share/doc", "/usr/share/man" ]
 
+[splits.nano-doc.os.Debian]
+dependencies = []
+
 [os.Debian]
 dependencies = ["libncursesw5"]
 

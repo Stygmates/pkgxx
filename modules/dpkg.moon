@@ -44,7 +44,7 @@ control = (dest) =>
 			ui.warning "No 'description'!"
 
 		target = "#{@name\gsub "_", "-"}_#{@version}-#{@release}" ..
-			"#{@architecture}.deb"
+			"-#{@architecture}.deb"
 
 		ui.detail "Building '#{target}'."
 

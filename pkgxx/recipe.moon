@@ -28,6 +28,10 @@ class
 		@release = recipe.release or 1
 		@dirname = @dirname or "#{@name}-#{@version}"
 
+		@dependencies = recipe.dependencies or {}
+
+		@architecture = @context.architecture
+
 		@class = recipe.class
 
 		@sources = {}
@@ -138,10 +142,11 @@ class
 
 			code = "set -x #{'-e' if critical else ''}\n#{code}"
 
-			unless @context.verbose
-				code = "(#{code}) > " ..
-					"#{@context.packagesDirectory}/" ..
+			if @context.configuration.verbosity < 5
+				logfile =  "#{@context.packagesDirectory}/" ..
 					"#{name}-#{version}-#{release}.log"
+
+				code = "(#{code}) 2>> #{logfile} >> #{logfile}"
 
 			fs.changeDirectory @\buildingDirectory!, ->
 				r, e = pcall -> os.execute code

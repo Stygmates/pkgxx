@@ -40,8 +40,9 @@ lfs = require "lfs"
 	dir: lfs.dir,
 
 	execute: (arg) =>
-		unless @context.verbose
-			arg = "(#{arg}) &> #{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
+		if @context.configuration.verbosity < 5
+			logfile = "#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
+			arg = "(#{arg}) 2>> #{logfile} >> #{logfile} "
 
 		os.execute arg
 }

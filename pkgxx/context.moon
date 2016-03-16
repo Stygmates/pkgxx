@@ -10,6 +10,9 @@ class
 	new: (configuration) =>
 		@configuration = configuration or {}
 
+		unless @configuration.verbosity
+			@configuration.verbosity = 4
+
 		home = os.getenv "HOME"
 
 		stat = io.open "/proc/self/stat", "r"
@@ -21,6 +24,12 @@ class
 		@sourcesDirectory  = "#{home}"
 		@packagesDirectory = "#{home}"
 		@buildingDirectory    = "/tmp/pkgxx-#{pid}-#{@randomKey}"
+
+		-- Setting default architecture based on the machine’s real
+		-- architecture.
+		p = io.popen "uname -m"
+		@architecture = p\read "*line"
+		p\close!
 
 		fs.mkdir @buildingDirectory
 
@@ -43,6 +52,8 @@ class
 				for filename in fs.dir dir
 					if not filename\match "%.moon$" or filename\match "%.lua$"
 						continue
+
+					ui.debug "Loading module '#{filename}'."
 
 					name = filename\gsub "%.moon$", ""
 					name =     name\gsub "%.lua$",  ""

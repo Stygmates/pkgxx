@@ -5,6 +5,8 @@ name = "nano"
 version = "2.5.3"
 sources = [ "http://www.nano-editor.org/dist/v2.5/nano-2.5.3.tar.gz" ]
 
+dependencies = ["ncurses"]
+
 class = "binary"
 
 #configure = [
@@ -26,4 +28,7 @@ class = "binary"
 [splits.nano-doc]
 class = "documentation"
 files = [ "/usr/share/doc", "/usr/share/man" ]
+
+[os.Debian]
+dependencies = ["libncursesw5"]
 

@@ -58,7 +58,11 @@ class
 						code, e = loadstring content
 
 					if code
-						@modules[name] = code!
+						module = code!
+						@modules[name] = module
+
+						if module.name and not @modules[module.name]
+							@modules[module.name] = module
 					else
 						io.stderr\write "module '#{name}' not loaded: #{e}\n"
 

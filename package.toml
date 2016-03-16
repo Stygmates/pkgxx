@@ -5,6 +5,8 @@ name = "nano"
 version = "2.5.3"
 sources = [ "http://www.nano-editor.org/dist/v2.5/nano-2.5.3.tar.gz" ]
 
+class = "binary"
+
 #configure = [
 #	"cd %{name}-%{version}",
 #	"./configure --prefix=/usr"
@@ -22,5 +24,6 @@ sources = [ "http://www.nano-editor.org/dist/v2.5/nano-2.5.3.tar.gz" ]
 
 # Splits not working. Here for future reference.
 [splits.nano-doc]
+class = "documentation"
 files = [ "/usr/share/doc", "/usr/share/man" ]
 

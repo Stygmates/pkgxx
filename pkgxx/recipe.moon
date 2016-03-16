@@ -27,14 +27,18 @@ class
 		@version = recipe.version
 		@release = recipe.release or 1
 		@dirname = @dirname or "#{@name}-#{@version}"
-		@sources = {}
 
+		@class = recipe.class
+
+		@sources = {}
 		@sources = @\parseSources recipe
 
 		@buildInstructions =
 			configure: recipe.configure,
 			build: recipe.build,
 			install: recipe.install
+
+		@\applyDistributionRules!
 
 	parseSources: (recipe) =>
 		local sources
@@ -69,10 +73,25 @@ class
 					version: data.version,
 					release: data.release,
 
+					class: data.split,
+
 					files: data.files
 				}, __index: @
 
 		splits
+
+	applyDistributionRules: =>
+		distribution = @context.configuration.distribution
+		module = @context.modules[distribution]
+
+		if module
+			if module.alterRecipe
+				module.alterRecipe @
+		else
+			ui.warning "No module found for this distribution: " ..
+				"'#{distribution}'."
+			ui.warning "Your package is very unlike to comply to " ..
+				"your OS’ packaging guidelines."
 
 	buildingDirectory: =>
 		"#{@context.buildingDirectory}/src/" ..

@@ -27,7 +27,7 @@ class = "binary"
 # Splits not working. Here for future reference.
 [splits.nano-doc]
 class = "documentation"
-files = [ "/usr/share/doc", "/usr/share/man" ]
+files = [ "/usr/share/doc" ]
 
 [splits.nano-doc.os.Debian]
 dependencies = []

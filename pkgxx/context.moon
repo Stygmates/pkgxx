@@ -25,6 +25,8 @@ class
 		@packagesDirectory = "#{home}"
 		@buildingDirectory    = "/tmp/pkgxx-#{pid}-#{@randomKey}"
 
+		@compressionMethod = "gz"
+
 		-- Setting default architecture based on the machine’s real
 		-- architecture.
 		p = io.popen "uname -m"

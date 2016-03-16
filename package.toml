@@ -5,6 +5,12 @@ name = "nano"
 version = "2.5.3"
 sources = [ "http://www.nano-editor.org/dist/v2.5/nano-2.5.3.tar.gz" ]
 
+packager = "Luka Vandervelden <lukc@upyum.com>"
+
+contributors = [
+	"Someone Kewl <test@example>"
+]
+
 dependencies = ["ncurses"]
 
 class = "binary"

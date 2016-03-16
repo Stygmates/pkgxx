@@ -32,6 +32,10 @@ class
 
 		@architecture = @context.architecture
 
+		@maintainer = recipe.maintainer or recipe.packager
+		@packager = recipe.packager
+		@contributers = recipe.contributors
+
 		@class = recipe.class
 
 		@sources = {}

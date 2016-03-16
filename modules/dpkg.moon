@@ -55,9 +55,7 @@ control = (dest) =>
 		os.execute "dpkg-deb " ..
 			"-Zxz -z9 --new " ..
 			"--build '#{fs.currentDirectory!}' " ..
-			"'#{target}'"
-		os.execute "" ..
-			"mv '#{target}' '#{@context.packagesDirectory}/#{target}'"
+			"'#{@context.packagesDirectory}/#{target}'"
 
 		-- Cleaning package directory for further reuse.
 		fs.remove "DEBIAN"

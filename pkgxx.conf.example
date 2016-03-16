@@ -1,0 +1,5 @@
+
+distribution = "Debian"
+package-manager = "dpkg"
+
+

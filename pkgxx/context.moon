@@ -1,12 +1,15 @@
 
 moonscript = require "moonscript"
 
+ui = require "pkgxx.ui"
 fs = require "pkgxx.fs"
 
 Recipe = require "pkgxx.recipe"
 
 class
-	new: =>
+	new: (configuration) =>
+		@configuration = configuration or {}
+
 		home = os.getenv "HOME"
 
 		stat = io.open "/proc/self/stat", "r"
@@ -22,6 +25,8 @@ class
 		fs.mkdir @buildingDirectory
 
 		@\loadModules!
+
+		@\checkConfiguration!
 
 	loadModules: =>
 		@modules = {}
@@ -56,6 +61,14 @@ class
 						@modules[name] = code!
 					else
 						io.stderr\write "module '#{name}' not loaded: #{e}\n"
+
+	checkConfiguration: =>
+		if not @modules[@configuration['package-manager']]
+			ui.warning "No module for the following package manager: " ..
+				"'#{@configuration['package-manager']}'."
+
+			ui.warning "Package manager set to 'pkgutils'."
+			@configuration['package-manager'] = "pkgutils"
 
 	openRecipe: (filename) =>
 		Recipe (filename or "package.toml"), @

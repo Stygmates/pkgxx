@@ -11,30 +11,41 @@ colors = {
 	clear:  "\027[00m",
 }
 
+-- FIXME: Merge in Context.
+
+verbosity = 2
+
 {
+	setVerbosity: (v) -> verbosity = v,
+
 	debug: (...) ->
-		io.stdout\write colors.cyan, ":: "
-		io.stdout\write ...
-		io.stdout\write colors.clear, "\n",
+		if verbosity >= 5
+			io.stdout\write colors.cyan, ":: "
+			io.stdout\write ...
+			io.stdout\write colors.clear, "\n",
 
 	detail: (...) ->
-		io.stdout\write colors.blue, "-- ", colors.white
-		io.stdout\write ...
-		io.stdout\write colors.clear, "\n",
+		if verbosity >= 4
+			io.stdout\write colors.blue, "-- ", colors.white
+			io.stdout\write ...
+			io.stdout\write colors.clear, "\n",
 
 	info: (...) ->
-		io.stdout\write colors.green, "-> ", colors.brightwhite
-		io.stdout\write ...
-		io.stdout\write colors.clear, "\n",
+		if verbosity >= 3
+			io.stdout\write colors.green, "-> ", colors.brightwhite
+			io.stdout\write ...
+			io.stdout\write colors.clear, "\n",
 
 	warning: (...) ->
-		io.stderr\write colors.yellow, "?? "
-		io.stderr\write ...
-		io.stderr\write colors.clear, "\n",
+		if verbosity >= 2
+			io.stderr\write colors.yellow, "?? "
+			io.stderr\write ...
+			io.stderr\write colors.clear, "\n",
 
 	error: (...) ->
-		io.stderr\write colors.red, "!! "
-		io.stderr\write ...
-		io.stderr\write colors.clear, "\n",
+		if verbosity >= 1
+			io.stderr\write colors.red, "!! "
+			io.stderr\write ...
+			io.stderr\write colors.clear, "\n",
 }
 

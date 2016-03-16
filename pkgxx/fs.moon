@@ -41,7 +41,7 @@ lfs = require "lfs"
 
 	execute: (arg) =>
 		unless @context.verbose
-			arg = "(#{arg}) > #{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
+			arg = "(#{arg}) &> #{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
 
 		os.execute arg
 }

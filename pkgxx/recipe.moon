@@ -189,12 +189,17 @@ class
 		ui.info "Packaging…"
 		@\split!
 
-		for name, module in pairs @context.modules
-			if module.package
-				@\packageSplit module, @
+		module = @context.modules[@context.configuration["package-manager"]]
 
-				for split in *@splits
-					@\packageSplit module, split
+		if module.package
+			@\packageSplit module, @
+
+			for split in *@splits
+				@\packageSplit module, split
+		else
+			-- Should NOT happen.
+			error "No module is available for the package manager "..
+				"'#{@configuration['package-manager']}'."
 
 	packageSplit: (module, split) =>
 		local splitName

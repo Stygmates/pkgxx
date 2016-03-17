@@ -45,9 +45,12 @@ pkginfo = (size, f) =>
 		target = "#{@name}-#{@version}-#{@release}-" .. 
 			"#{@architecture}.pkg.tar.xz"
 
-		p = io.popen "du -cb . | tail -n 1"
+		-- -sb would have been preferable on Arch, but that ain’t
+		-- supported on all distributions using pacman derivatives!
+		p = io.popen "du -sk ."
 		size = (p\read "*line")\gsub " .*", ""
-		size = tonumber size
+		size = size\gsub "%s.*", ""
+		size = (tonumber size) * 1024
 		p\close!
 
 		f = io.open ".PKGINFO", "w"
@@ -56,6 +59,6 @@ pkginfo = (size, f) =>
 
 		os.execute "tar cJf " ..
 			"'#{@context.packagesDirectory}/#{target}' " ..
-			".PKGINFO ."
+			".PKGINFO *"
 }
 

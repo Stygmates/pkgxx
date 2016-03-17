@@ -33,7 +33,11 @@ class
 		@license = recipe.license
 		@copyright = recipe.copyright
 
+		@groups = recipe.groups or {}
+
+		@conflicts = recipe.conflicts or {}
 		@dependencies = recipe.dependencies or {}
+		@provides = recipe.provides or {}
 
 		@architecture = @context.architecture
 
@@ -122,8 +126,16 @@ class
 			@version = diff.version
 		if diff.release
 			@release = diff.release
+
 		if diff.dependencies
 			@dependencies = diff.dependencies
+		if diff.conflicts
+			@conflicts = recipe.conflicts or {}
+		if diff.provides
+			@provides = recipe.provides or {}
+
+		if diff.groups
+			@groups = recipe.groups or {}
 
 		if diff.summary
 			@summary = diff.summary

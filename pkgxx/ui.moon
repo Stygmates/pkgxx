@@ -16,7 +16,9 @@ colors = {
 verbosity = 2
 
 {
+	-- what the hell. How did it come to this?
 	setVerbosity: (v) -> verbosity = v,
+	getVerbosity: -> verbosity,
 
 	debug: (...) ->
 		if verbosity >= 5

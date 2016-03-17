@@ -45,7 +45,7 @@ lfs = require "lfs"
 		for key, value in pairs @context.exports
 			exports = exports .. "export #{key}='#{value}';"
 
-		if @context.configuration.verbosity < 5
+		if ui.getVerbosity! >= 5
 			logfile = "#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
 			arg = "#{exports} (#{arg}) 2>> #{logfile} >> #{logfile} "
 

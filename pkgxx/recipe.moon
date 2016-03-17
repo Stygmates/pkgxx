@@ -165,7 +165,7 @@ class
 					os.execute "strip --strip-all '#{line}'"
 				elseif type\match ".*ELF.*shared object.*not stripped"
 					ui.debug "Stripping '#{line}'."
-					os.execute "strip --strip-unneeded'#{line}'"
+					os.execute "strip --strip-unneeded '#{line}'"
 				elseif type\match "current ar archive"
 					ui.debug "Stripping '#{line}'."
 					os.execute "strip --strip-debug '#{line}'"

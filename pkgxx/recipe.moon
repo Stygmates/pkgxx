@@ -30,6 +30,9 @@ class
 		@description = recipe.description
 		@dirname = @dirname or "#{@name}-#{@version}"
 
+		@license = recipe.license
+		@copyright = recipe.copyright
+
 		@dependencies = recipe.dependencies or {}
 
 		@architecture = @context.architecture
@@ -126,6 +129,11 @@ class
 			@summary = diff.summary
 		if diff.description
 			@description = diff.description
+
+		if diff.license
+			@license = diff.license
+		if diff.copyright
+			@copyright = diff.copyright
 
 		if diff.class
 			@class = diff.class

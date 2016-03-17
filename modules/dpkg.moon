@@ -47,6 +47,20 @@ control = (dest) =>
 
 	file\close!
 
+debian_copyright = "http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/"
+
+copyright = (dest) =>
+	file = io.open dest, "w"
+
+	file\write "Format: #{debian_copyright}\n"
+	file\write "\n"
+	file\write "Files: *\n"
+	file\write "Copyright: #{@copyright}\n"
+	file\write "License: #{@license}\n"
+	file\write "\n"
+
+	file\close!
+
 {
 	target: =>
 	package: =>
@@ -63,6 +77,12 @@ control = (dest) =>
 		fs.mkdir "DEBIAN"
 
 		control @, "DEBIAN/control"
+
+		if @license and @copyright
+			copyright @, "DEBIAN/copyright"
+		else
+			ui.warning "No debian/copyright file will be generated "
+			ui.warning "due to no 'license' or 'copyright' field."
 
 		os.execute "dpkg-deb " ..
 			"-Zxz -z9 --new " ..

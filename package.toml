@@ -27,6 +27,9 @@ However, nano also implements many features missing in pico, including:
 
 dependencies = ["ncurses"]
 
+license = "GPL-3"
+copyright = "2001-2016 Free Software Foundation"
+
 class = "binary"
 
 #configure = [

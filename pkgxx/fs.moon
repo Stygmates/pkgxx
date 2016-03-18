@@ -40,6 +40,7 @@ lfs = require "lfs"
 	dir: lfs.dir,
 
 	execute: (arg) =>
+		arg = "set -e; " .. arg
 		exports = ""
 
 		for key, value in pairs @context.exports
@@ -47,7 +48,7 @@ lfs = require "lfs"
 
 		if ui.getVerbosity! < 5
 			logfile = "#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
-			arg = "#{exports} (#{arg}) 2>> #{logfile} >> #{logfile} "
+			arg = "#{exports} (set -x; #{arg}) 2>> #{logfile} >> #{logfile} "
 
 		os.execute arg
 }

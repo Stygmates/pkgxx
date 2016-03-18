@@ -57,6 +57,8 @@ class
 
 		@\applyDistributionRules recipe
 
+		@\checkRecipe!
+
 	parseSources: (recipe) =>
 		local sources
 
@@ -118,6 +120,14 @@ class
 
 			if os and os[distribution]
 				@@.applyDiff split, os[distribution]
+
+	checkRecipe: =>
+		module = @context.modules[@context.packageManager]
+		if module and module.check
+			r, e = module.check @
+
+			if e and not r
+				error e, 0
 
 	applyDiff: (diff) =>
 		if diff.name

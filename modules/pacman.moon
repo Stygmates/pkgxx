@@ -45,6 +45,8 @@ pkginfo = (size, f) =>
 		target = "#{@name}-#{@version}-#{@release}-" ..
 			"#{@architecture}.pkg.tar.xz"
 
+		ui.detail "Building '#{target}'."
+
 		unless @context.builder
 			ui.warning "No 'builder' was defined in your configuration!"
 

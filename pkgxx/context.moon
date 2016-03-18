@@ -25,7 +25,10 @@ class
 		@packagesDirectory = "#{home}"
 		@buildingDirectory    = "/tmp/pkgxx-#{pid}-#{@randomKey}"
 
-		@builder = nil
+		@builder = @configuration["builder"]
+
+		@distribution = @configuration["distribution"]
+		@packageManager = @configuration["package-manager"]
 
 		@compressionMethod = "gz"
 
@@ -86,12 +89,12 @@ class
 						io.stderr\write "module '#{name}' not loaded: #{e}\n"
 
 	checkConfiguration: =>
-		if not @modules[@configuration['package-manager']]
+		if not @modules[@packageManager]
 			ui.warning "No module for the following package manager: " ..
-				"'#{@configuration['package-manager']}'."
+				"'#{@packageManager}'."
 
 			ui.warning "Package manager set to 'pkgutils'."
-			@configuration['package-manager'] = "pkgutils"
+			@packageManager = "pkgutils"
 
 	openRecipe: (filename) =>
 		Recipe (filename or "package.toml"), @

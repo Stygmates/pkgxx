@@ -2,4 +2,5 @@
 distribution = "Debian"
 package-manager = "dpkg"
 
+builder = "Someone <some@one.example>"
 

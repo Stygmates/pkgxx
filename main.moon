@@ -45,6 +45,9 @@ context = pkgxx.newContext config
 if args.architecture
 	context.architecture = args.architecture
 
+if config.builder
+	context.builder = config.builder
+
 for variable in *{
 	"CFLAGS", "CPPFLAGS", "CXXFLAGS", "FFLAGS", "LDFLAGS",
 	"MAKEFLAGS"

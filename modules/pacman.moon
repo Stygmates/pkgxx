@@ -21,8 +21,8 @@ pkginfo = (size, f) =>
 
 	f\write "buildtype = host\n"
 
-	if @packager
-		f\write "packager = #{@packager}\n"
+	if @context.builder
+		f\write "packager = #{@context.builder}\n"
 	if @maintainer
 		f\write "maintainer = #{@maintainer}\n"
 
@@ -42,8 +42,11 @@ pkginfo = (size, f) =>
 
 {
 	package: =>
-		target = "#{@name}-#{@version}-#{@release}-" .. 
+		target = "#{@name}-#{@version}-#{@release}-" ..
 			"#{@architecture}.pkg.tar.xz"
+
+		unless @context.builder
+			ui.warning "No 'builder' was defined in your configuration!"
 
 		-- -sb would have been preferable on Arch, but that ain’t
 		-- supported on all distributions using pacman derivatives!

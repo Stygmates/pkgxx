@@ -25,6 +25,8 @@ class
 		@packagesDirectory = "#{home}"
 		@buildingDirectory    = "/tmp/pkgxx-#{pid}-#{@randomKey}"
 
+		@builder = nil
+
 		@compressionMethod = "gz"
 
 		-- An associative array of stuff to export when running

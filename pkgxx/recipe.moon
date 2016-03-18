@@ -23,6 +23,8 @@ class
 		-- FIXME: sort by name or something.
 		@splits = @\parseSplits recipe
 
+		@origin = @
+
 		@name = recipe.name
 		@version = recipe.version
 		@release = recipe.release or 1

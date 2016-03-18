@@ -10,6 +10,7 @@ name = "nano"
 version = "2.5.3"
 sources = [ "http://www.nano-editor.org/dist/v2.5/nano-2.5.3.tar.gz" ]
 
+url = "http://www.nano-editor.org"
 summary = "small, friendly text editor inspired by Pico"
 description = """
 GNU nano is an easy-to-use text editor originally designed as a replacement

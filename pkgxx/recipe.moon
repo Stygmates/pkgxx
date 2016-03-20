@@ -10,6 +10,9 @@ class
 	new: (filename, context) =>
 		file = io.open filename, "r"
 
+		unless file
+			error "could not open recipe", 0
+
 		recipe, e = toml.parse (file\read "*all"), {strict: false}
 
 		file\close!

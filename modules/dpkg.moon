@@ -62,17 +62,15 @@ copyright = (dest) =>
 	file\close!
 
 {
-	target: =>
+	target: => "#{@name\gsub "_", "-"}_#{@version}-#{@release}" ..
+			"-#{@architecture}.deb"
 	package: =>
 		unless @maintainer
 			ui.warning "No 'maintainer'!"
 		unless @description
 			ui.warning "No 'description'!"
 
-		target = "#{@name\gsub "_", "-"}_#{@version}-#{@release}" ..
-			"-#{@architecture}.deb"
-
-		ui.detail "Building '#{target}'."
+		ui.detail "Building '#{@target}'."
 
 		fs.mkdir "DEBIAN"
 
@@ -87,7 +85,7 @@ copyright = (dest) =>
 		os.execute "dpkg-deb " ..
 			"-Zxz -z9 --new " ..
 			"--build '#{fs.currentDirectory!}' " ..
-			"'#{@context.packagesDirectory}/#{target}'"
+			"'#{@context.packagesDirectory}/#{@target}'"
 
 		-- Cleaning package directory for further reuse.
 		fs.remove "DEBIAN"

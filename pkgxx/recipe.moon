@@ -62,7 +62,32 @@ class
 
 		@\applyDistributionRules recipe
 
+		@\setTargets!
+
 		@\checkRecipe!
+
+	-- Is meant to be usable after package manager or architecture
+	-- changes, avoiding the creation of a new context.
+	setTargets: =>
+		module = @context.modules[@context.packageManager]
+		unless module and module.check
+			ui.error "Could not set targets. Wrong package manager module?"
+			return nil
+
+		@target = module.target @
+		for split in *@splits
+			split.target = module.target split
+
+	getTargets: =>
+		i = 0
+
+		return ->
+			i = i + 1
+
+			if i - 1 == 0
+				return @target
+			elseif i - 1 <= #@splits
+				return @splits[i - 1].target
 
 	parseSources: (recipe) =>
 		local sources

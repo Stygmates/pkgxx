@@ -67,9 +67,7 @@ genPkginfo = (size) =>
 	f\close!
 
 apkPackage = (size) =>
-	target = "#{@name}-#{@version}-r#{@release - 1}.apk"
-
-	ui.detail "Building '#{target}'."
+	ui.detail "Building '#{@target}'."
 
 	os.execute [[
 		tar --xattrs -c * | abuild-tar --hash | \
@@ -89,19 +87,23 @@ apkPackage = (size) =>
 
 		# create the final apk
 		cat control.tar.gz data.tar.gz > ]] ..
-			"'#{@context.packagesDirectory}/#{target}'"
+			"'#{@context.packagesDirectory}/#{@target}'"
 
 pacmanPackage = (size) =>
-	target = "#{@name}-#{@version}-#{@release}-" ..
-		"#{@architecture}.pkg.tar.xz"
-
-	ui.detail "Building '#{target}'."
+	ui.detail "Building '#{@target}'."
 
 	os.execute "tar cJf " ..
-		"'#{@context.packagesDirectory}/#{target}' " ..
+		"'#{@context.packagesDirectory}/#{@target}' " ..
 		".PKGINFO *"
 
 {
+	target: =>
+		if @context.packageManager == "apk"
+			"#{@name}-#{@version}-r#{@release - 1}.apk"
+		else
+			"#{@name}-#{@version}-#{@release}-" ..
+				"#{@architecture}.pkg.tar.xz"
+
 	check: =>
 		if @context.packageManager == "apk"
 			unless os.execute "abuild-sign --installed"

@@ -21,8 +21,8 @@ class
 
 		@randomKey = math.random 0, 65535
 
-		@sourcesDirectory  = "#{home}"
-		@packagesDirectory = "#{home}"
+		@sourcesDirectory  = @configuration.sourcesDirectory or "#{home}"
+		@packagesDirectory = @configuration.packagesDirectory or "#{home}"
 		@buildingDirectory    = "/tmp/pkgxx-#{pid}-#{@randomKey}"
 
 		@builder = @configuration["builder"]
@@ -61,7 +61,7 @@ class
 		for dir in *directories
 			if fs.attributes dir
 				for filename in fs.dir dir
-					if not filename\match "%.moon$" or filename\match "%.lua$"
+					if (not filename\match "%.moon$") and (not filename\match "%.lua$")
 						continue
 
 					ui.debug "Loading module '#{filename}'."

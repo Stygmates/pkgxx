@@ -70,7 +70,8 @@ class
 	-- changes, avoiding the creation of a new context.
 	setTargets: =>
 		module = @context.modules[@context.packageManager]
-		unless module and module.check
+
+		unless module and module.target
 			ui.error "Could not set targets. Wrong package manager module?"
 			return nil
 
@@ -354,7 +355,7 @@ class
 		ui.info "Packaging…"
 		@\split!
 
-		module = @context.modules[@context.configuration["package-manager"]]
+		module = @context.modules[@context.packageManager]
 
 		if module.package
 			@\packageSplit module, @

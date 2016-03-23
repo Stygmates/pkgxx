@@ -21,10 +21,10 @@ debarch = (arch) ->
 			arch
 
 paragraph = (text) ->
-	text = text\gsub "\n$", ""
+	text = text\gsub "\n$",  ""
 	text = text\gsub "\n\n", "\n.\n"
-	text = text\gsub "\n", "\n  "
-	text = text\gsub "\t", " "
+	text = text\gsub "\n",   "\n  "
+	text = text\gsub "\t",   " "
 
 	return " " .. text
 

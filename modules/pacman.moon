@@ -66,43 +66,9 @@ genPkginfo = (size) =>
 	pkginfo @, size, f
 	f\close!
 
-apkPackage = (size) =>
-	ui.detail "Building '#{@target}'."
-
-	os.execute [[
-		tar --xattrs -c * | abuild-tar --hash | \
-			gzip -9 > ../data.tar.gz
-
-		mv .PKGINFO ../
-
-		# append the hash for data.tar.gz
-		local sha256=$(sha256sum ../data.tar.gz | cut -f1 -d' ')
-		echo "datahash = $sha256" >> ../.PKGINFO
-
-		# control.tar.gz
-		cd ..
-		tar -c .PKGINFO | abuild-tar --cut \
-			| gzip -9 > control.tar.gz
-		abuild-sign -q control.tar.gz || exit 1
-
-		# create the final apk
-		cat control.tar.gz data.tar.gz > ]] ..
-			"'#{@context.packagesDirectory}/#{@target}'"
-
-pacmanPackage = (size) =>
-	ui.detail "Building '#{@target}'."
-
-	os.execute "tar cJf " ..
-		"'#{@context.packagesDirectory}/#{@target}' " ..
-		".PKGINFO *"
-
 {
-	target: =>
-		if @context.packageManager == "apk"
-			"#{@name}-#{@version}-r#{@release - 1}.apk"
-		else
-			"#{@name}-#{@version}-#{@release}-" ..
-				"#{@architecture}.pkg.tar.xz"
+	target: => "#{@name}-#{@version}-#{@release}-" ..
+			"#{@architecture}.pkg.tar.xz"
 
 	check: =>
 		if @context.packageManager == "apk"
@@ -114,6 +80,8 @@ pacmanPackage = (size) =>
 
 				return nil, "no abuild key"
 
+	_genPkginfo: genPkginfo
+
 	package: =>
 		unless @context.builder
 			ui.warning "No 'builder' was defined in your configuration!"
@@ -122,9 +90,10 @@ pacmanPackage = (size) =>
 
 		genPkginfo @, size
 
-		if @context.packageManager == "apk"
-			return apkPackage @, size
-		else
-			return pacmanPackage @, size
+		ui.detail "Building '#{@target}'."
+
+		os.execute "tar cJf " ..
+			"'#{@context.packagesDirectory}/#{@target}' " ..
+			".PKGINFO *"
 }
 

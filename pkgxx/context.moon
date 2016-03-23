@@ -99,6 +99,13 @@ class
 	openRecipe: (filename) =>
 		Recipe (filename or "package.toml"), @
 
+	updateRepository: =>
+		module = @modules[@packageManager].makeRepository
+		if module
+			module @
+		else
+			ui.error "No module to build a repository."
+
 	close: =>
 		fs.remove @buildingDirectory
 

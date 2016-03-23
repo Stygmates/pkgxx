@@ -72,5 +72,7 @@ assert recipe\build!
 recipe\package!
 recipe\clean!
 
+context\updateRepository!
+
 context\close!
 

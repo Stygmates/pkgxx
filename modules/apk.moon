@@ -14,7 +14,11 @@ getSize = ->
 	size
 
 {
-	target: => "#{@name}-#{@version}-r#{@release - 1}.apk"
+	target: =>
+		-- We need to store the packages in a sub-directory to be able
+		-- to build valid apk repositories.
+		"#{@context.architecture}/" ..
+			"#{@name}-#{@version}-r#{@release - 1}.apk"
 	check: =>
 		unless os.execute "abuild-sign --installed"
 			ui.error "You need to generate a key with " ..
@@ -33,6 +37,8 @@ getSize = ->
 		@context.modules.pacman._genPkginfo @, size
 
 		ui.detail "Building '#{@target}'."
+		fs.mkdir @context.packagesDirectory .. "/" ..
+			@context.architecture
 		os.execute [[
 			tar --xattrs -c * | abuild-tar --hash | \
 				gzip -9 > ../data.tar.gz
@@ -52,5 +58,33 @@ getSize = ->
 			# create the final apk
 			cat control.tar.gz data.tar.gz > ]] ..
 				"'#{@context.packagesDirectory}/#{@target}'"
+
+	makeRepository: =>
+		ui.info "Building 'apk' repository."
+
+		index = "#{@packagesDirectory}/#{@architecture}/APKINDEX.tar.gz"
+
+		local oldIndex
+		if lfs.attributes index
+			oldIndex = " --index #{index}"
+		else
+			oldIndex = ""
+
+		output = " --output '#{index}.unsigned'"
+
+		r, e = os.execute "apk index --quiet #{oldIndex} #{output}" ..
+			" --description 'test test'" ..
+			" --rewrite-arch '#{@architecture}'" ..
+			" #{@packagesDirectory}/*.apk"
+
+		unless r
+			return nil, e
+
+		r, e = os.execute "abuild-sign -q '#{index}.unsigned'"
+
+		unless r
+			return nil, e
+
+		os.execute "mv '#{index}.unsigned' '#{index}'"
 }
 

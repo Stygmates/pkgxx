@@ -1,6 +1,7 @@
 
 distribution = "Debian"
 package-manager = "dpkg"
+repository-manager = "reprepro"
 
 builder = "Someone <some@one.example>"
 

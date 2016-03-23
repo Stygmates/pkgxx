@@ -29,6 +29,7 @@ class
 
 		@distribution = @configuration["distribution"]
 		@packageManager = @configuration["package-manager"]
+		@repositoryManager = @configuration["repository-manager"]
 
 		@compressionMethod = "gz"
 
@@ -96,15 +97,40 @@ class
 			ui.warning "Package manager set to 'pkgutils'."
 			@packageManager = "pkgutils"
 
+		if @repositoryManager and not @modules[@repositoryManager]
+			if @repositoryManager == "none"
+				@repositoryManager = nil
+			else
+				ui.warning "No module for the following repository manager: " ..
+					"'#{@repositoryManager}'."
+
+				if @modules[@packageManager].makeRepository
+					ui.warning "Repository manager set to " ..
+						"'#{@packageManager}'."
+					@repositoryManager = @packageManager
+				else
+					ui.warning "No repository will be generated."
+					@repositoryManager = nil
+
 	openRecipe: (filename) =>
 		Recipe (filename or "package.toml"), @
 
 	updateRepository: =>
-		module = @modules[@packageManager].makeRepository
+		unless @repositoryManager
+			return
+
+		module = @modules[@repositoryManager or @packageManager].makeRepository
 		if module
-			module @
+			fs.changeDirectory @packagesDirectory, ->
+				module @
 		else
 			ui.error "No module to build a repository."
+
+	addToRepository: (recipe) =>
+		module = @modules[@repositoryManager or @packageManager].addToRepository
+		if module
+			fs.changeDirectory @packagesDirectory, ->
+				module @, recipe
 
 	close: =>
 		fs.remove @buildingDirectory

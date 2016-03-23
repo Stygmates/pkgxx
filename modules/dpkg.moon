@@ -62,6 +62,7 @@ copyright = (dest) =>
 	file\close!
 
 {
+	_debarch: debarch
 	target: => "#{@name\gsub "_", "-"}_#{@version}-#{@release}" ..
 			"-#{@architecture}.deb"
 	package: =>

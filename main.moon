@@ -73,6 +73,7 @@ recipe\package!
 recipe\clean!
 
 context\updateRepository!
+context\addToRepository recipe
 
 context\close!
 

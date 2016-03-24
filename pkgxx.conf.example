@@ -3,5 +3,8 @@ distribution = "Debian"
 package-manager = "dpkg"
 repository-manager = "reprepro"
 
+# Usefull options for reprepro.
+distribution-codename = "jessie"
+
 builder = "Someone <some@one.example>"
 

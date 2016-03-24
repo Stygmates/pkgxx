@@ -8,8 +8,8 @@ build:
 	moonc */*.moon
 
 install: build
-	cp *.lua ${DESTDIR}${LDIR}
 	mkdir -p ${DESTDIR}${LDIR}/pkgxx
+	cp *.lua ${DESTDIR}${LDIR}
 	cp pkgxx/*.lua ${DESTDIR}${LDIR}/pkgxx/
 	mkdir -p ${DESTDIR}${PREFIX}/share/pkgxx
 	cp -r modules/*.lua ${DESTDIR}${PREFIX}/share/pkgxx/

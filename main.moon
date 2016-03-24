@@ -67,13 +67,16 @@ if args.targets
 
 	os.exit 0
 
-recipe\download!
-assert recipe\build!
-recipe\package!
-recipe\clean!
+if recipe\buildNeeded!
+	recipe\download!
+	assert recipe\build!
+	recipe\package!
+	recipe\clean!
 
-context\updateRepository!
-context\addToRepository recipe
+	context\updateRepository!
+	context\addToRepository recipe
+else
+	ui.info "Everything up to date. Not rebuilding."
 
 context\close!
 

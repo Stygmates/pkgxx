@@ -56,6 +56,8 @@ class
 			build: recipe.build,
 			install: recipe.install
 
+		@recipeAttributes = lfs.attributes filename
+
 		@\applyDistributionRules recipe
 
 		@\setTargets!
@@ -247,6 +249,17 @@ class
 
 	packagingDirectory: (name) =>
 		"#{@context.buildingDirectory}/pkg/#{name}"
+
+	buildNeeded: =>
+		for self in *{self, table.unpack self.splits}
+			attributes = lfs.attributes "" ..
+				"#{@context.packagesDirectory}/#{@target}"
+			unless attributes
+				return true
+
+			if attributes.modification < @recipeAttributes.modification
+				ui.info "Recipe is newer than packages."
+				return true
 
 	download: =>
 		ui.info "Downloading…"

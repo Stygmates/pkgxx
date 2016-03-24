@@ -138,3 +138,17 @@ class
 	__tostring: =>
 		"<pkgxx:xContext: #{@pid}-#{@randomKey}>"
 
+	prefixes: {
+		prefix:     "/usr",
+		bindir:     "/usr/bin",
+		sharedir:   "/usr/share",
+		infodir:    "/usr/share/info",
+		mandir:     "/usr/share/man",
+		docdir:     "/usr/share/doc",
+		libdir:     "/usr/lib",
+		libexecdir: "/usr/libexec",
+		confdir:    "/etc",
+		statedir:   "/var",
+		opt:        "/opt"
+	}
+

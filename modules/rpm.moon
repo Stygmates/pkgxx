@@ -2,6 +2,11 @@
 ui = require "pkgxx.ui"
 fs = require "pkgxx.fs"
 
+has = (e, a) ->
+	for k, v in pairs a
+		if v == e
+			return true
+
 writeSpec = (f) =>
 	dir = @name
 	if @ == @origin
@@ -38,9 +43,20 @@ writeSpec = (f) =>
 	f\write "%description\n"
 	f\write "#{@description}\n"
 	f\write "\n"
+
 	f\write "%files\n"
-	f\write "/\n"
-	-- FIXME: We should assign package-owned directories, with %dir dirname.
+	fs.changeDirectory (@\packagingDirectory dir), ->
+		p = io.popen "find ."
+		for line in p\lines!
+			file = line\sub 2, #line
+
+			if (lfs.attributes line).mode == "directory"
+				if not has file, @context.prefixes
+					f\write "%dir ", file, "\n"
+			else
+				f\write file, "\n"
+
+		p\close!
 
 -- FIXME: We need the list of RPM architectures.
 rpmArch = =>

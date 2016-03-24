@@ -65,7 +65,7 @@ class
 		@\checkRecipe!
 
 	parse: (str) =>
-		(macro.parse {str}, macroList!)[1]
+		(macro.parse {str}, macroList @)[1]
 
 	-- Is meant to be usable after package manager or architecture
 	-- changes, avoiding the creation of a new context.

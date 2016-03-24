@@ -16,8 +16,8 @@ parseHelper = (t, root, presets) ->
 
 						t[key] = value\gsub "%%{#{variable}}",
 							tostring (if root[variable]
-								root[variable]
-							else presets[variable])
+								string.gsub root[variable], "%%", "%%%%"
+							else string.gsub presets[variable], "%%", "%%%%")
 
 						parsed = true
 

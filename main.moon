@@ -36,6 +36,7 @@ parser = with argparse "pkgxx", "Packages builder."
 		\args 1
 
 	\flag "-t --targets"
+	\flag "-f --force"
 
 args = parser\parse!
 
@@ -67,7 +68,7 @@ if args.targets
 
 	os.exit 0
 
-if recipe\buildNeeded!
+if args.force or recipe\buildNeeded!
 	recipe\download!
 	assert recipe\build!
 	recipe\package!

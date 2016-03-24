@@ -28,30 +28,17 @@ class
 
 		@origin = @
 
-		@name = recipe.name
-		@version = recipe.version
-		@release = recipe.release or 1
-		@summary = recipe.summary
-		@description = recipe.description
+		@\applyDiff recipe
+
+		@release = @release or 1
 		@dirname = @dirname or "#{@name}-#{@version}"
 
-		@license = recipe.license
-		@copyright = recipe.copyright
-
-		@groups = recipe.groups or {}
-
-		@conflicts = recipe.conflicts or {}
-		@dependencies = recipe.dependencies or {}
-		@provides = recipe.provides or {}
+		@conflicts    = @conflicts or {}
+		@dependencies = @dependencies or {}
+		@provides     = @provides or {}
+		@groups       = @groups or {}
 
 		@architecture = @context.architecture
-
-		@maintainer = recipe.maintainer or recipe.packager
-		@packager = recipe.packager
-		@contributers = recipe.contributors
-
-		@class = recipe.class
-
 		@sources = {}
 		@sources = @\parseSources recipe
 

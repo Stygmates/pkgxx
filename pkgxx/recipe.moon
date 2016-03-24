@@ -6,6 +6,16 @@ fs = require "pkgxx.fs"
 macro = require "pkgxx.macro"
 sources = require "pkgxx.sources"
 
+macroList = =>
+	l = {
+		pkg: @\packagingDirectory "_"
+	}
+
+	for name, path in pairs @context.prefixes
+		l[name] = path
+
+	l
+
 class
 	new: (filename, context) =>
 		file = io.open filename, "r"
@@ -19,9 +29,7 @@ class
 
 		@context = context
 
-		recipe = macro.parse recipe, {
-			pkg: "#{@\packagingDirectory "_"}"
-		}
+		recipe = macro.parse recipe, macroList @
 
 		-- FIXME: sort by name or something.
 		@splits = @\parseSplits recipe
@@ -53,6 +61,9 @@ class
 		@\setTargets!
 
 		@\checkRecipe!
+
+	parse: (str) =>
+		(macro.parse {str}, macroList!)[1]
 
 	-- Is meant to be usable after package manager or architecture
 	-- changes, avoiding the creation of a new context.
@@ -282,12 +293,7 @@ class
 				code = "(#{code}) 2>> #{logfile} >> #{logfile}"
 
 			fs.changeDirectory @\buildingDirectory!, ->
-				r, e = pcall -> os.execute code
-
-				if not r
-					ui.error "#{e}"
-
-				return r, e
+				return os.execute code
 		else
 			@\executeModule name, critical
 
@@ -314,14 +320,17 @@ class
 
 		success, e = (@\execute "configure")
 		if not success
+			ui.error "Build failure. Could not configure."
 			return nil, e
 
 		success, e = (@\execute "build", true)
 		if not success
+			ui.error "Build failure. Could not build."
 			return nil, e
 
 		success, e = (@\execute "install")
 		if not success
+			ui.error "Build failure. Could not install."
 			return nil, e
 
 		@\stripFiles!

@@ -140,13 +140,13 @@ class
 
 	prefixes: {
 		prefix:     "/usr",
-		bindir:     "/usr/bin",
-		sharedir:   "/usr/share",
-		infodir:    "/usr/share/info",
-		mandir:     "/usr/share/man",
-		docdir:     "/usr/share/doc",
-		libdir:     "/usr/lib",
-		libexecdir: "/usr/libexec",
+		bindir:     "%{prefix}/bin",
+		sharedir:   "%{prefix}/share",
+		infodir:    "%{sharedir}/info",
+		mandir:     "%{sharedir}/man",
+		docdir:     "%{sharedir}/doc",
+		libdir:     "%{prefix}/lib",
+		libexecdir: "%{prefix}/libexec",
 		confdir:    "/etc",
 		statedir:   "/var",
 		opt:        "/opt"

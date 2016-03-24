@@ -50,10 +50,9 @@ writeSpec = (f) =>
 		for line in p\lines!
 			file = line\sub 2, #line
 
-			if (lfs.attributes line).mode == "directory"
-				if not has file, @context.prefixes
-					f\write "%dir ", file, "\n"
-			else
+			-- Directories ignored until we can safely determine which are
+			-- part of the system and which are not.
+			unless (lfs.attributes line).mode == "directory"
 				f\write file, "\n"
 
 		p\close!

@@ -29,8 +29,10 @@ lfs = require "lfs"
 
 		r, e = lfs.chdir newDir
 		if r
-			f!
+			r = {f!}
 			lfs.chdir oldDir
+
+			return unpack r
 		else
 			error e
 

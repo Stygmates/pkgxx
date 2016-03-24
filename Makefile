@@ -15,6 +15,6 @@ install: build
 	cp -r modules/*.lua ${DESTDIR}${PREFIX}/share/pkgxx/
 
 clean:
-	for i in *.moon; do rm $${i%%.moon}.lua; done
-	for i in */*.moon; do rm $${i%%.moon}.lua; done
+	for i in *.moon; do rm -f $${i%%.moon}.lua; done
+	for i in */*.moon; do rm -f $${i%%.moon}.lua; done
 

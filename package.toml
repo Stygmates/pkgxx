@@ -52,6 +52,7 @@ class = "binary"
 [splits.nano-doc]
 class = "documentation"
 files = [ "/usr/share/doc" ]
+options = ["no-arch"]
 
 [splits.nano-doc.os.Debian]
 dependencies = []

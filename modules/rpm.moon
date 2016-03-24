@@ -13,6 +13,9 @@ writeSpec = (f) =>
 	f\write "Release:   #{@release}%{?dist}\n"
 	f\write "License:   #{@license}\n"
 
+	if @hasOption "no-arch"
+		f\write "BuildArch: noarch\n"
+
 	f\write "BuildRoot: /usr\n"
 
 	-- Documentation says not to use this on Fedora?	
@@ -39,6 +42,14 @@ writeSpec = (f) =>
 	f\write "/\n"
 	-- FIXME: We should assign package-owned directories, with %dir dirname.
 
+-- FIXME: We need the list of RPM architectures.
+rpmArch = =>
+	arch = @architecture
+	if @hasOption "no-arch"
+		arch = "noarch"
+
+	arch
+
 dist = ->
 	p = io.popen "rpm --eval '%dist'"
 	rpm_dist = p\read "*line"
@@ -47,7 +58,7 @@ dist = ->
 	return rpm_dist or ""
 
 {
-	target: => "#{@name}-#{@version}-#{@release}-#{@architecture}#{dist!}.rpm"
+	target: => "#{@name}-#{@version}-#{@release}-#{rpmArch @}#{dist!}.rpm"
 	package: =>
 		dir = @name
 		if @ == @origin
@@ -74,11 +85,11 @@ dist = ->
 				" --buildroot='#{pwd}/#{dir}'" ..
 				" -bb #{@name}.spec"
 
-			-- FIXME: We need the list of RPM architectures.
-			arch = @architecture
+			arch = rpmArch @
 
 			os.execute "mv" ..
-				" '#{pwd}/../#{arch}/#{@name}-#{@version}-#{@release}#{dist!}.#{arch}.rpm'" ..
+				" '#{pwd}/../#{arch}/" ..
+					"#{@name}-#{@version}-#{@release}#{dist!}.#{arch}.rpm'" ..
 				" '#{@context.packagesDirectory}/#{@target}'"
 }
 

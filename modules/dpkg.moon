@@ -39,7 +39,11 @@ control = (dest) =>
 		file\write (paragraph @description), "\n"
 
 	file\write "Maintainer: #{@maintainer}\n"
-	file\write "Architecture: #{debarch @architecture}\n"
+
+	if @hasOption "no-arch"
+		file\write "Architecture: all\n"
+	else
+		file\write "Architecture: #{debarch @architecture}\n"
 	file\write "Depends: #{list @dependencies}\n"
 
 	-- Final, empty newline. Required.

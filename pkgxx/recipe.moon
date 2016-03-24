@@ -37,6 +37,7 @@ class
 		@dependencies = @dependencies or {}
 		@provides     = @provides or {}
 		@groups       = @groups or {}
+		@options      = @options or {}
 
 		@architecture = @context.architecture
 		@sources = {}
@@ -147,6 +148,11 @@ class
 			if e and not r
 				error e, 0
 
+	hasOption: (option) =>
+		for opt in *@options
+			if opt == option
+				return true
+
 	applyDiff: (diff) =>
 		if diff.name
 			@name = diff.name
@@ -158,12 +164,13 @@ class
 		if diff.dependencies
 			@dependencies = diff.dependencies
 		if diff.conflicts
-			@conflicts = recipe.conflicts or {}
+			@conflicts = diff.conflicts
 		if diff.provides
-			@provides = recipe.provides or {}
-
+			@provides = diff.provides
 		if diff.groups
-			@groups = recipe.groups or {}
+			@groups = diff.groups
+		if diff.options
+			@options = diff.options
 
 		if diff.summary
 			@summary = diff.summary

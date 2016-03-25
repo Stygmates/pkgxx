@@ -4,10 +4,6 @@ ui = require "pkgxx.ui"
 {
 	name: "Fedora",
 	alterRecipe: =>
-		unless @class
-			ui.warning "Fedora packages should all have a 'class' value!"
-			return
-
 		switch @class
 			when "headers"
 				@name = @name .. "-devel"

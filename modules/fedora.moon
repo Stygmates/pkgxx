@@ -1,0 +1,23 @@
+
+ui = require "pkgxx.ui"
+
+{
+	name: "Fedora",
+	alterRecipe: =>
+		unless @class
+			ui.warning "Fedora packages should all have a 'class' value!"
+			return
+
+		switch @class
+			when "headers"
+				@name = @name .. "-devel"
+				@name = @name\gsub "-devel-devel", "-devel"
+			when "documentation"
+				@name = @name .. "-doc"
+				@name = @name\gsub "-doc-doc$", "-doc"
+			when "library" or "binary"
+				true -- Do nothing.
+			else
+				ui.warning "<modules/Fedora> Unrecognized class: '#{@class}'."
+}
+

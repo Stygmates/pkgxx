@@ -11,6 +11,7 @@ fs = require "pkgxx.fs"
 					"--sysconfdir='%{confdir}'"
 					"--bindir='%{bindir}'"
 					"--libdir='%{libdir}'"
+					unpack (@recipe["configure-options"] or {})
 				}, " "
 }
 

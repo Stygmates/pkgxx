@@ -15,7 +15,7 @@ parser = with argparse "pkgxx", "Packages builder."
 		\args "?"
 
 	with \flag "-v --verbose"
-		\count "0-1"
+		\count "0-2"
 		\target "verbosity"
 
 	with \flag "-q --quiet"
@@ -31,7 +31,7 @@ parser = with argparse "pkgxx", "Packages builder."
 
 args = parser\parse!
 
-ui.setVerbosity ((4 + ((args.verbosity and 1 or 0) - (args.quiet or 0))) or
+ui.setVerbosity ((4 + ((args.verbosity or 0) - (args.quiet or 0))) or
 	context.configuration.verbosity or 4)
 
 if args.architecture

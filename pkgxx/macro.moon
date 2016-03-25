@@ -9,7 +9,7 @@ parseHelper = (t, root, presets) ->
 		for key, value in pairs t
 			switch type value
 				when "table"
-					parsed = parseHelper value, root
+					parsed = parseHelper value, root, presets
 				when "string"
 					for variable in value\gmatch "%%{[a-zA-Z0-9]+}"
 						variable = variable\sub 3, #variable - 1

@@ -33,22 +33,6 @@ copyright = "2001-2016 Free Software Foundation"
 
 class = "binary"
 
-#configure = [
-#	"cd %{name}-%{version}",
-#	"./configure --prefix=/usr"
-#]
-
-#build = [
-#	"cd %{name}-%{version}",
-#	"make",
-#]
-
-#install = [
-#	"cd %{name}-%{version}",
-#	"make DESTDIR='%{pkg}' install"
-#]
-
-# Splits not working. Here for future reference.
 [splits.nano-doc]
 class = "documentation"
 files = [ "/usr/share/doc" ]

@@ -21,8 +21,8 @@ class
 
 		@randomKey = math.random 0, 65535
 
-		@sourcesDirectory  = @configuration.sourcesDirectory or "#{home}"
-		@packagesDirectory = @configuration.packagesDirectory or "#{home}"
+		@sourcesDirectory  = @configuration["sources-directory"] or "#{home}"
+		@packagesDirectory = @configuration["packages-directory"] or "#{home}"
 		@buildingDirectory    = "/tmp/pkgxx-#{pid}-#{@randomKey}"
 
 		@builder = @configuration["builder"]

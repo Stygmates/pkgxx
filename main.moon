@@ -5,18 +5,9 @@ argparse = require "argparse"
 pkgxx = require "pkgxx"
 ui = require "pkgxx.ui"
 
-configFileName = "/etc/pkgxx.conf"
-configFile = io.open configFileName, "r"
+context = pkgxx.newContext config
 
-local config
-if configFile
-	config = toml.parse configFile\read "*all"
-	configFile\close!
-else
-	ui.warning "No configuration file found at '#{configFileName}'."
-
-unless config
-	config = {}
+context\importConfiguration "/etc/pkgxx.conf"
 
 parser = with argparse "pkgxx", "Packages builder."
 	with \argument "recipe",
@@ -41,19 +32,10 @@ parser = with argparse "pkgxx", "Packages builder."
 args = parser\parse!
 
 ui.setVerbosity ((4 + ((args.verbosity and 1 or 0) - (args.quiet or 0))) or
-	config.verbosity or 4)
-
-context = pkgxx.newContext config
+	context.configuration.verbosity or 4)
 
 if args.architecture
 	context.architecture = args.architecture
-
-for variable in *{
-	"CFLAGS", "CPPFLAGS", "CXXFLAGS", "FFLAGS", "LDFLAGS",
-	"MAKEFLAGS"
-}
-	if config[variable]
-		context.exports[variable] = config[variable]
 
 recipe = context\openRecipe "package.toml"
 

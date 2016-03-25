@@ -1,5 +1,6 @@
 
 moonscript = require "moonscript"
+toml = require "toml"
 
 ui = require "pkgxx.ui"
 fs = require "pkgxx.fs"
@@ -7,11 +8,10 @@ fs = require "pkgxx.fs"
 Recipe = require "pkgxx.recipe"
 
 class
-	new: (configuration) =>
-		@configuration = configuration or {}
-
-		unless @configuration.verbosity
-			@configuration.verbosity = 4
+	new: () =>
+		@configuration = {
+			verbosity: 4
+		}
 
 		home = os.getenv "HOME"
 
@@ -21,15 +21,9 @@ class
 
 		@randomKey = math.random 0, 65535
 
-		@sourcesDirectory  = @configuration["sources-directory"] or "#{home}"
-		@packagesDirectory = @configuration["packages-directory"] or "#{home}"
+		@sourcesDirectory  = "#{home}"
+		@packagesDirectory = "#{home}"
 		@buildingDirectory    = "/tmp/pkgxx-#{pid}-#{@randomKey}"
-
-		@builder = @configuration["builder"]
-
-		@distribution = @configuration["distribution"]
-		@packageManager = @configuration["package-manager"]
-		@repositoryManager = @configuration["repository-manager"]
 
 		@compressionMethod = "gz"
 
@@ -48,6 +42,33 @@ class
 		@\loadModules!
 
 		@\checkConfiguration!
+
+	importConfiguration: (filename) =>
+		f = io.open filename
+		content = f\read "*all"
+		f\close!
+
+		configuration = toml.parse content
+
+		@sourcesDirectory  = configuration["sources-directory"] or @sourcesDirectory
+		@packagesDirectory = configuration["packages-directory"] or @paackagesDirectory
+
+		@builder = configuration["builder"]
+
+		@distribution = configuration["distribution"]
+		@packageManager = configuration["package-manager"]
+		@repositoryManager = configuration["repository-manager"]
+
+		for variable in *{
+			"CFLAGS", "CPPFLAGS", "CXXFLAGS", "FFLAGS", "LDFLAGS",
+			"MAKEFLAGS"
+		}
+			if configuration[variable]
+				context.exports[variable] = configuration[variable]
+
+		@configuration = configuration
+		unless @configuration.verbosity
+			@configuration.verbosity = 4
 
 	loadModules: =>
 		@modules = {}

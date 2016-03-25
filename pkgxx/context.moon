@@ -169,6 +169,7 @@ class
 		docdir:     "%{sharedir}/doc",
 		libdir:     "%{prefix}/lib",
 		libexecdir: "%{prefix}/libexec",
+		includedir: "%{prefix}/include"
 		confdir:    "/etc",
 		statedir:   "/var",
 		opt:        "/opt"

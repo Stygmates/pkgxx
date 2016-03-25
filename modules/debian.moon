@@ -19,5 +19,13 @@ ui = require "pkgxx.ui"
 			else
 				ui.warning "<modules/Debian> Unrecognized class: " ..
 					"'#{@class}'"
+	autosplits: =>
+		{
+			{
+				name: @name .. "-dev",
+				description: "Development files for #{@name}"
+				files: { "%{includedir}" }
+			}
+		}
 }
 

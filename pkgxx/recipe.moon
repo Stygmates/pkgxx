@@ -126,6 +126,7 @@ class
 
 				-- Splits will need much more data than this.
 				split = setmetatable {
+					os: data.os,
 					files: data.files
 				}, __index: @
 
@@ -144,6 +145,22 @@ class
 		if module
 			if module.alterRecipe
 				module.alterRecipe @
+
+			ui.debug "Distribution: #{module.name}"
+			if module.autosplits
+				oldIndex = #@splits
+
+				newSplits = module.autosplits @
+				newSplits = macro.parse newSplits, macroList @
+
+				for split in *@\parseSplits splits: newSplits
+					ui.debug "Registering automatic split: #{split.name}."
+
+					if not @\hasSplit split.name
+						split.automatic = true
+						@splits[#@splits+1] = split
+					else
+						ui.debug " ... split already exists."
 		else
 			ui.warning "No module found for this distribution: " ..
 				"'#{distribution}'."
@@ -155,7 +172,7 @@ class
 			@@.applyDiff @, recipe.os[distribution]
 
 		for split in *@splits
-			os = recipe.splits[split.name].os
+			os = split.os
 
 			if os and os[distribution]
 				@@.applyDiff split, os[distribution]
@@ -177,6 +194,11 @@ class
 
 			if e and not r
 				error e, 0
+
+	hasSplit: (name) =>
+		for split in *@splits
+			if split.name == name
+				return true
 
 	hasOption: (option) =>
 		for opt in *@options
@@ -371,6 +393,10 @@ class
 	split: =>
 		for split in *@splits
 			if split.files
+				if split.automatic and not @\splitHasFiles split
+					ui.debug "No file detected for #{split.name}. Ignoring."
+					return
+
 				ui.detail "Splitting '#{split.name}'."
 
 				for file in *split.files
@@ -383,6 +409,16 @@ class
 					--      permissions here.
 					fs.mkdir destination\gsub "/[^/]*$", ""
 					os.execute "mv '#{source}' '#{destination}'"
+
+	splitHasFiles: (split) =>
+		baseDir = @\packagingDirectory split.name
+		for file in *split.files
+			fileName = baseDir .. "/" .. file
+
+			if not fs.attributes fileName
+				return false
+
+		return true
 
 	package: =>
 		ui.info "Packaging…"
@@ -400,12 +436,19 @@ class
 			error "No module is available for the package manager "..
 				"'#{@configuration['package-manager']}'."
 
+	-- Checks that the split has the files it’s supposed to have in .files.
+
 	packageSplit: (module, split) =>
 		local splitName
 		if split == @
 			splitName = "_"
 		else
 			splitName = split.name
+
+		if split.automatic and not @\splitHasFiles split
+			ui.debug "Not building automatic split: #{split.name}"
+
+			return
 
 		fs.changeDirectory (@\packagingDirectory splitName), ->
 			module.package split

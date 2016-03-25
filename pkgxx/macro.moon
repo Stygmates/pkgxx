@@ -1,4 +1,6 @@
 
+ui = require "pkgxx.ui"
+
 -- WARNING: works destructively
 parseHelper = (t, root, presets) ->
 	parsed = true
@@ -14,10 +16,16 @@ parseHelper = (t, root, presets) ->
 					for variable in value\gmatch "%%{[a-zA-Z0-9]+}"
 						variable = variable\sub 3, #variable - 1
 
-						t[key] = value\gsub "%%{#{variable}}",
-							tostring (if root[variable]
-								string.gsub root[variable], "%%", "%%%%"
-							else string.gsub presets[variable], "%%", "%%%%")
+						t[key] = value\gsub "%%{#{variable}}", "" ..
+							if root[variable]
+								string.gsub root[variable],
+									"%%", "%%%%"
+							elseif presets[variable]
+								string.gsub presets[variable],
+									"%%", "%%%%"
+							else
+								ui.warning "Undefined macro: #{variable}"
+								""
 
 						parsed = true
 

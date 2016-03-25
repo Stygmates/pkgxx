@@ -73,7 +73,8 @@ dist = ->
 	return rpm_dist or ""
 
 {
-	target: => "#{@name}-#{@version}-#{@release}-#{rpmArch @}#{dist!}.rpm"
+	target: =>
+		"#{@name}-#{@version}-#{@release}#{dist!}.#{rpmArch @}.rpm"
 	package: =>
 		dir = @name
 		if @ == @origin
@@ -103,8 +104,7 @@ dist = ->
 			arch = rpmArch @
 
 			os.execute "mv" ..
-				" '#{pwd}/../#{arch}/" ..
-					"#{@name}-#{@version}-#{@release}#{dist!}.#{arch}.rpm'" ..
+				" '#{pwd}/../#{arch}/#{@target}'" ..
 				" '#{@context.packagesDirectory}/#{@target}'"
 }
 

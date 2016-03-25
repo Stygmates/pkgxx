@@ -15,7 +15,9 @@ ui = require "pkgxx.ui"
 			when "documentation"
 				@name = @name .. "-doc"
 				@name = @name\gsub "-doc-doc$", "-doc"
-			when "library" or "binary"
+			when "library"
+				true -- Do nothing.
+			when "binary"
 				true -- Do nothing.
 			else
 				ui.warning "<modules/Fedora> Unrecognized class: '#{@class}'."

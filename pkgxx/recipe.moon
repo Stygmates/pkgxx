@@ -56,6 +56,7 @@ class
 			build: recipe.build,
 			install: recipe.install
 
+		@recipe = recipe -- Can be required for module-defined fields.
 		@recipeAttributes = lfs.attributes filename
 
 		@\applyDistributionRules recipe

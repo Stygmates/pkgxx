@@ -104,6 +104,7 @@ class
 					if code
 						module = code!
 						@modules[name] = module
+						module.name = module.name or name
 
 						if module.name and not @modules[module.name]
 							@modules[module.name] = module

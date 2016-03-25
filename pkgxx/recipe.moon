@@ -38,6 +38,8 @@ class
 
 		@\applyDiff recipe
 
+		@class = @class or @\guessClass @
+
 		@release = @release or 1
 		@dirname = @dirname or "#{@name}-#{@version}"
 
@@ -118,16 +120,20 @@ class
 		splits = {}
 
 		if recipe.splits
-			for split, data in pairs recipe.splits
+			for splitName, data in pairs recipe.splits
 				if not data.name
-					data.name = split
+					data.name = splitName
 
 				-- Splits will need much more data than this.
-				splits[#splits+1] = setmetatable {
+				split = setmetatable {
 					files: data.files
 				}, __index: @
 
-				@@.applyDiff splits[#splits], data
+				splits[#splits+1] = split
+
+				@@.applyDiff split, data
+
+				split.class = split.class or @\guessClass split
 
 		splits
 
@@ -153,6 +159,16 @@ class
 
 			if os and os[distribution]
 				@@.applyDiff split, os[distribution]
+
+	guessClass: (split) =>
+		if split.name\match "-doc$"
+			"documentation"
+		elseif split.name\match "-dev$" or split.name\match "-devel$"
+			"headers"
+		elseif split.name\match "^lib"
+			"library"
+		else
+			"binary"
 
 	checkRecipe: =>
 		module = @context.modules[@context.packageManager]

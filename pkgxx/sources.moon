@@ -6,11 +6,11 @@ _M = {}
 
 _M.download = (source, context) ->
 	fs.changeDirectory context.sourcesDirectory, ->
-		if fs.attributes source.filename
-			ui.detail "Already downloaded: '#{source.filename}'."
+		module = context.modules[source.protocol]
+		if module and module.download
+			module.download source
 		else
-			ui.detail "Downloading '#{source.filename}'."
-			os.execute "wget '#{source.url}' -O './#{source.filename}'"
+			ui.error "Does not know how to download: #{source.url}"
 
 _M
 

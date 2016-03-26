@@ -108,8 +108,13 @@ class
 		for i = 1, #sources
 			source = sources[i]
 			url = source\gsub " -> .*", ""
+			protocol = url\gsub ":.*", ""
+
+			-- Aliases and stuff like git+http.
+			protocol = protocol\gsub "+.*", ""
 
 			sources[i] = {
+				protocol: protocol,
 				filename: url\gsub ".*/", "",
 				url: url
 			}
@@ -304,7 +309,10 @@ class
 		ui.info "Downloading…"
 
 		for source in *@sources
-			sources.download source, @context
+			if (sources.download source, @context) ~= true
+				return
+
+		true
 
 	prepareBuild: =>
 		fs.mkdir @\buildingDirectory!

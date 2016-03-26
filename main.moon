@@ -51,7 +51,7 @@ if args.targets
 	os.exit 0
 
 if args.force or recipe\buildNeeded!
-	recipe\download!
+	assert recipe\download!
 	assert recipe\build!
 	recipe\package!
 	recipe\clean!

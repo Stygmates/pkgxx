@@ -41,8 +41,6 @@ class
 
 		@\loadModules!
 
-		@\checkConfiguration!
-
 	importConfiguration: (filename) =>
 		f = io.open filename
 		content = f\read "*all"

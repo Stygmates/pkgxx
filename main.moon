@@ -9,6 +9,8 @@ context = pkgxx.newContext config
 
 context\importConfiguration "/etc/pkgxx.conf"
 
+context\checkConfiguration!
+
 parser = with argparse "pkgxx", "Packages builder."
 	with \argument "recipe",
 		"Path to the recipe of the package to build."

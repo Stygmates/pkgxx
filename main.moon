@@ -40,6 +40,10 @@ if args.architecture
 recipe = context\openRecipe "package.toml"
 
 if args.targets
+	if not recipe.version
+		assert recipe\download!
+		recipe\updateVersion!
+
 	for target in recipe\getTargets!
 		if ui.getVerbosity! > 3
 			ui.detail target
@@ -50,15 +54,27 @@ if args.targets
 
 	os.exit 0
 
-if args.force or recipe\buildNeeded!
+local upToDate
+if args.force or (not recipe.version) or recipe\buildNeeded!
 	assert recipe\download!
-	assert recipe\build!
-	recipe\package!
-	recipe\clean!
 
-	context\updateRepository!
-	context\addToRepository recipe
+	if not recipe.version
+		recipe\updateVersion!
+
+	-- Development packages might have set their versions by now.
+	if args.force or recipe\buildNeeded!
+		assert recipe\build!
+		recipe\package!
+		recipe\clean!
+
+		context\updateRepository!
+		context\addToRepository recipe
+	else
+		upToDate = true
 else
+	upToDate = true
+
+if upToDate
 	ui.info "Everything up to date. Not rebuilding."
 
 context\close!

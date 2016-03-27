@@ -41,7 +41,7 @@ class
 		@class = @class or @\guessClass @
 
 		@release = @release or 1
-		@dirname = @dirname or "#{@name}-#{@version}"
+		@dirname = recipe.dirname or "#{@name}-#{@version}"
 
 		@conflicts    = @conflicts or {}
 		@dependencies = @dependencies or {}
@@ -112,6 +112,7 @@ class
 
 			-- Aliases and stuff like git+http.
 			protocol = protocol\gsub "+.*", ""
+			url = url\gsub ".*+", ""
 
 			sources[i] = {
 				protocol: protocol,
@@ -296,6 +297,9 @@ class
 
 	buildNeeded: =>
 		for self in *{self, table.unpack self.splits}
+			if self.automatic
+				continue
+
 			attributes = lfs.attributes "" ..
 				"#{@context.packagesDirectory}/#{@target}"
 			unless attributes
@@ -313,6 +317,24 @@ class
 				return
 
 		true
+
+	updateVersion: =>
+		local v
+
+		for source in *@sources
+			module = @context.modules[source.protocol]
+
+			unless module
+				continue
+
+			if module.getVersion
+				v = fs.changeDirectory @context.sourcesDirectory, ->
+					module.getVersion source
+
+				if not @version
+					@version = v
+
+		@\setTargets!
 
 	prepareBuild: =>
 		fs.mkdir @\buildingDirectory!
@@ -333,7 +355,9 @@ class
 						"#{source.filename}'"
 				else
 					ui.detail "Copying '#{source.filename}'."
-					os.execute "cp " ..
+					-- FIXME: -r was needed for repositories and stuff.
+					--        We need to modularize “extractions”.
+					os.execute "cp -r " ..
 						"'#{@context.sourcesDirectory}/" ..
 						"#{source.filename}' ./"
 

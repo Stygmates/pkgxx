@@ -56,6 +56,8 @@ if args.targets
 
 local upToDate
 if args.force or (not recipe.version) or recipe\buildNeeded!
+	recipe\checkDependencies!
+
 	assert recipe\download!
 
 	if not recipe.version

@@ -16,6 +16,15 @@ macroList = =>
 
 	l
 
+swapKeys = (tree, oldKey, newKey) ->
+	tree[oldKey], tree[newKey] = tree[newKey], tree[oldKey]
+
+	for key, value in pairs tree
+		if (type value) == "table"
+			tree[key] = swapKeys value, oldKey, newKey
+
+	tree
+
 class
 	new: (filename, context) =>
 		file = io.open filename, "r"
@@ -24,6 +33,8 @@ class
 			error "could not open recipe", 0
 
 		recipe, e = toml.parse (file\read "*all"), {strict: false}
+
+		swapKeys recipe, "build-dependencies", "buildDependencies"
 
 		file\close!
 
@@ -45,6 +56,7 @@ class
 
 		@conflicts    = @conflicts or {}
 		@dependencies = @dependencies or {}
+		@buildDependencies = @buildDependencies or {}
 		@provides     = @provides or {}
 		@groups       = @groups or {}
 		@options      = @options or {}
@@ -193,6 +205,8 @@ class
 
 		if diff.dependencies
 			@dependencies = diff.dependencies
+		if diff.buildDependencies
+			@buildDependencies = diff.buildDependencies
 		if diff.conflicts
 			@conflicts = diff.conflicts
 		if diff.provides
@@ -280,6 +294,36 @@ class
 			if attributes.modification < @recipeAttributes.modification
 				ui.info "Recipe is newer than packages."
 				return true
+
+	checkDependencies: =>
+		module = @context.modules[@context.packageManager]
+
+		unless module and module.isInstalled
+			-- FIXME: Make this a real warning once it’s implemented.
+			return nil, "unable to check dependencies"
+
+		deps = {}
+		for name in *@dependencies
+			table.insert deps, name
+		for name in *@buildDependencies
+			table.insert deps, name
+
+		for name in *deps
+			if not module.isInstalled name
+				-- FIXME: Check the configuration to make sure it’s tolerated.
+				--        If it isn’t, at least ask interactively.
+				ui.detail "Installing missing dependency: #{name}"
+				@\installDependency name
+
+	installDependency: (name) =>
+		module = @context.modules[@context.dependenciesManager]
+		if not (module and module.installDependency)
+			module = @context.modules[@context.packageManager]
+
+		if not (module and module.installDependency)
+			return nil, "no way to install packages"
+
+		module.installDependency name
 
 	download: =>
 		ui.info "Downloading…"

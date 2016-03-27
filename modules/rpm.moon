@@ -106,5 +106,10 @@ dist = ->
 			os.execute "mv" ..
 				" '#{pwd}/../#{arch}/#{@target}'" ..
 				" '#{@context.packagesDirectory}/#{@target}'"
+	isInstalled: (name) ->
+		-- Being silent.
+		p = io.popen "rpm -V --noscripts --nodeps --nofiles #{name}"
+		p\read "*all"
+		p\close!
 }
 

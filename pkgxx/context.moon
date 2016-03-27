@@ -58,6 +58,7 @@ class
 		@distribution = configuration["distribution"]
 		@packageManager = configuration["package-manager"]
 		@repositoryManager = configuration["repository-manager"]
+		@dependenciesManager = configuration["dependencies-manager"]
 
 		for variable in *{
 			"CFLAGS", "CPPFLAGS", "CXXFLAGS", "FFLAGS", "LDFLAGS",

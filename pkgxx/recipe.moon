@@ -51,7 +51,7 @@ class
 
 		@architecture = @context.architecture
 		@sources = {}
-		@sources = @\parseSources recipe
+		@sources = sources.parse recipe
 
 		@buildInstructions =
 			configure: recipe.configure,
@@ -93,34 +93,6 @@ class
 				return @target
 			elseif i - 1 <= #@splits
 				return @splits[i - 1].target
-
-	parseSources: (recipe) =>
-		local sources
-
-		sources = switch type recipe.sources
-			when "string"
-				{ recipe.sources }
-			when "nil"
-				{}
-			else
-				recipe.sources
-
-		for i = 1, #sources
-			source = sources[i]
-			url = source\gsub " -> .*", ""
-			protocol = url\gsub ":.*", ""
-
-			-- Aliases and stuff like git+http.
-			protocol = protocol\gsub "+.*", ""
-			url = url\gsub ".*+", ""
-
-			sources[i] = {
-				protocol: protocol,
-				filename: url\gsub ".*/", "",
-				url: url
-			}
-
-		sources
 
 	parseSplits: (recipe) =>
 		splits = {}

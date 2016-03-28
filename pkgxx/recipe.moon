@@ -62,7 +62,6 @@ class
 		@options      = @options or {}
 
 		@architecture = @context.architecture
-		@sources = {}
 		@sources = sources.parse recipe
 
 		@buildInstructions =
@@ -79,8 +78,12 @@ class
 
 		@\checkRecipe!
 
-	parse: (str) =>
-		(macro.parse {str}, macroList @)[1]
+	parse: (string) =>
+		parsed = true
+		while parsed
+			string, parsed = macro.parseString string, (macroList @), {}
+
+		string
 
 	-- Is meant to be usable after package manager or architecture
 	-- changes, avoiding the creation of a new context.

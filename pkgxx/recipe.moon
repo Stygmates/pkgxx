@@ -52,7 +52,12 @@ class
 		@class = @class or @\guessClass @
 
 		@release = @release or 1
-		@dirname = recipe.dirname or "#{@name}-#{@version}"
+
+		unless @dirname
+			if @version
+				@dirname = "#{@name}-#{@version}"
+			else
+				@dirname = recipe.name
 
 		@conflicts    = @conflicts or {}
 		@dependencies = @dependencies or {}

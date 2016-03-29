@@ -442,9 +442,11 @@ class
 		true
 
 	split: =>
+		mainPkgDir = @\packagingDirectory "_"
+
 		for split in *@splits
 			if split.files
-				if split.automatic and not @\splitHasFiles split
+				if split.automatic and not @\splitHasFiles split, mainPkgDir
 					ui.debug "No file detected for #{split.name}. Ignoring."
 					return
 
@@ -461,8 +463,8 @@ class
 					fs.mkdir destination\gsub "/[^/]*$", ""
 					os.execute "mv '#{source}' '#{destination}'"
 
-	splitHasFiles: (split) =>
-		baseDir = @\packagingDirectory split.name
+	splitHasFiles: (split, baseDir) =>
+		baseDir = baseDir or @\packagingDirectory split.name
 		for file in *split.files
 			fileName = baseDir .. "/" .. file
 

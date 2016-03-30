@@ -410,19 +410,19 @@ class
 			@\executeModule name, critical
 
 	executeModule: (name, critical) =>
-		local module
 		if (type @buildInstructions[name]) == "string"
 			module = @context.modules[@buildInstructions[name]]
+
+			return fs.changeDirectory @\buildingDirectory!, ->
+				module[name] @
 		else
-			for modname, module in pairs @context.modules
+			for _, module in pairs @context.modules
 				if module[name]
-					break
+					r, e = fs.changeDirectory @\buildingDirectory!, ->
+						module[name] @
 
-		r, e = fs.changeDirectory @\buildingDirectory!, ->
-			module[name] @
-
-		if r or e
-			return r, e
+					if r or e
+						return r, e
 
 		return nil, "no suitable module found"
 

@@ -8,3 +8,7 @@ distribution-codename = "jessie"
 
 builder = "Someone <some@one.example>"
 
+[collections.test]
+	provider = "Lukc"
+	prefix = "/opt/Lukc/test"
+

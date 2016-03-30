@@ -25,6 +25,8 @@ class
 		@packagesDirectory = "#{home}"
 		@buildingDirectory    = "/tmp/pkgxx-#{pid}-#{@randomKey}"
 
+		@collections = {}
+
 		@compressionMethod = "gz"
 
 		-- An associative array of stuff to export when running
@@ -65,9 +67,19 @@ class
 			if configuration[variable]
 				context.exports[variable] = configuration[variable]
 
+		@prefixes = {}
+		for prefix in *@prefixes
+			if configuration[prefix]
+				@prefixes[prefix] = configuration[prefix]
+
 		@configuration = configuration
 		unless @configuration.verbosity
 			@configuration.verbosity = 4
+
+		if configuration.collections
+			for name, col in pairs configuration.collections
+				ui.debug "Registering collection '#{name}'."
+				@collections[name] = col
 
 	loadModules: =>
 		@modules = {}
@@ -160,17 +172,35 @@ class
 		"<pkgxx:xContext: #{@pid}-#{@randomKey}>"
 
 	prefixes: {
-		prefix:     "/usr",
-		bindir:     "%{prefix}/bin",
-		sharedir:   "%{prefix}/share",
-		infodir:    "%{sharedir}/info",
-		mandir:     "%{sharedir}/man",
-		docdir:     "%{sharedir}/doc",
-		libdir:     "%{prefix}/lib",
-		libexecdir: "%{prefix}/libexec",
-		includedir: "%{prefix}/include"
-		confdir:    "/etc",
-		statedir:   "/var",
-		opt:        "/opt"
+		"prefix",
+		"bindir",
+		"sharedir",
+		"infodir",
+		"mandir",
+		"docdir",
+		"libdir",
+		"libexecdir",
+		"includedir",
+		"confdir",
+		"statedir",
+		"opt",
 	}
+
+	getPrefix: (name) =>
+		defaults = {
+			prefix:     "/usr",
+			bindir:     "%{prefix}/bin",
+			sharedir:   "%{prefix}/share",
+			infodir:    "%{sharedir}/info",
+			mandir:     "%{sharedir}/man",
+			docdir:     "%{sharedir}/doc",
+			libdir:     "%{prefix}/lib",
+			libexecdir: "%{prefix}/libexec",
+			includedir: "%{prefix}/include"
+			confdir:    "/etc",
+			statedir:   "/var",
+			opt:        "/opt"
+		}
+
+		@prefixes[name] or defaults[name]
 

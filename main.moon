@@ -28,6 +28,10 @@ parser = with argparse "pkgxx", "Packages builder."
 		\target "architecture"
 		\args 1
 
+	with \option "-c --collection"
+		\target "collection"
+		\args 1
+
 	\flag "-t --targets"
 	\flag "-f --force"
 
@@ -38,6 +42,10 @@ ui.setVerbosity ((4 + ((args.verbosity or 0) - (args.quiet or 0))) or
 
 if args.architecture
 	context.architecture = args.architecture
+
+if args.collection
+	print "Building in the following collection: #{args.collection}"
+	context.collection = args.collection
 
 recipe = context\openRecipe "package.toml"
 

@@ -69,10 +69,11 @@ class
 		@architecture = @context.architecture
 		@sources = sources.parse recipe
 
+		bs = recipe["build-system"]
 		@buildInstructions =
-			configure: recipe.configure,
-			build: recipe.build,
-			install: recipe.install
+			configure: recipe.configure or bs,
+			build: recipe.build or bs,
+			install: recipe.install or bs
 
 		@recipe = recipe -- Can be required for module-defined fields.
 		@recipeAttributes = lfs.attributes filename

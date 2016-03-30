@@ -14,6 +14,9 @@ macroList = =>
 	for name, path in pairs @context.prefixes
 		l[name] = path
 
+	for name, value in pairs @context.configuration
+		l[name] = value
+
 	l
 
 swapKeys = (tree, oldKey, newKey) ->

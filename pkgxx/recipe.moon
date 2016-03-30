@@ -389,7 +389,7 @@ class
 	execute: (name, critical) =>
 		ui.debug "Executing '#{name}'."
 
-		if @buildInstructions[name]
+		if (type @buildInstructions[name]) == "table"
 			code = table.concat @buildInstructions[name], "\n"
 
 			code = "set -x #{'-e' if critical else ''}\n#{code}"
@@ -406,16 +406,19 @@ class
 			@\executeModule name, critical
 
 	executeModule: (name, critical) =>
-		local r
+		local module
+		if (type @buildInstructions[name]) == "string"
+			module = @context.modules[@buildInstructions[name]]
+		else
+			for modname, module in pairs @context.modules
+				if module[name]
+					break
 
-		for modname, module in pairs @context.modules
-			if module[name]
-				-- FIXME: Not very readable. Please fix.
-				r, e = fs.changeDirectory @\buildingDirectory!, ->
-					module[name] @
+		r, e = fs.changeDirectory @\buildingDirectory!, ->
+			module[name] @
 
-				if r or e
-					return r, e
+		if r or e
+			return r, e
 
 		return nil, "no suitable module found"
 

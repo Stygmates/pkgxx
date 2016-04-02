@@ -85,9 +85,10 @@ class
 
 		@\applyDistributionRules recipe
 
-		for self in *{self, unpack self.splits}
-			if @context.collection
-				@name = @context.collection .. "-" .. @name
+		for package in *{self, unpack self.splits}
+			if package.context.collection
+				package.name = package.context.collection ..
+					"-" .. package.name
 
 				for list in *{
 					"conflicts",
@@ -97,8 +98,9 @@ class
 					"groups",
 					"options",
 				}
-					for index, name in pairs @[list]
-						@[list][index] = @context.collection .. "-" .. name
+					for index, name in pairs package[list]
+						package[list][index] = package.context.collection ..
+							"-" .. name
 
 		@\setTargets!
 

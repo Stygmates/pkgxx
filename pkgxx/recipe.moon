@@ -286,13 +286,21 @@ class
 
 	compressManpages: =>
 		fs.changeDirectory (@\packagingDirectory "_"), ->
+			prefix = @\parse @context\getPrefix "mandir"
+
 			-- FIXME: hardcoded directory spotted.
-			find = io.popen "find usr/share/man -type f"
+			unless fs.attributes "./#{prefix}"
+				ui.debug "No manpage found: not compressing manpages."
+				return
+
+			find = io.popen "find ./#{prefix} -type f"
 
 			file = find\read "*line"
 			while file
 				unless file\match "%.gz$" or file\match "%.xz$" or
 				       file\match "%.bz2$"
+					ui.debug "Compressing manpage: #{file}"
+
 					switch @context.compressionMethod
 						when "gz"
 							os.execute "gzip -9 '#{file}'"
@@ -491,8 +499,9 @@ class
 
 					-- XXX: We need to be more cautious about
 					--      permissions here.
-					fs.mkdir destination\gsub "/[^/]*$", ""
-					os.execute "mv '#{source}' '#{destination}'"
+					if fs.attributes source
+						fs.mkdir destination\gsub "/[^/]*$", ""
+						os.execute "mv '#{source}' '#{destination}'"
 
 	splitHasFiles: (split, baseDir) =>
 		baseDir = baseDir or @\packagingDirectory split.name

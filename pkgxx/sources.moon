@@ -6,11 +6,14 @@ _M = {}
 
 _M.download = (source, context) ->
 	fs.changeDirectory context.sourcesDirectory, ->
-		module = context.modules[source.protocol]
-		if module and module.download
-			module.download source
+		if source.protocol
+			module = context.modules[source.protocol]
+			if module and module.download
+				module.download source
+			else
+				ui.error "Does not know how to download: #{source.url}"
 		else
-			ui.error "Does not know how to download: #{source.url}"
+			true
 
 _M.parse = (recipe) ->
 	local sources
@@ -27,9 +30,11 @@ _M.parse = (recipe) ->
 		source = sources[i]
 		url = source\gsub " -> .*", ""
 		protocol = url\gsub ":.*", ""
+		protocol = url\match "^([^ ]*):"
 
 		-- Aliases and stuff like git+http.
-		protocol = protocol\gsub "+.*", ""
+		if protocol
+			protocol = protocol\gsub "+.*", ""
 		url = url\gsub ".*+", ""
 
 		sources[i] = {

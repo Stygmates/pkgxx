@@ -72,8 +72,8 @@ copyright = (dest) =>
 	package: =>
 		unless @maintainer
 			ui.warning "No 'maintainer'!"
-		unless @description
-			ui.warning "No 'description'!"
+		unless @description or @summary
+			ui.warning "No 'description' or 'summary'!"
 
 		ui.detail "Building '#{@target}'."
 

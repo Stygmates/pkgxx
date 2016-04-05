@@ -84,8 +84,8 @@ copyright = (dest) =>
 		if @license and @copyright
 			copyright @, "DEBIAN/copyright"
 		else
-			ui.warning "No debian/copyright file will be generated "
-			ui.warning "due to no 'license' or 'copyright' field."
+			ui.detail "No debian/copyright file will be generated "
+			ui.detail "due to no 'license' or 'copyright' field."
 
 		os.execute "dpkg-deb " ..
 			"-Zxz -z9 --deb-format=2.0 " ..

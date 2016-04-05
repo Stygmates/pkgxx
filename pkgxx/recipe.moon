@@ -321,7 +321,7 @@ class
 		"#{@context.buildingDirectory}/pkg/#{name}"
 
 	buildNeeded: =>
-		for self in *{self, table.unpack self.splits}
+		for self in *{self, unpack self.splits}
 			if self.automatic
 				continue
 

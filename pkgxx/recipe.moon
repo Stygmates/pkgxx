@@ -56,6 +56,9 @@ class
 
 		@class = @class or @\guessClass @
 
+		@packager = recipe.packager
+		@maintainer = recipe.maintainer or @packager
+
 		@release = @release or 1
 
 		unless @dirname

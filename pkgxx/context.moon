@@ -45,6 +45,10 @@ class
 
 	importConfiguration: (filename) =>
 		f = io.open filename
+
+		unless f
+			return nil, "file couldn’t be opened"
+
 		content = f\read "*all"
 		f\close!
 

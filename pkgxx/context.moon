@@ -23,7 +23,7 @@ class
 
 		@sourcesDirectory  = "#{home}"
 		@packagesDirectory = "#{home}"
-		@buildingDirectory    = "/tmp/pkgxx-#{pid}-#{@randomKey}"
+		@buildingDirectory = "/tmp/pkgxx-#{pid}-#{@randomKey}"
 
 		@collections = {}
 
@@ -55,7 +55,7 @@ class
 		configuration = toml.parse content
 
 		@sourcesDirectory  = configuration["sources-directory"] or @sourcesDirectory
-		@packagesDirectory = configuration["packages-directory"] or @paackagesDirectory
+		@packagesDirectory = configuration["packages-directory"] or @packagesDirectory
 
 		@builder = configuration["builder"]
 

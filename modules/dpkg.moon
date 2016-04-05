@@ -88,7 +88,7 @@ copyright = (dest) =>
 			ui.warning "due to no 'license' or 'copyright' field."
 
 		os.execute "dpkg-deb " ..
-			"-Zxz -z9 --new " ..
+			"-Zxz -z9 --deb-format=2.0 " ..
 			"--build '#{fs.currentDirectory!}' " ..
 			"'#{@context.packagesDirectory}/#{@target}'"
 

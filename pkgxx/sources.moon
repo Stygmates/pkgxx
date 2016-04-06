@@ -5,14 +5,22 @@ fs = require "pkgxx.fs"
 _M = {}
 
 _M.download = (source, context) ->
-	fs.changeDirectory context.sourcesDirectory, ->
-		if source.protocol
+	{:filename, :url} = source
+
+	if source.protocol
+		fs.changeDirectory context.sourcesDirectory, ->
 			module = context.modules[source.protocol]
 			if module and module.download
 				module.download source
 			else
-				ui.error "Does not know how to download: #{source.url}"
+				ui.error "Does not know how to download: #{url}"
+	else
+		-- Files are built-in.
+		if fs.attributes source.filename
+			ui.detail "Copying file: #{filename}"
+			os.execute "cp '#{filename}' '#{context.sourcesDirectory}/#{filename}'"
 		else
+			ui.detail "Already downloaded: #{filename}."
 			true
 
 _M.parse = (recipe) ->

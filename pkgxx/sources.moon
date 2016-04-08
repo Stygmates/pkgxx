@@ -36,9 +36,12 @@ _M.parse = (recipe) ->
 
 	for i = 1, #sources
 		source = sources[i]
-		url = source\gsub " -> .*", ""
+		url = source\gsub "%s*->%s*.*", ""
 		protocol = url\gsub ":.*", ""
 		protocol = url\match "^([^ ]*):"
+		filename = source\match "->%s*(%S*)$"
+		unless filename
+			filename = url\gsub ".*/", ""
 
 		-- Aliases and stuff like git+http.
 		if protocol
@@ -47,7 +50,7 @@ _M.parse = (recipe) ->
 
 		sources[i] = {
 			protocol: protocol,
-			filename: url\gsub ".*/", "",
+			filename: filename,
 			url: url
 		}
 

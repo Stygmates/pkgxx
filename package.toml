@@ -1,46 +1,23 @@
 
-# A test package. Will be moved (or removed) at a later time.
-packager = "Luka Vandervelden <lukc@upyum.com>"
+name = "pkgxx"
+sources = ["git+https://github.com/Lukc/pkgxx.moon -> pkgxx"]
+dirname = "pkgxx"
 
-contributors = [
-	"Someone Kewl <test@example>"
+summary = "Modular and extensible packages builder."
+url = "https://github.com/Lukc/pkgxx.moon"
+
+# This is still a theoretical list. Per-distro dependencies are not being
+# provided, for now.
+dependencies = [
+	"moonscript",
+	"lua-argparse",
+	"luafilesystem",
+	"lua-toml"
 ]
 
-name = "nano"
-version = "2.5.3"
-sources = [ "http://www.nano-editor.org/dist/v2.5/nano-2.5.3.tar.gz" ]
+# The format (and existence) of “build-dependencies”.
+build-dependencies = [
+	"buildzsh"
+]
 
-url = "http://www.nano-editor.org"
-summary = "small, friendly text editor inspired by Pico"
-description = """
-GNU nano is an easy-to-use text editor originally designed as a replacement
-for Pico, the ncurses-based editor from the non-free mailer package Pine
-(itself now available under the Apache License as Alpine).
-
-However, nano also implements many features missing in pico, including:
-	- feature toggles;
-	- interactive search and replace (with regular expression support);
-	- go to line (and column) command;
-	- auto-indentation and color syntax-highlighting;
-	- filename tab-completion and support for multiple buffers;
-	- full internationalization support.
-"""
-
-dependencies = ["ncurses"]
-
-license = "GPL-3"
-copyright = "2001-2016 Free Software Foundation"
-
-class = "binary"
-
-[splits.nano-doc]
-class = "documentation"
-files = [ "/usr/share/doc" ]
-options = ["no-arch"]
-
-[splits.nano-doc.os.Debian]
-dependencies = []
-
-[os.Debian]
-dependencies = ["libncursesw5", "libc6"]
 

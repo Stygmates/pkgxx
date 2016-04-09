@@ -28,11 +28,12 @@ done
 
 # main.moon -> main.in -> main.lua
 targets+=(main.lua main.in)
-type[main.in]=moon
-type[main.lua]=script
+type[main.in]=script
+type[main.lua]=moon
 sources[main.in]="main.moon"
 sources[main.lua]="main.in"
 auto[main.in]=true
+install[main.in]=-
 nodist[main.in]=true
 filename[main.lua]="pkgxx"
 

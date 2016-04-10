@@ -23,7 +23,28 @@ _M.download = (source, context) ->
 			ui.detail "Already downloaded: #{filename}."
 			true
 
-_M.parse = (recipe) ->
+_M.parse = (source) ->
+	url = source\gsub "%s*->%s*.*", ""
+	protocol = url\gsub ":.*", ""
+	protocol = url\match "^([^ ]*):"
+	filename = source\match "->%s*(%S*)$"
+
+	unless filename
+		filename = url\match ":(%S*)"
+		filename = (filename or url)\gsub ".*/", ""
+
+	-- Aliases and stuff like git+http.
+	if protocol
+		protocol = protocol\gsub "+.*", ""
+	url = url\gsub ".*+", ""
+
+	{
+		protocol: protocol,
+		filename: filename,
+		url: url
+	}
+
+_M.parseAll = (recipe) ->
 	local sources
 
 	sources = switch type recipe.sources
@@ -35,24 +56,7 @@ _M.parse = (recipe) ->
 			recipe.sources
 
 	for i = 1, #sources
-		source = sources[i]
-		url = source\gsub "%s*->%s*.*", ""
-		protocol = url\gsub ":.*", ""
-		protocol = url\match "^([^ ]*):"
-		filename = source\match "->%s*(%S*)$"
-		unless filename
-			filename = url\gsub ".*/", ""
-
-		-- Aliases and stuff like git+http.
-		if protocol
-			protocol = protocol\gsub "+.*", ""
-		url = url\gsub ".*+", ""
-
-		sources[i] = {
-			protocol: protocol,
-			filename: filename,
-			url: url
-		}
+		sources[i] = _M.parse sources[i]
 
 	sources
 

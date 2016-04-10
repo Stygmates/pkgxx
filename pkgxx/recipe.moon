@@ -75,7 +75,7 @@ class
 		@options      = @options or {}
 
 		@architecture = @context.architecture
-		@sources = sources.parse recipe
+		@sources = sources.parseAll recipe
 
 		bs = recipe["build-system"]
 		@buildInstructions =

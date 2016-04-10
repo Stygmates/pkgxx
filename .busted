@@ -1,7 +1,8 @@
 return {
   _all = {
     ROOT = {
-		"tests/sources.moon"
+		"tests/sources.moon",
+		"tests/macro.moon"
 	},
     verbose = true
   }

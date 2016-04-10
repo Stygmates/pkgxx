@@ -1,26 +1,40 @@
 
 ui = require "pkgxx.ui"
 
+valueOf = (variable, root, presets) ->
+	if root[variable]
+		string.gsub root[variable],
+			"%%", "%%%%"
+	elseif presets[variable]
+		string.gsub presets[variable],
+			"%%", "%%%%"
+	else
+		ui.warning "Undefined macro: #{variable}"
+		""
+
 -- FIXME: Check for circular references.
 parseString = (string, root, presets) ->
-	parsed = false
+	parsed = true
 
-	for variable in string\gmatch "%%{[a-zA-Z0-9]+}"
-		parsed = true
-		variable = variable\sub 3, #variable - 1
+	while parsed
+		parsed = false
 
-		string = string\gsub "%%{#{variable}}", "" ..
-			if root[variable]
-				string.gsub root[variable],
-					"%%", "%%%%"
-			elseif presets[variable]
-				string.gsub presets[variable],
-					"%%", "%%%%"
-			else
-				ui.warning "Undefined macro: #{variable}"
-				""
+		for variable in string\gmatch "%%{[a-zA-Z0-9]+}"
+			parsed = true
+			variable = variable\sub 3, #variable - 1
 
-	string, parsed
+			string = string\gsub "%%{#{variable}}", "" ..
+				valueOf variable, root, presets
+
+		-- Copying that much code is not very elegant.
+		for variable in string\gmatch "%%[a-zA-Z0-9]+"
+			parsed = true
+			variable = variable\sub 2, #variable
+
+			string = string\gsub "%%#{variable}", "" ..
+				valueOf variable, root, presets
+
+	string
 
 -- FIXME: Works destructively.
 parseHelper = (t, root, presets) ->
@@ -39,8 +53,9 @@ parseHelper = (t, root, presets) ->
 	parsed
 
 {
+	parseString: (s, b, p) ->
+		parseString s, b, (p or {})
 	-- FIXME: Works destructively.
-	parseString: parseString,
 	parse: (t, b) ->
 		parseHelper t, t, b
 

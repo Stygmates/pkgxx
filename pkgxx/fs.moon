@@ -4,9 +4,18 @@ lfs = require "lfs"
 
 {
 	mkdir: (dir) ->
-		-- FIXME: use lfs
-		-- FIXME: rename makeDirectory or something
-		os.execute "mkdir -p '#{dir}'"
+		local path
+
+		if dir\match "^/"
+			path = "/"
+
+		for name in dir\gmatch "[^/]+"
+			if path
+				path = path .. "/" .. name
+			else
+				path = name
+
+			lfs.mkdir path
 
 	remove: (filename, options) ->
 		-- FIXME: use lfs

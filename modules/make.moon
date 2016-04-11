@@ -13,6 +13,7 @@ checkMakefile = =>
 			"SYSCONFDIR='%{confdir}'",
 			"BINDIR='%{bindir}'",
 			"LIBDIR='%{libdir}'",
+			"SHAREDIR='%{sharedir}'",
 			"MANDIR='%{mandir}'",
 			unpack (@recipe["install-options"] or {})
 		}, " "
@@ -27,6 +28,7 @@ checkMakefile = =>
 			"SYSCONFDIR='%{confdir}'",
 			"BINDIR='%{bindir}'",
 			"LIBDIR='%{libdir}'",
+			"SHAREDIR='%{sharedir}'",
 			"MANDIR='%{mandir}'",
 			unpack (@recipe["install-options"] or {})
 		}, " "

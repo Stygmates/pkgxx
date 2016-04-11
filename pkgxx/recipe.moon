@@ -447,12 +447,19 @@ class
 			return fs.changeDirectory @\buildingDirectory!, ->
 				module[name] @
 		else
+			testName = "can#{(name\sub 1, 1)\upper!}#{name\sub 2, #name}"
+
 			for _, module in pairs @context.modules
 				if module[name]
-					r, e = fs.changeDirectory @\buildingDirectory!, ->
-						module[name] @
+					local finished
 
-					if r or e
+					r, e = fs.changeDirectory @\buildingDirectory!, ->
+						if module[testName] @
+							finished = true
+
+							return module[name] @
+
+					if finished
 						return r, e
 
 		return nil, "no suitable module found"

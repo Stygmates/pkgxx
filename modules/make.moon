@@ -1,7 +1,12 @@
 
 fs = require "pkgxx.fs"
 
+checkMakefile = =>
+	fs.attributes "#{@dirname}/Makefile" or
+		fs.attributes "#{@dirname}/makefile"
+
 {
+	canBuild: checkMakefile
 	build: =>
 		opts = @\parse table.concat {
 			"PREFIX='%{prefix}'",
@@ -15,6 +20,7 @@ fs = require "pkgxx.fs"
 		fs.changeDirectory @dirname, ->
 			if fs.attributes "Makefile" or fs.attributes "makefile"
 				fs.execute @, "make #{opts}",
+	canInstall: checkMakefile
 	install: =>
 		opts = @\parse table.concat {
 			"PREFIX='%{prefix}'",

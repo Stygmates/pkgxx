@@ -3,6 +3,8 @@ ui = require "pkgxx.ui"
 fs = require "pkgxx.fs"
 
 {
+	canConfigure: =>
+		fs.attributes "#{@dirname}/project.zsh"
 	configure: =>
 		fs.changeDirectory @dirname, ->
 			if fs.attributes "./project.zsh"

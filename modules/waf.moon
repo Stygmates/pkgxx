@@ -1,7 +1,13 @@
 
 fs = require "pkgxx.fs"
 
+checkWaf = => fs.attributes "#{@dirname}/waf"
+
 {
+	canConfigure: checkWaf
+	canBuild: checkWaf
+	canInstall: checkWaf
+
 	configure: =>
 		fs.changeDirectory @dirname, ->
 			if fs.attributes "./waf"

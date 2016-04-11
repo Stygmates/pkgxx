@@ -2,6 +2,8 @@
 fs = require "pkgxx.fs"
 
 {
+	canConfigure: =>
+		fs.attributes "#{@dirname}/CMakeLists.txt"
 	configure: =>
 		fs.changeDirectory @dirname, ->
 			if fs.attributes "CMakeLists.txt"

@@ -44,7 +44,9 @@ control = (dest) =>
 	file\write "Maintainer: #{@maintainer}\n"
 
 	file\write "Architecture: #{debarch @}\n"
-	file\write "Depends: #{list @dependencies}\n"
+
+	if #@dependencies > 0
+		file\write "Depends: #{list @dependencies}\n"
 
 	-- Final, empty newline. Required.
 	file\write "\n"

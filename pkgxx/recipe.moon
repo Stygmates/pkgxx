@@ -61,6 +61,7 @@ class
 
 		@release = @release or 1
 
+		@dirname = recipe.dirname
 		unless @dirname
 			if @version
 				@dirname = "#{@name}-#{@version}"

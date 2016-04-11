@@ -5,6 +5,8 @@ ui = require "pkgxx.ui"
 {
 	-- FIXME: We need to invest a lot of work in updating that configuration.
 	makeRepository: =>
+		if fs.attributes "conf/distributions"
+			return
 
 		ui.info "Building PPA."
 		fs.mkdir "conf"

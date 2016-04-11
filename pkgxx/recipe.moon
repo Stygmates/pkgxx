@@ -427,7 +427,7 @@ class
 		if (type @buildInstructions[name]) == "table"
 			code = table.concat @buildInstructions[name], "\n"
 
-			code = "set -x #{'-e' if critical else ''}\n#{code}"
+			code = "set -x -e\n#{code}"
 
 			if @context.configuration.verbosity < 5
 				logfile =  "#{@context.packagesDirectory}/" ..

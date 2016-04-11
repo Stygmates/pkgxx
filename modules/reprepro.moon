@@ -12,7 +12,7 @@ ui = require "pkgxx.ui"
 		f = io.open "conf/distributions", "w"
 		f\write "Codename: #{@configuration["distribution-codename"]}\n"
 		f\write "Components: main\n"
-		f\write "Architectures: #{@modules.dpkg._debarch @architecture}\n"
+		f\write "Architectures: #{@modules.dpkg._debarch @}\n"
 		f\write "\n"
 		f\close!
 
@@ -20,7 +20,7 @@ ui = require "pkgxx.ui"
 		ui.info "Adding '#{package.target}' to PPA."
 		-- Just in case?
 		os.execute "reprepro -Vb." ..
-			" -A #{@modules.dpkg._debarch @architecture}" ..
+			" -A #{@modules.dpkg._debarch @}" ..
 			" remove '#{@configuration["distribution-codename"]}' '#{package.name}'"
 
 		os.execute "reprepro -Vb ." ..

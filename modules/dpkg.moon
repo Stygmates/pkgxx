@@ -13,12 +13,16 @@ list = (a) ->
 
 	str
 
-debarch = (arch) ->
-	switch arch
-		when "x86_64"
-			"amd64"
-		else
-			arch
+debarch = =>
+	if @hasOption and @hasOption "no-arch"
+		ui.info "IZ NO ARSH"
+		"all"
+	else
+		switch @architecture
+			when "x86_64"
+				"amd64"
+			else
+				arch
 
 paragraph = (text) ->
 	text = text\gsub "\n$",  ""
@@ -40,10 +44,7 @@ control = (dest) =>
 
 	file\write "Maintainer: #{@maintainer}\n"
 
-	if @hasOption "no-arch"
-		file\write "Architecture: all\n"
-	else
-		file\write "Architecture: #{debarch @architecture}\n"
+	file\write "Architecture: #{debarch @}\n"
 	file\write "Depends: #{list @dependencies}\n"
 
 	-- Final, empty newline. Required.
@@ -67,8 +68,14 @@ copyright = (dest) =>
 
 {
 	_debarch: debarch
-	target: => "#{@name\gsub "_", "-"}_#{@version}-#{@release}" ..
-			"-#{@architecture}.deb"
+	target: =>
+		arch = if @hasOption "no-arch"
+				"all"
+			else
+				@architecture
+
+		"#{@name\gsub "_", "-"}_#{@version}-#{@release}" ..
+			"_#{arch}.deb"
 	package: =>
 		unless @maintainer
 			ui.warning "No 'maintainer'!"

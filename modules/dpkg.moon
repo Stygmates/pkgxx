@@ -15,7 +15,6 @@ list = (a) ->
 
 debarch = =>
 	if @hasOption and @hasOption "no-arch"
-		ui.info "IZ NO ARSH"
 		"all"
 	else
 		switch @architecture

@@ -17,7 +17,22 @@ dependencies = [
 
 # The format (and existence) of “build-dependencies”.
 build-dependencies = [
-	"buildzsh"
+	"build.zsh"
 ]
 
+[os.Debian]
+dependencies = [
+	"moonscript",
+	"lua-argparse",
+	"lua-filesystem",
+	"lua-toml"
+]
+
+[os.Fedora]
+dependencies = [
+	"lua-moonscript",
+	"lua-argparse",
+	"lua-filesystem",
+	"lua-toml"
+]
 

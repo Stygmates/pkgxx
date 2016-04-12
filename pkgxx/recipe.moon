@@ -431,7 +431,11 @@ class
 
 			if @context.configuration.verbosity < 5
 				logfile =  "#{@context.packagesDirectory}/" ..
-					"#{name}-#{version}-#{release}.log"
+					"#{@name}-#{@version}-#{@release}.log"
+
+				lf = io.open logfile, "w"
+				if lf
+					lf\close!
 
 				code = "(#{code}) 2>> #{logfile} >> #{logfile}"
 

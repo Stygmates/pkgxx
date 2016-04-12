@@ -9,6 +9,6 @@ fs = require "pkgxx.fs"
 			return true
 		else
 			ui.detail "Downloading '#{source.filename}'."
-			os.execute "wget '#{source.url}' -O './#{source.filename}'"
+			false ~= os.execute "wget '#{source.url}' -O './#{source.filename}'"
 }
 

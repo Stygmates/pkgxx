@@ -11,7 +11,7 @@ for i in pkgxx/*.moon pkgxx.moon; do
 	auto[$i]=true
 
 	case "$i" in
-		pkgxx.moon)
+		pkgxx.lua)
 			install[$i]='$(SHAREDIR)/lua/$(LUA_VERSION)' ;;
 		*)
 			install[$i]='$(SHAREDIR)/lua/$(LUA_VERSION)/pkgxx' ;;

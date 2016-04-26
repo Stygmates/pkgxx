@@ -475,17 +475,17 @@ class
 
 		ui.info "Building…"
 
-		success, e = (@\execute "configure")
+		success, e = @\execute "configure"
 		if not success
 			ui.error "Build failure. Could not configure."
 			return nil, e
 
-		success, e = (@\execute "build", true)
+		success, e = @\execute "build", true
 		if not success
 			ui.error "Build failure. Could not build."
 			return nil, e
 
-		success, e = (@\execute "install")
+		success, e = @\execute "install"
 		if not success
 			ui.error "Build failure. Could not install."
 			return nil, e

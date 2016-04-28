@@ -15,7 +15,7 @@ checkMakefile = =>
 			"LIBDIR='%{libdir}'",
 			"SHAREDIR='%{sharedir}'",
 			"MANDIR='%{mandir}'",
-			unpack (@recipe["install-options"] or {})
+			unpack (@recipe["build-options"] or {})
 		}, " "
 
 		fs.changeDirectory @dirname, ->

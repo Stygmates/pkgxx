@@ -18,7 +18,12 @@ _M.download = (source, context) ->
 		-- Files are built-in.
 		if fs.attributes source.filename
 			ui.detail "Copying file: #{filename}"
-			os.execute "cp '#{filename}' '#{context.sourcesDirectory}/#{filename}'"
+			a = os.execute "cp '#{filename}' '#{context.sourcesDirectory}/#{filename}'"
+
+			if (type a) == "number" then
+				a = a == 0
+
+			return a
 		else
 			ui.detail "Already downloaded: #{filename}."
 			true

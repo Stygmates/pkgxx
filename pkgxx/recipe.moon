@@ -264,7 +264,51 @@ class
 		if diff.class
 			@class = diff.class
 
+	checkOwnership: =>
+		local uid, gid
+
+		ui.detail "Checking ownership..."
+
+		with io.popen "id -u"
+			uid = tonumber \read "*line"
+			\close!
+
+		with io.popen "id -g"
+			gid = tonumber \read "*line"
+			\close!
+
+		if uid == 0 and gid == 0
+			return true, "already root"
+
+		ui.debug "Ownership data: uid=#{uid}, gid=#{gid}"
+
+		fs.changeDirectory (@\packagingDirectory "_"), ->
+			find = io.popen "find ."
+
+			-- Skipping ".". Would create more issues than it would solve.
+			find\read "*line"
+
+			line = find\read "*line"
+			while line
+				attributes = fs.attributes line
+
+				-- FIXME: sudo might not be available. We need to have this
+				--        behavior toggleable
+				if attributes.uid == uid
+					ui.debug "Changing ownership of #{line}"
+					os.execute "sudo chown 0 '#{line}'"
+
+				if attributes.gid == gid
+					ui.debug "Changing group ownership of #{line}"
+					os.execute "sudo chgrp 0 '#{line}'"
+
+				line = find\read "*line"
+
+			find\close!
+
 	stripFiles: =>
+		ui.detail "Stripping binaries..."
+
 		fs.changeDirectory (@\packagingDirectory "_"), ->
 			find = io.popen "find . -type f"
 
@@ -289,6 +333,8 @@ class
 			find\close!
 
 	compressManpages: =>
+		ui.detail "Compressing manpages..."
+
 		fs.changeDirectory (@\packagingDirectory "_"), ->
 			prefix = @\parse @context\getPrefix "mandir"
 
@@ -490,6 +536,8 @@ class
 			ui.error "Build failure. Could not install."
 			return nil, e
 
+		ui.info "Doing post-build verifications."
+		@\checkOwnership!
 		@\stripFiles!
 		@\compressManpages!
 
@@ -564,9 +612,10 @@ class
 	clean: =>
 		ui.info "Cleaning…"
 		ui.detail "Removing '#{@\buildingDirectory!}'."
-		fs.remove @\buildingDirectory!, {
-			force: true
-		}
+
+		-- Sort of necessary, considering the directories and files are
+		-- root-owned. And they have to if we want our packages to be valid.
+		os.execute "sudo rm -rf '#{@\buildingDirectory!}'"
 
 	__tostring: =>
 		"<pkgxx:Recipe: #{@name}-#{@version}-#{@release}>"

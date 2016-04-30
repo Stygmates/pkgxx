@@ -28,6 +28,8 @@ parser = with argparse "pkgxx", "Packages builder."
 		\target "architecture"
 		\args 1
 
+	\flag "-l --lint"
+
 	with \option "-c --collection"
 		\target "collection"
 		\args 1
@@ -48,6 +50,9 @@ if args.collection
 	context.collection = args.collection
 
 recipe = context\openRecipe "package.toml"
+
+if args.lint
+	os.exit recipe\lint!
 
 if args.targets
 	if not recipe.version

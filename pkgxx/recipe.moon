@@ -58,6 +58,7 @@ class
 
 		@packager = recipe.packager
 		@maintainer = recipe.maintainer or @packager
+		@url = recipe.url
 
 		@release = @release or 1
 
@@ -616,6 +617,56 @@ class
 		-- Sort of necessary, considering the directories and files are
 		-- root-owned. And they have to if we want our packages to be valid.
 		os.execute "sudo rm -rf '#{@\buildingDirectory!}'"
+
+	lint: =>
+		e = 0
+
+		unless @name
+			ui.error "no 'name' field"
+			e = e + 1
+		unless @sources
+			ui.error "no 'sources' field"
+			e = e + 1
+
+		unless @version
+			isVersionable = false
+
+			for source in *@sources
+				m = @context.modules[source.protocol]
+
+				if m and m.getVersion
+					isVersionable = true
+
+					break
+
+			unless isVersionable
+				-- FIXME: Check there’s no VCS in the sources
+				ui.error "no 'version' field"
+				e = e + 1
+
+		unless @summary
+			ui.warning "no 'summary' field"
+			e = e + 1
+		unless @description
+			ui.warning "no 'description' field"
+			e = e + 1
+
+		unless @url
+			ui.warning "no 'url' field"
+			e = e + 1
+
+		unless @packager
+			ui.warning "no 'packager' field"
+			e = e + 1
+		unless @options
+			ui.warning "no 'options' field"
+			e = e + 1
+
+		unless @dependencies
+			ui.warning "no 'dependencies' field"
+			e = e + 1
+
+		e
 
 	__tostring: =>
 		"<pkgxx:Recipe: #{@name}-#{@version}-#{@release}>"

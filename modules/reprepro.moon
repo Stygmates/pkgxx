@@ -18,17 +18,23 @@ ui = require "pkgxx.ui"
 		f\write "\n"
 		f\close!
 
-	addToRepository: (package) =>
+	addToRepository: (package, opt) =>
 		ui.info "Adding '#{package.target}' to PPA."
-		-- Just in case?
-		os.execute "reprepro -Vb." ..
-			" -A #{@modules.dpkg._debarch @}" ..
-			" remove '#{@configuration["distribution-codename"]}' '#{package.name}'"
+
+		cn = @configuration["distribution-codename"]
+
+		-- FIXME: reprepro list #{cn} #{package.name} | grep -q "|#{@modules.dpkg._debarch @}:"
+		--        We just need a reliable os.execute before that.
+		if opt.force
+			-- Just in case?
+			os.execute "reprepro -Vb." ..
+				" -A #{@modules.dpkg._debarch @}" ..
+				" remove '#{cn}' '#{package.name}'"
 
 		os.execute "reprepro -Vb ." ..
 			" -S main" ..  -- Section. Required.
 			" -P extra" .. -- Priority. Required.
-			" includedeb '#{@configuration["distribution-codename"]}' " ..
+			" includedeb '#{cn}' " ..
 			package.target
 }
 

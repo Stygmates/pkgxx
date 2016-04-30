@@ -152,22 +152,22 @@ class
 	openRecipe: (filename) =>
 		Recipe (filename or "package.toml"), @
 
-	updateRepository: =>
+	updateRepository: (opt) =>
 		unless @repositoryManager
 			return
 
 		module = @modules[@repositoryManager or @packageManager].makeRepository
 		if module
 			fs.changeDirectory @packagesDirectory, ->
-				module @
+				module @, opt
 		else
 			ui.error "No module to build a repository."
 
-	addToRepository: (recipe) =>
+	addToRepository: (recipe, opt) =>
 		module = @modules[@repositoryManager or @packageManager].addToRepository
 		if module
 			fs.changeDirectory @packagesDirectory, ->
-				module @, recipe
+				module @, recipe, opt
 
 	close: =>
 		fs.remove @buildingDirectory

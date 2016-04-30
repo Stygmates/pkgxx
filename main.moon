@@ -79,8 +79,12 @@ if args.force or (not recipe.version) or recipe\buildNeeded!
 		recipe\package!
 		recipe\clean!
 
-		context\updateRepository!
-		context\addToRepository recipe
+		context\updateRepository {
+			force: args.force
+		}
+		context\addToRepository recipe, {
+			force: args.force
+		}
 	else
 		upToDate = true
 else

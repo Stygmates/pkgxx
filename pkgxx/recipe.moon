@@ -648,24 +648,29 @@ class
 				if element.name == name
 					return true
 
-		for dep in *@dependencies
-			foundOne = false
+		depFinder = =>
+			for dep in *@dependencies
+				foundOne = false
 
-			-- FIXME: Check if it’s in the distribution’s package manager first.
-			for repository in *@context.repositories
-				success, r = pcall ->
-					@context\openRecipe "#{repository}/#{dep}/package.toml"
+				-- FIXME: Check if it’s in the distribution’s package manager first.
+				for repository in *@context.repositories
+					success, r = pcall ->
+						@context\openRecipe "#{repository}/#{dep}/package.toml"
 
-				if success
-					unless depInTree dep
-						ui.debug "Dependency: #{repository}, #{dep}"
-						foundOne = true
-						deps[#deps+1] = r
+					if success
+						unless depInTree dep
+							ui.debug "Dependency: #{repository}, #{dep}"
+							foundOne = true
+							deps[#deps+1] = r
 
-						break
+							depFinder r
 
-			unless foundOne
-				ui.warning "Dependency not found: '#{dep}'."
+							break
+
+				unless foundOne
+					ui.warning "Dependency not found: '#{dep}'."
+
+		depFinder @
 
 		return deps
 

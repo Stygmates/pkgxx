@@ -669,5 +669,8 @@ class
 		e
 
 	__tostring: =>
-		"<pkgxx:Recipe: #{@name}-#{@version}-#{@release}>"
+		if @version
+			"<pkgxx:Recipe: #{@name}-#{@version}-#{@release}>"
+		else
+			"<pkgxx:Recipe: #{@name}-[devel]-#{@release}>"
 

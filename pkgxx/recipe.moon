@@ -278,35 +278,6 @@ class
 			gid = tonumber \read "*line"
 			\close!
 
-		if uid == 0 and gid == 0
-			return true, "already root"
-
-		ui.debug "Ownership data: uid=#{uid}, gid=#{gid}"
-
-		fs.changeDirectory (@\packagingDirectory "_"), ->
-			find = io.popen "find ."
-
-			-- Skipping ".". Would create more issues than it would solve.
-			find\read "*line"
-
-			line = find\read "*line"
-			while line
-				attributes = fs.attributes line
-
-				-- FIXME: sudo might not be available. We need to have this
-				--        behavior toggleable
-				if attributes.uid == uid
-					ui.debug "Changing ownership of #{line}"
-					os.execute "sudo chown 0 '#{line}'"
-
-				if attributes.gid == gid
-					ui.debug "Changing group ownership of #{line}"
-					os.execute "sudo chgrp 0 '#{line}'"
-
-				line = find\read "*line"
-
-			find\close!
-
 	stripFiles: =>
 		ui.detail "Stripping binaries..."
 

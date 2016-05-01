@@ -170,7 +170,7 @@ class
 				module @, recipe, opt
 
 	close: =>
-		os.execute "sudo rm -rf '#{@buildingDirectory}'"
+		os.execute "rm -rf '#{@buildingDirectory}'"
 
 	__tostring: =>
 		"<pkgxx:xContext: #{@pid}-#{@randomKey}>"

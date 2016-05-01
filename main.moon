@@ -54,6 +54,21 @@ recipe = context\openRecipe "package.toml"
 if args.lint
 	os.exit recipe\lint!
 
+local uid, gid
+
+with io.popen "id -u"
+	uid = tonumber \read "*line"
+	\close!
+
+with io.popen "id -g"
+	gid = tonumber \read "*line"
+	\close!
+
+if uid ~= 0 or gid ~= 0
+	-- I’d sure like to get rid of that warning, though.
+	ui.error "You should build your packages as root."
+	ui.error "Not doing so will result in errors or invalid packages."
+
 if args.targets
 	if not recipe.version
 		assert recipe\download!

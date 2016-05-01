@@ -28,14 +28,17 @@ parser = with argparse "pkgxx", "Packages builder."
 		\target "architecture"
 		\args 1
 
-	\flag "-l --lint"
+	\flag "-l --lint",
+		"Print potential defects in the recipe instead of building."
+
+	\flag "-n --no-deps", "Do not build dependencies."
 
 	with \option "-c --collection"
 		\target "collection"
 		\args 1
 
 	\flag "-t --targets"
-	\flag "-f --force"
+	\flag "-f --force", "Force rebuild and repository inclusion."
 
 args = parser\parse!
 
@@ -84,31 +87,48 @@ if args.targets
 
 	os.exit 0
 
+revertTable = (t) -> [t[i] for i = #t, 1, -1]
+
+packagesList = if args.no_deps
+	{recipe}
+else
+	revertTable recipe\depTree!
+
+if #packagesList > 1
+	ui.section "Build list:"
+	for recipe in *packagesList
+		ui.detail "  - " ..
+			"#{recipe.name}-#{recipe.version or "%"}-#{recipe.release}"
+
 local upToDate
-if args.force or (not recipe.version) or recipe\buildNeeded!
-	recipe\checkDependencies!
+for recipe in *packagesList
+	if args.force or (not recipe.version) or recipe\buildNeeded!
+		--recipe\checkDependencies!
+		if #packagesList > 1
+			ui.section "Building " ..
+				"#{recipe.name}-#{recipe.version or "%"}-#{recipe.release}."
 
-	assert recipe\download!
+		assert recipe\download!
 
-	if not recipe.version
-		recipe\updateVersion!
+		if not recipe.version
+			recipe\updateVersion!
 
-	-- Development packages might have set their versions by now.
-	if args.force or recipe\buildNeeded!
-		assert recipe\build!
-		recipe\package!
-		recipe\clean!
+		-- Development packages might have set their versions by now.
+		if args.force or recipe\buildNeeded!
+			assert recipe\build!
+			recipe\package!
+			recipe\clean!
 
-		context\updateRepository {
-			force: args.force
-		}
-		context\addToRepository recipe, {
-			force: args.force
-		}
+			context\updateRepository {
+				force: args.force
+			}
+			context\addToRepository recipe, {
+				force: args.force
+			}
+		else
+			upToDate = true
 	else
 		upToDate = true
-else
-	upToDate = true
 
 if upToDate
 	ui.info "Everything up to date. Not rebuilding."

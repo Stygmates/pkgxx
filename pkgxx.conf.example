@@ -8,6 +8,10 @@ distribution-codename = "jessie"
 
 builder = "Someone <some@one.example>"
 
+#repositories = [
+#	"/usr/recipes"
+#]
+
 [collections.test]
 	provider = "Lukc"
 	prefix = "/opt/Lukc/test"

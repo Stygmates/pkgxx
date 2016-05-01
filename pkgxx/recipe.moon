@@ -32,6 +32,9 @@ swapKeys = (tree, oldKey, newKey) ->
 
 class
 	new: (filename, context) =>
+		@context = context
+		@filename = filename
+
 		file = io.open filename, "r"
 
 		unless file
@@ -42,8 +45,6 @@ class
 		swapKeys recipe, "build-dependencies", "buildDependencies"
 
 		file\close!
-
-		@context = context
 
 		recipe = macro.parse recipe, macroList @
 
@@ -638,6 +639,35 @@ class
 			e = e + 1
 
 		e
+
+	depTree: =>
+		deps = {@}
+
+		depInTree = (name) ->
+			for element in *deps
+				if element.name == name
+					return true
+
+		for dep in *@dependencies
+			foundOne = false
+
+			-- FIXME: Check if it’s in the distribution’s package manager first.
+			for repository in *@context.repositories
+				success, r = pcall ->
+					@context\openRecipe "#{repository}/#{dep}/package.toml"
+
+				if success
+					unless depInTree dep
+						ui.debug "Dependency: #{repository}, #{dep}"
+						foundOne = true
+						deps[#deps+1] = r
+
+						break
+
+			unless foundOne
+				ui.warning "Dependency not found: '#{dep}'."
+
+		return deps
 
 	__tostring: =>
 		if @version

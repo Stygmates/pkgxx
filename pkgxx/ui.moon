@@ -7,6 +7,7 @@ colors = {
 	blue:   "\027[01;34m",
 	cyan:   "\027[00;36m",
 	white:  "\027[00;37m",
+	brightmagenta: "\027[01;35m",
 	brightwhite:  "\027[01;37m",
 	clear:  "\027[00m",
 }
@@ -37,6 +38,12 @@ verbosity = 2
 			io.stdout\write colors.green, "-> ", colors.brightwhite
 			io.stdout\write ...
 			io.stdout\write colors.clear, "\n",
+
+	section: (...) ->
+		if verbosity >= 2
+			io.stdout\write colors.brightmagenta, "|>  ", colors.brightwhite
+			io.stdout\write ...
+			io.stdout\write colors.clear, "\n"
 
 	warning: (...) ->
 		if verbosity >= 2

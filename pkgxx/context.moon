@@ -29,6 +29,10 @@ class
 
 		@compressionMethod = "gz"
 
+		-- Array of strings that contain the pathnames of the repositories
+		-- in which pkg++ could look for dependencies.
+		@repositories = {}
+
 		-- An associative array of stuff to export when running
 		-- external commands in order to build softwares.
 		@exports = {}
@@ -79,6 +83,10 @@ class
 		@configuration = configuration
 		unless @configuration.verbosity
 			@configuration.verbosity = 4
+
+		if configuration.repositories
+			for s in *configuration.repositories
+				@repositories[#@repositories+1] = s
 
 		if configuration.collections
 			for name, col in pairs configuration.collections

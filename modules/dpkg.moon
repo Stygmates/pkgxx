@@ -103,7 +103,7 @@ copyright = (dest) =>
 		-- Cleaning package directory for further reuse.
 		fs.remove "DEBIAN"
 
-	install: (filename) ->
+	installPackage: (filename) ->
 		false ~= os.execute "dpkg -i '#{filename}'"
 }
 

@@ -113,7 +113,7 @@ dist = ->
 		p\read "*all"
 		p\close!
 
-	install: (filename) ->
+	installPackage: (filename) ->
 		false ~= os.execute "rpm -i '#{filename}'"
 }
 

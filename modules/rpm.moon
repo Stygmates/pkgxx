@@ -52,7 +52,7 @@ writeSpec = (f) =>
 
 			-- Directories ignored until we can safely determine which are
 			-- part of the system and which are not.
-			unless (lfs.attributes line).mode == "directory"
+			unless (lfs.symlinkattributes line).mode == "directory"
 				f\write file, "\n"
 
 		p\close!

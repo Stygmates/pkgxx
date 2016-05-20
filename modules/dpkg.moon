@@ -35,7 +35,7 @@ control = (dest) =>
 	file = io.open dest, "w"
 
 	file\write "Package: #{@name\gsub "_", "-"}\n"
-	file\write "Version: #{@version}\n"
+	file\write "Version: #{@version}-#{@release}\n"
 	file\write "Description: #{@summary}\n"
 
 	if @description

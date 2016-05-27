@@ -115,7 +115,7 @@ class
 	parse: (string) =>
 		parsed = true
 		while parsed
-			string, parsed = macro.parseString string, (macroList @), {}
+			string, parsed = macro.parseString string, (macroList @), @
 
 		string
 

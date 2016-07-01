@@ -181,7 +181,7 @@ class
 		os.execute "rm -rf '#{@buildingDirectory}'"
 
 	__tostring: =>
-		"<pkgxx:xContext: #{@pid}-#{@randomKey}>"
+		"<pkgxx:Context: #{@pid}-#{@randomKey}>"
 
 	prefixes: {
 		"prefix",

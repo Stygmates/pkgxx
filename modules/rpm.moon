@@ -9,8 +9,6 @@ has = (e, a) ->
 
 writeSpec = (f) =>
 	dir = @name
-	if @ == @origin
-		dir = "_"
 
 	f\write "Summary:   #{@summary}\n"
 	f\write "Name:      #{@name}\n"
@@ -77,15 +75,11 @@ dist = ->
 		"#{@name}-#{@version}-#{@release}#{dist!}.#{rpmArch @}.rpm"
 	package: =>
 		dir = @name
-		if @ == @origin
-			dir = "_"
 
 		ui.detail "Building '#{@target}'."
 
 		fs.changeDirectory "..", ->
 			dir = @name
-			if @ == @origin
-				dir = "_"
 
 			f = io.open "#{@name}.spec", "w"
 			writeSpec @, f

@@ -51,11 +51,9 @@ class
 		-- FIXME: sort by name or something.
 		@splits = @\parseSplits recipe
 
-		@origin = @
-
-		@\applyDiff recipe
-
-		@class = @class or @\guessClass @
+		@name = recipe.name
+		@version = recipe.version
+		@release = recipe.release
 
 		@packager = recipe.packager
 		@maintainer = recipe.maintainer or @packager
@@ -128,40 +126,54 @@ class
 			ui.error "Could not set targets. Wrong package manager module?"
 			return nil
 
-		@target = module.target @
 		for split in *@splits
 			split.target = module.target split
 
+		@target = @splits[1].target
+
 	getTargets: =>
-		i = 0
+		i = 1
 
 		return ->
 			i = i + 1
 
-			if i - 1 == 0
-				return @target
-			elseif i - 1 <= #@splits
+			if i - 1 <= #@splits
 				return @splits[i - 1].target
 
 	parseSplits: (recipe) =>
 		splits = {}
 
+		splits[1] = setmetatable {
+			origin: @
+		}, {
+			__index: @
+			__tostring: =>
+				"<pkgxxSplit: #{@name}-#{@version}-#{@release}>"
+		}
+
+		@@.applyDiff splits[1], recipe
+
 		if recipe.splits
 			for splitName, data in pairs recipe.splits
-				if not data.name
-					data.name = splitName
-
 				-- Splits will need much more data than this.
+				-- FIXME: Split!? Target!?
 				split = setmetatable {
+					-- .name may be overwritten by applyDiff
+					name: splitName,
+					origin: @,
 					os: data.os,
 					files: data.files
-				}, __index: @
-
-				splits[#splits+1] = split
+				}, {
+					__index: splits[1],
+					__tostring: =>
+						"<pkgxxSplit: #{@name}-#{@version}-#{@release}>"
+				}
 
 				@@.applyDiff split, data
 
-				split.class = split.class or @\guessClass split
+				split.class = split.class or @@.guessClass split
+
+				splits[#splits+1] = split
 
 		splits
 
@@ -170,13 +182,11 @@ class
 		module = @context.modules[distribution]
 
 		if module
-			if module.alterRecipe
-				module.alterRecipe @
-
 			ui.debug "Distribution: #{module.name}"
 			if module.autosplits
 				oldIndex = #@splits
 
+				ui.debug "Trying module '#{module.name}'."
 				newSplits = module.autosplits @
 				newSplits = macro.parse newSplits, macroList @
 
@@ -195,8 +205,8 @@ class
 				"your OS’ packaging guidelines."
 
 		-- Not very elegant.
-		if recipe.os and recipe.os[distribution]
-			@@.applyDiff @, recipe.os[distribution]
+--		if recipe.os and recipe.os[distribution]
+--			@@.applyDiff @, recipe.os[distribution]
 
 		for split in *@splits
 			os = split.os
@@ -204,7 +214,7 @@ class
 			if os and os[distribution]
 				@@.applyDiff split, os[distribution]
 
-	guessClass: (split) =>
+	guessClass: (split) ->
 		if split.name\match "-doc$"
 			"documentation"
 		elseif split.name\match "-dev$" or split.name\match "-devel$"
@@ -556,8 +566,6 @@ class
 		module = @context.modules[@context.packageManager]
 
 		if module.package
-			@\packageSplit module, @
-
 			for split in *@splits
 				@\packageSplit module, split
 		else

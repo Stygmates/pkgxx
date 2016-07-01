@@ -67,10 +67,11 @@ with io.popen "id -g"
 	gid = tonumber \read "*line"
 	\close!
 
-if uid ~= 0 or gid ~= 0
-	-- I’d sure like to get rid of that warning, though.
-	ui.error "You should build your packages as root."
-	ui.error "Not doing so will result in errors or invalid packages."
+unless args.targets or args.lint
+	if uid ~= 0 or gid ~= 0
+		-- I’d sure like to get rid of that warning, though.
+		ui.error "You should build your packages as root."
+		ui.error "Not doing so will result in errors or invalid packages."
 
 if args.targets
 	if not recipe.version

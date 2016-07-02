@@ -310,7 +310,7 @@ class
 		"#{@context.buildingDirectory}/pkg/#{name}"
 
 	buildNeeded: =>
-		for self in *{self, unpack self.splits}
+		for self in *self.splits
 			if self.automatic
 				continue
 
@@ -491,19 +491,7 @@ class
 					ui.debug "No file detected for #{split.name}. Ignoring."
 					continue
 
-				ui.detail "Splitting '#{split.name}'."
-
-				for file in *split.files
-					source = @\packagingDirectory! .. file
-					destination = (@\packagingDirectory split.name) ..
-						file
-					ui.debug "split: #{source} -> #{destination}"
-
-					-- XXX: We need to be more cautious about
-					--      permissions here.
-					if fs.attributes source
-						fs.mkdir destination\gsub "/[^/]*$", ""
-						os.execute "mv '#{source}' '#{destination}'"
+				split\moveFiles!
 
 		-- FIXME: A bit hacky. We need packaging directories and fake roots
 		--        to be different.

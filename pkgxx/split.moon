@@ -100,6 +100,20 @@ Class
 		if diff.class
 			@class = diff.class
 
+	moveFiles: =>
+		ui.detail "Splitting '#{@name}'."
+
+		for file in *@files
+			source = (@origin\packagingDirectory "_") .. file
+			destination = (@\packagingDirectory!) .. file
+			ui.debug "split: #{source} -> #{destination}"
+
+			-- XXX: We need to be more cautious about
+			--      permissions here.
+			if fs.attributes source
+				fs.mkdir destination\gsub "/[^/]*$", ""
+				os.execute "mv '#{source}' '#{destination}'"
+
 	-- Checks that the split has the files it’s supposed to have in .files.
 	package: (module) =>
 		if @.automatic and not @\hasFiles!

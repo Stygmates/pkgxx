@@ -2,7 +2,8 @@ return {
   _all = {
     ROOT = {
 		"tests/sources.moon",
-		"tests/macro.moon"
+		"tests/macro.moon",
+		"tests/modules.moon"
 	},
     verbose = true
   }

@@ -6,6 +6,7 @@ ui = require "pkgxx.ui"
 fs = require "pkgxx.fs"
 
 Recipe = require "pkgxx.recipe"
+Module = require "pkgxx.module"
 
 class
 	new: () =>
@@ -125,7 +126,7 @@ class
 						code, e = loadstring content
 
 					if code
-						module = code!
+						module = Module code!
 						@modules[name] = module
 						module.name = module.name or name
 

@@ -594,7 +594,9 @@ class
 					return true
 
 		depFinder = =>
-			for dep in *@dependencies
+			dependencies = [unpack x.dependencies for x in *@splits]
+
+			for dep in *dependencies
 				foundOne = false
 
 				-- FIXME: Check if it’s in the distribution’s package manager first.

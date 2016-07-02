@@ -125,6 +125,10 @@ for recipe in *packagesList
 			}
 
 			for split in *recipe.splits
+				-- FIXME: Should we check it’s been actually built instead?
+				if split.automatic and not split\hasFiles!
+					continue
+
 				context\addToRepository split, {
 					force: args.force
 				}

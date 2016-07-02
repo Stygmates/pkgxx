@@ -2,20 +2,7 @@
 fs = require "pkgxx.fs"
 ui = require "pkgxx.ui"
 
-Class = (arg) ->
-	setmetatable arg, {
-		__call: (...) =>
-			obj = setmetatable {
-				__class: arg
-			}, {
-				__index: arg.__index or arg,
-				__tostring: arg.__tostring
-			}
-
-			arg.new obj, ...
-
-			obj
-	}
+Class = require "pkgxx.class"
 
 Class
 	new: (arg) =>

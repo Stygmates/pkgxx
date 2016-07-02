@@ -32,6 +32,11 @@ swapKeys = (tree, oldKey, newKey) ->
 
 	tree
 
+has = (e, t) ->
+	for i in *t
+		if e == i
+			return true
+
 class
 	new: (filename, context) =>
 		@context = context
@@ -78,6 +83,13 @@ class
 			configure: recipe.configure or bs,
 			build: recipe.build or bs,
 			install: recipe.install or bs
+		@buildDependencies = recipe.buildDependencies or {}
+
+		-- Importing splits’ dependencies in the build-deps.
+		for split in *@splits
+			for name in *split.dependencies
+				if not has name, @buildDependencies
+					@buildDependencies[#@buildDependencies+1] = name
 
 		@recipe = recipe -- Can be required for module-defined fields.
 		@recipeAttributes = lfs.attributes filename

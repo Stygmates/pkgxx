@@ -11,7 +11,6 @@ Class
 		@name = arg.name
 
 		@dependencies = {}
-		@buildDependencies = {}
 		@provides = {}
 		@groups = {}
 		@options = {}
@@ -79,8 +78,6 @@ Class
 
 		if diff.dependencies
 			@dependencies = diff.dependencies
-		if diff.buildDependencies
-			@buildDependencies = diff.buildDependencies
 		if diff.conflicts
 			@conflicts = diff.conflicts
 		if diff.provides

@@ -553,16 +553,8 @@ class
 					break
 
 			unless isVersionable
-				-- FIXME: Check there’s no VCS in the sources
 				ui.error "no 'version' field"
 				e = e + 1
-
-		unless @summary
-			ui.warning "no 'summary' field"
-			e = e + 1
-		unless @description
-			ui.warning "no 'description' field"
-			e = e + 1
 
 		unless @url
 			ui.warning "no 'url' field"
@@ -571,13 +563,24 @@ class
 		unless @packager
 			ui.warning "no 'packager' field"
 			e = e + 1
-		unless @options
-			ui.warning "no 'options' field"
-			e = e + 1
 
-		unless @dependencies
-			ui.warning "no 'dependencies' field"
-			e = e + 1
+		for split in *@splits
+			with self = split
+				ui.detail @name
+				unless @summary
+					ui.warning "no 'summary' field"
+					e = e + 1
+				unless @description
+					ui.warning "no 'description' field"
+					e = e + 1
+
+				unless @options
+					ui.warning "no 'options' field"
+					e = e + 1
+
+				unless @dependencies
+					ui.warning "no 'dependencies' field"
+					e = e + 1
 
 		e
 

@@ -123,9 +123,11 @@ for recipe in *packagesList
 			context\updateRepository {
 				force: args.force
 			}
-			context\addToRepository recipe, {
-				force: args.force
-			}
+
+			for split in *recipe.splits
+				context\addToRepository split, {
+					force: args.force
+				}
 		else
 			upToDate = true
 	else

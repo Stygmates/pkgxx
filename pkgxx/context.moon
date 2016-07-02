@@ -172,11 +172,11 @@ class
 		else
 			ui.error "No module to build a repository."
 
-	addToRepository: (recipe, opt) =>
+	addToRepository: (target, opt) =>
 		module = @modules[@repositoryManager or @packageManager].addToRepository
 		if module
 			fs.changeDirectory @packagesDirectory, ->
-				module @, recipe, opt
+				module @, target, opt
 
 	close: =>
 		os.execute "rm -rf '#{@buildingDirectory}'"

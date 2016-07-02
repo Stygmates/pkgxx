@@ -8,11 +8,15 @@ ui.setVerbosity 0
 
 for name, module in pairs context.modules
 	describe "modules.#{name}:", ->
+		local doesSomething
+
 		it "has a name", -> assert module.name
 
 		-- package manager support
 		if module.target
-			describe "package manager support", ->
+			doesSomething = true
+
+			describe "package manager module", ->
 				it "builds packages", ->
 					assert module.package
 
@@ -23,16 +27,22 @@ for name, module in pairs context.modules
 					assert module.isInstalled
 
 		if module.download
-			describe "sources downloader", ->
+			doesSomething = true
+
+			describe "sources module", ->
 
 		if module.getVersion
-			describe "VCS support", ->
+			doesSomething = true
+
+			describe "VCS sources module", ->
 
 			it "clones repositories", ->
 				assert module.download
 
 		if module.configure or module.build or module.install
-			describe "build system support", ->
+			doesSomething = true
+
+			describe "build system module", ->
 
 			if module.configure
 				it "configures", ->
@@ -45,6 +55,20 @@ for name, module in pairs context.modules
 			if module.install
 				it "installs", ->
 					assert module.canInstall
+
+		if module.autosplits or module.alterRecipe
+			doesSomething = true
+
+		if module.makeRepository
+			doesSomething = true
+
+			it "adds packages to repositories without full rebuilds", ->
+				assert module.addToRepository
+
+		if module.installDependency
+			doesSomething = true
+
+		it "does something", -> assert doesSomething
 
 context\close!
 

@@ -21,7 +21,7 @@ ui = require "pkgxx.ui"
 		{
 			{
 				name: @name .. "-devel",
-				description: "Development files for #{@name}",
+				summary: "Development files for #{@name}",
 				files: { "%{includedir}" }
 			}
 		}

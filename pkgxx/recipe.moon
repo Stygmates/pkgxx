@@ -185,12 +185,8 @@ class
 		else
 			ui.warning "No module found for this distribution: " ..
 				"'#{distribution}'."
-			ui.warning "Your package is very unlike to comply to " ..
+			ui.warning "Your package is unlikely to comply to " ..
 				"your OS’ packaging guidelines."
-
-		-- Not very elegant.
---		if recipe.os and recipe.os[distribution]
---			@@.applyDiff @, recipe.os[distribution]
 
 		for split in *@splits
 			os = split.os

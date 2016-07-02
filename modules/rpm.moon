@@ -8,8 +8,6 @@ has = (e, a) ->
 			return true
 
 writeSpec = (f) =>
-	dir = @name
-
 	f\write "Summary:   #{@summary}\n"
 	f\write "Name:      #{@name}\n"
 	f\write "Version:   #{@version}\n"
@@ -43,7 +41,7 @@ writeSpec = (f) =>
 	f\write "\n"
 
 	f\write "%files\n"
-	fs.changeDirectory (@\packagingDirectory dir), ->
+	fs.changeDirectory (@origin\packagingDirectory @name), ->
 		p = io.popen "find ."
 		for line in p\lines!
 			file = line\sub 2, #line

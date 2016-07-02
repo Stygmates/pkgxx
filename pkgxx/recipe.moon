@@ -6,9 +6,11 @@ fs = require "pkgxx.fs"
 macro = require "pkgxx.macro"
 sources = require "pkgxx.sources"
 
+Split = require "pkgxx.split"
+
 macroList = =>
 	l = {
-		pkg: @\packagingDirectory "_"
+		pkg: @\packagingDirectory!
 	}
 
 	for name in *@context.__class.prefixes
@@ -68,13 +70,6 @@ class
 			else
 				@dirname = recipe.name
 
-		@conflicts    = @conflicts or {}
-		@dependencies = @dependencies or {}
-		@buildDependencies = @buildDependencies or {}
-		@provides     = @provides or {}
-		@groups       = @groups or {}
-		@options      = @options or {}
-
 		@architecture = @context.architecture
 		@sources = sources.parseAll recipe
 
@@ -89,9 +84,9 @@ class
 
 		@\applyDistributionRules recipe
 
-		for package in *{self, unpack self.splits}
-			if package.context.collection
-				package.name = package.context.collection ..
+		for package in *@splits
+			if @context.collection
+				package.name = @context.collection ..
 					"-" .. package.name
 
 				for list in *{
@@ -103,7 +98,7 @@ class
 					"options",
 				}
 					for index, name in pairs package[list]
-						package[list][index] = package.context.collection ..
+						package[list][index] = @context.collection ..
 							"-" .. name
 
 		@\setTargets!
@@ -143,33 +138,22 @@ class
 	parseSplits: (recipe) =>
 		splits = {}
 
-		splits[1] = setmetatable {
+		splits[1] = Split
 			origin: @
-		}, {
-			__index: @
-			__tostring: =>
-				"<pkgxxSplit: #{@name}-#{@version}-#{@release}>"
-		}
 
-		@@.applyDiff splits[1], recipe
+		splits[1]\applyDiff recipe
 
 		if recipe.splits
 			for splitName, data in pairs recipe.splits
 				-- Splits will need much more data than this.
 				-- FIXME: Split!? Target!?
-				split = setmetatable {
-					-- .name may be overwritten by applyDiff
-					name: splitName,
-					origin: @,
-					os: data.os,
+				split = Split
+					name: splitName
+					origin: @
+					os: data.os
 					files: data.files
-				}, {
-					__index: splits[1],
-					__tostring: =>
-						"<pkgxxSplit: #{@name}-#{@version}-#{@release}>"
-				}
 
-				@@.applyDiff split, data
+				split\applyDiff data
 
 				split.class = split.class or @@.guessClass split
 
@@ -237,45 +221,6 @@ class
 			if split.name == name
 				return true
 
-	hasOption: (option) =>
-		for opt in *@options
-			if opt == option
-				return true
-
-	applyDiff: (diff) =>
-		if diff.name
-			@name = diff.name
-		if diff.version
-			@version = diff.version
-		if diff.release
-			@release = diff.release
-
-		if diff.dependencies
-			@dependencies = diff.dependencies
-		if diff.buildDependencies
-			@buildDependencies = diff.buildDependencies
-		if diff.conflicts
-			@conflicts = diff.conflicts
-		if diff.provides
-			@provides = diff.provides
-		if diff.groups
-			@groups = diff.groups
-		if diff.options
-			@options = diff.options
-
-		if diff.summary
-			@summary = diff.summary
-		if diff.description
-			@description = diff.description
-
-		if diff.license
-			@license = diff.license
-		if diff.copyright
-			@copyright = diff.copyright
-
-		if diff.class
-			@class = diff.class
-
 	checkOwnership: =>
 		local uid, gid
 
@@ -292,7 +237,7 @@ class
 	stripFiles: =>
 		ui.detail "Stripping binaries..."
 
-		fs.changeDirectory (@\packagingDirectory "_"), ->
+		fs.changeDirectory (@\packagingDirectory!), ->
 			find = io.popen "find . -type f"
 
 			line = find\read "*line"
@@ -318,7 +263,7 @@ class
 	compressManpages: =>
 		ui.detail "Compressing manpages..."
 
-		fs.changeDirectory (@\packagingDirectory "_"), ->
+		fs.changeDirectory (@\packagingDirectory!), ->
 			prefix = @\parse @context\getPrefix "mandir"
 
 			-- FIXME: hardcoded directory spotted.
@@ -351,6 +296,9 @@ class
 			"#{@name}-#{@version}-#{@release}"
 
 	packagingDirectory: (name) =>
+		unless name
+			name = "_"
+
 		"#{@context.buildingDirectory}/pkg/#{name}"
 
 	buildNeeded: =>
@@ -426,7 +374,7 @@ class
 
 	prepareBuild: =>
 		fs.mkdir @\buildingDirectory!
-		fs.mkdir @\packagingDirectory "_"
+		fs.mkdir @\packagingDirectory!
 
 		for split in *@splits
 			fs.mkdir @\packagingDirectory split.name
@@ -527,18 +475,18 @@ class
 		true
 
 	split: =>
-		mainPkgDir = @\packagingDirectory "_"
+		mainPkgDir = @\packagingDirectory!
 
 		for split in *@splits
 			if split.files
 				if split.automatic and not @\splitHasFiles split, mainPkgDir
 					ui.debug "No file detected for #{split.name}. Ignoring."
-					return
+					continue
 
 				ui.detail "Splitting '#{split.name}'."
 
 				for file in *split.files
-					source = (@\packagingDirectory "_") .. file
+					source = @\packagingDirectory! .. file
 					destination = (@\packagingDirectory split.name) ..
 						file
 					ui.debug "split: #{source} -> #{destination}"
@@ -548,6 +496,12 @@ class
 					if fs.attributes source
 						fs.mkdir destination\gsub "/[^/]*$", ""
 						os.execute "mv '#{source}' '#{destination}'"
+
+		-- FIXME: A bit hacky. We need packaging directories and fake roots
+		--        to be different.
+		fs.remove @\packagingDirectory @splits[1].name
+		os.execute "mv '#{@\packagingDirectory!}' " ..
+			"'#{@\packagingDirectory @splits[1].name}'"
 
 	splitHasFiles: (split, baseDir) =>
 		baseDir = baseDir or @\packagingDirectory split.name
@@ -567,28 +521,11 @@ class
 
 		if module.package
 			for split in *@splits
-				@\packageSplit module, split
+				split\package module
 		else
 			-- Should NOT happen.
 			error "No module is available for the package manager "..
 				"'#{@configuration['package-manager']}'."
-
-	-- Checks that the split has the files it’s supposed to have in .files.
-
-	packageSplit: (module, split) =>
-		local splitName
-		if split == @
-			splitName = "_"
-		else
-			splitName = split.name
-
-		if split.automatic and not @\splitHasFiles split
-			ui.debug "Not building automatic split: #{split.name}"
-
-			return
-
-		fs.changeDirectory (@\packagingDirectory splitName), ->
-			module.package split
 
 	clean: =>
 		ui.info "Cleaning…"

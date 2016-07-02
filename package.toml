@@ -1,6 +1,6 @@
 
 name = "pkgxx"
-sources = ["git+https://github.com/Lukc/pkgxx.moon -> pkgxx"]
+sources = ["git+https://github.com/Lukc/pkgxx"]
 dirname = "pkgxx"
 
 summary = "Modular and extensible packages builder."

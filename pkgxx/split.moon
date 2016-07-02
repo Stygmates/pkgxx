@@ -102,13 +102,16 @@ Class
 
 	-- Checks that the split has the files it’s supposed to have in .files.
 	package: (module) =>
-		if @.automatic and not @origin\splitHasFiles @, @origin\packagingDirectory!
+		if @.automatic and not @\hasFiles!
 			ui.debug "Not building automatic split: #{@name}"
 
 			return
 
-		fs.changeDirectory (@origin\packagingDirectory @name), ->
+		fs.changeDirectory (@\packagingDirectory!), ->
 			module.package @
+
+	packagingDirectory: =>
+		@origin\packagingDirectory @name
 
 	hasOption: (option) =>
 		for element in *@options
@@ -116,6 +119,17 @@ Class
 				return true
 
 		false
+
+	hasFiles: =>
+		baseDir = @\packagingDirectory!
+
+		for file in *@files
+			filename = baseDir .. "/" .. file
+
+			if not fs.attributes filename
+				return false
+
+		true
 
 	__tostring: =>
 		if @version

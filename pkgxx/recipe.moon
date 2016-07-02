@@ -487,7 +487,7 @@ class
 
 		for split in *@splits
 			if split.files
-				if split.automatic and not @\splitHasFiles split, mainPkgDir
+				if split.automatic and not split\hasFiles!
 					ui.debug "No file detected for #{split.name}. Ignoring."
 					continue
 
@@ -510,16 +510,6 @@ class
 		fs.remove @\packagingDirectory @splits[1].name
 		os.execute "mv '#{@\packagingDirectory!}' " ..
 			"'#{@\packagingDirectory @splits[1].name}'"
-
-	splitHasFiles: (split, baseDir) =>
-		baseDir = baseDir or @\packagingDirectory split.name
-		for file in *split.files
-			fileName = baseDir .. "/" .. file
-
-			if not fs.attributes fileName
-				return false
-
-		return true
 
 	package: =>
 		ui.info "Packaging…"

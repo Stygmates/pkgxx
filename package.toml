@@ -6,6 +6,8 @@ dirname = "pkgxx"
 summary = "Modular and extensible packages builder."
 url = "https://github.com/Lukc/pkgxx.moon"
 
+packager = "Luka Vandervelden <lukc@upyum.com>"
+
 options = ["no-arch"]
 
 # This is still a theoretical list. Per-distro dependencies are not being

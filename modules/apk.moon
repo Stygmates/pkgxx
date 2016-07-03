@@ -13,6 +13,34 @@ getSize = ->
 
 	size
 
+makeRepository = =>
+	ui.info "Building 'apk' repository."
+
+	index = "#{@packagesDirectory}/#{@architecture}/APKINDEX.tar.gz"
+
+	local oldIndex
+	if lfs.attributes index
+		oldIndex = " --index #{index}"
+	else
+		oldIndex = ""
+
+	output = " --output '#{index}.unsigned'"
+
+	r, e = os.execute "apk index --quiet #{oldIndex} #{output}" ..
+		" --description 'test test'" ..
+		" --rewrite-arch '#{@architecture}'" ..
+		" #{@packagesDirectory}/*.apk"
+
+	unless r
+		return nil, e
+
+	r, e = os.execute "abuild-sign -q '#{index}.unsigned'"
+
+	unless r
+		return nil, e
+
+	os.execute "mv '#{index}.unsigned' '#{index}'"
+
 {
 	target: =>
 		-- We need to store the packages in a sub-directory to be able
@@ -59,32 +87,22 @@ getSize = ->
 			cat control.tar.gz data.tar.gz > ]] ..
 				"'#{@context.packagesDirectory}/#{@target}'"
 
-	makeRepository: =>
-		ui.info "Building 'apk' repository."
+	addToRepository: (target, opt) =>
+		makeRepository target, opt
+	makeRepository: => (target, opt) =>
+		makeRepository target, opt
 
-		index = "#{@packagesDirectory}/#{@architecture}/APKINDEX.tar.gz"
+	installDependency: (name) =>
+		os.execute "apk add '#{name}'"
 
-		local oldIndex
-		if lfs.attributes index
-			oldIndex = " --index #{index}"
-		else
-			oldIndex = ""
+	installPackage: (name) =>
+		os.execute "apk add --allow-untrusted '#{name}'"
 
-		output = " --output '#{index}.unsigned'"
-
-		r, e = os.execute "apk index --quiet #{oldIndex} #{output}" ..
-			" --description 'test test'" ..
-			" --rewrite-arch '#{@architecture}'" ..
-			" #{@packagesDirectory}/*.apk"
-
-		unless r
-			return nil, e
-
-		r, e = os.execute "abuild-sign -q '#{index}.unsigned'"
-
-		unless r
-			return nil, e
-
-		os.execute "mv '#{index}.unsigned' '#{index}'"
+	isInstalled: (name) =>
+		p = io.popen "apk add --interactive '#{name}'"
+		p\write "n\n"
+		p\read "*all"
+		p\close!
 }
+
 

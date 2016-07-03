@@ -85,16 +85,16 @@ class
 			install: recipe.install or bs
 		@buildDependencies = recipe.buildDependencies or {}
 
+		@recipe = recipe -- Can be required for module-defined fields.
+		@recipeAttributes = lfs.attributes filename
+
+		@\applyDistributionRules recipe
+
 		-- Importing splits’ dependencies in the build-deps.
 		for split in *@splits
 			for name in *split.dependencies
 				if not has name, @buildDependencies
 					@buildDependencies[#@buildDependencies+1] = name
-
-		@recipe = recipe -- Can be required for module-defined fields.
-		@recipeAttributes = lfs.attributes filename
-
-		@\applyDistributionRules recipe
 
 		for package in *@splits
 			if @context.collection
@@ -586,12 +586,16 @@ class
 					return true
 
 		depFinder = =>
-			dependencies = [unpack x.dependencies for x in *@splits]
+			dependencies = {}
+
+			for name in *@buildDependencies
+				dependencies[#dependencies+1] = name
 
 			for dep in *dependencies
 				foundOne = false
 
-				-- FIXME: Check if it’s in the distribution’s package manager first.
+				-- FIXME: Check if it’s in the distribution’s package manager
+				--        if stuff fails.
 				for repository in *@context.repositories
 					success, r = pcall ->
 						@context\openRecipe "#{repository}/#{dep}/package.toml"

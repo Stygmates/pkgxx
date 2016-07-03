@@ -200,11 +200,14 @@ class
 			ui.warning "Your package is unlikely to comply to " ..
 				"your OS’ packaging guidelines."
 
+		if recipe.os and recipe.os[distribution]
+			@splits[1]\applyDiff recipe.os[distribution]
+
 		for split in *@splits
 			os = split.os
 
 			if os and os[distribution]
-				@@.applyDiff split, os[distribution]
+				split\applyDiff os[distribution]
 
 	guessClass: (split) ->
 		if split.name\match "-doc$"

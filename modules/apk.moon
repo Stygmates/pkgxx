@@ -16,7 +16,7 @@ getSize = ->
 makeRepository = =>
 	ui.info "Building 'apk' repository."
 
-	ui.error tostring @
+	index = "#{@context.packagesDirectory}/#{@context.architecture}/APKINDEX.tar.gz"
 
 	local oldIndex
 	if lfs.attributes index

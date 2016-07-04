@@ -92,13 +92,13 @@ makeRepository = =>
 	makeRepository: => (target, opt) =>
 		makeRepository target, opt
 
-	installDependency: (name) =>
+	installDependency: (name) ->
 		os.execute "apk add '#{name}'"
 
-	installPackage: (name) =>
+	installPackage: (name) ->
 		os.execute "apk add --allow-untrusted '#{name}'"
 
-	isInstalled: (name) =>
+	isInstalled: (name) ->
 		p = io.popen "apk add --interactive '#{name}'"
 		p\write "n\n"
 		p\read "*all"

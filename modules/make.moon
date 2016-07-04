@@ -1,6 +1,8 @@
 
 fs = require "pkgxx.fs"
 
+unpack = unpack or table.unpack
+
 checkMakefile = =>
 	fs.attributes "#{@dirname}/Makefile" or
 		fs.attributes "#{@dirname}/makefile"

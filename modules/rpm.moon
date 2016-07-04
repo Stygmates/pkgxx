@@ -31,8 +31,8 @@ writeSpec = (f) =>
 
 	if #@dependencies > 0
 		f\write "Requires: "
-		for depend in *@dependencies
-			f\write " ", depend
+		for atom in *@dependencies
+			f\write " ", atom.name
 		f\write "\n"
 
 	f\write "\n"

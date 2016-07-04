@@ -6,6 +6,7 @@ fs = require "pkgxx.fs"
 macro = require "pkgxx.macro"
 sources = require "pkgxx.sources"
 
+Atom = require "pkgxx.atom"
 Split = require "pkgxx.split"
 
 macroList = =>
@@ -83,7 +84,9 @@ class
 			configure: recipe.configure or bs,
 			build: recipe.build or bs,
 			install: recipe.install or bs
-		@buildDependencies = recipe.buildDependencies or {}
+		@buildDependencies = {}
+		for string in *(recipe.buildDependencies or {})
+			table.insert @buildDependencies, Atom string
 
 		@recipe = recipe -- Can be required for module-defined fields.
 		@recipeAttributes = lfs.attributes filename
@@ -92,10 +95,11 @@ class
 
 		-- Importing splits’ dependencies in the build-deps.
 		for split in *@splits
-			for name in *split.dependencies
-				if not has name, @buildDependencies
-					@buildDependencies[#@buildDependencies+1] = name
+			for atom in *split.dependencies
+				if not has atom, @buildDependencies
+					@buildDependencies[#@buildDependencies+1] = atom
 
+		-- FIXME: Broken since Atom exist.
 		for package in *@splits
 			if @context.collection
 				package.name = @context.collection ..
@@ -334,16 +338,16 @@ class
 			return nil, "unable to check dependencies"
 
 		deps = {}
-		for name in *@dependencies
-			table.insert deps, name
-		for name in *@buildDependencies
-			table.insert deps, name
+		for atom in *@dependencies
+			table.insert deps, atom
+		for atom in *@buildDependencies
+			table.insert deps, atom
 
-		for name in *deps
-			if not module.isInstalled name
+		for atom in *deps
+			if not module.isInstalled atom.name
 				-- FIXME: Check the configuration to make sure it’s tolerated.
 				--        If it isn’t, at least ask interactively.
-				ui.detail "Installing missing dependency: #{name}"
+				ui.detail "Installing missing dependency: #{atom.name}"
 				@\installDependency name
 
 	installDependency: (name) =>
@@ -595,21 +599,21 @@ class
 		depFinder = =>
 			dependencies = {}
 
-			for name in *@buildDependencies
-				dependencies[#dependencies+1] = name
+			for atom in *@buildDependencies
+				dependencies[#dependencies+1] = atom
 
-			for dep in *dependencies
+			for atom in *dependencies
 				foundOne = false
 
 				-- FIXME: Check if it’s in the distribution’s package manager
 				--        if stuff fails.
 				for repository in *@context.repositories
 					success, r = pcall ->
-						@context\openRecipe "#{repository}/#{dep}/package.toml"
+						@context\openRecipe "#{repository}/#{atom.origin}/package.toml"
 
 					if success
-						unless depInTree dep
-							ui.debug "Dependency: #{repository}, #{dep}"
+						unless depInTree atom
+							ui.debug "Dependency: #{repository}, #{atom}"
 							foundOne = true
 							deps[#deps+1] = r
 
@@ -618,13 +622,13 @@ class
 							break
 
 				unless foundOne
-					foundOne = isInstalled dep
+					foundOne = isInstalled atom.name
 
 					if foundOne
-						ui.debug "Dependency: <installed>, #{dep}"
+						ui.debug "Dependency: <installed>, #{atom}"
 
 				unless foundOne
-					ui.warning "Dependency not found: '#{dep}'."
+					ui.warning "Dependency not found: '#{atom.name}'."
 
 		depFinder @
 

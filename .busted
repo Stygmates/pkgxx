@@ -3,6 +3,7 @@ return {
     ROOT = {
 		"tests/sources.moon",
 		"tests/macro.moon",
+		"tests/atom.moon",
 		"tests/modules.moon"
 	},
     verbose = true

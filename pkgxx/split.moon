@@ -3,6 +3,7 @@ fs = require "pkgxx.fs"
 ui = require "pkgxx.ui"
 
 Class = require "pkgxx.class"
+Atom = require "pkgxx.atom"
 
 Class
 	new: (arg) =>
@@ -76,12 +77,13 @@ Class
 		if diff.release
 			@release = diff.release
 
-		if diff.dependencies
-			@dependencies = diff.dependencies
-		if diff.conflicts
-			@conflicts = diff.conflicts
-		if diff.provides
-			@provides = diff.provides
+		for variable in *{"dependencies", "conflicts", "provides"}
+			if diff[variable]
+				@[variable] = {}
+
+				for string in *diff[variable]
+					table.insert @[variable], Atom string
+
 		if diff.groups
 			@groups = diff.groups
 		if diff.options

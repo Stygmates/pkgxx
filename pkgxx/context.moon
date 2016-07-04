@@ -16,9 +16,11 @@ class
 
 		home = os.getenv "HOME"
 
+		pid = -666 -- Default value if /proc is unavailable.
 		stat = io.open "/proc/self/stat", "r"
-		pid = tonumber ((stat\read "*line")\gsub " .*", "")
-		stat\close!
+		if stat
+			pid = tonumber ((stat\read "*line")\gsub " .*", "")
+			stat\close!
 
 		@randomKey = math.random 0, 65535
 

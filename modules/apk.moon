@@ -16,7 +16,7 @@ getSize = ->
 makeRepository = =>
 	ui.info "Building 'apk' repository."
 
-	index = "#{@packagesDirectory}/#{@architecture}/APKINDEX.tar.gz"
+	ui.error tostring @
 
 	local oldIndex
 	if lfs.attributes index
@@ -28,8 +28,8 @@ makeRepository = =>
 
 	r, e = os.execute "apk index --quiet #{oldIndex} #{output}" ..
 		" --description 'test test'" ..
-		" --rewrite-arch '#{@architecture}'" ..
-		" #{@packagesDirectory}/*.apk"
+		" --rewrite-arch '#{@context.architecture}'" ..
+		" #{@context.packagesDirectory}/#{@context.architecture}/*.apk"
 
 	unless r
 		return nil, e
@@ -59,6 +59,9 @@ makeRepository = =>
 	package: =>
 		unless @context.builder
 			ui.warning "No 'builder' was defined in your configuration!"
+
+		unless fs.attributes "#{@context.packagesDirectory}/#{@context.architecture}"
+			fs.mkdir "#{@context.packagesDirectory}/#{@context.architecture}"
 
 		size = getSize!
 

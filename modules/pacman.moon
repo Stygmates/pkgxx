@@ -38,8 +38,8 @@ pkginfo = (size, f) =>
 
 	if @context.builder
 		f\write "packager = #{@context.builder}\n"
-	if @maintainer
-		f\write "maintainer = #{@maintainer}\n"
+	if @origin.maintainer or @origin.packager
+		f\write "maintainer = #{@origin.maintainer or @origin.packager}\n"
 
 	-- FIXME: check the license format — in distro modules?
 	if @license
@@ -52,14 +52,14 @@ pkginfo = (size, f) =>
 	for group in *@groups
 		f\write "group = #{group}\n"
 
-	for depend in *@dependencies
-		f\write "depend = #{depend}\n"
+	for atom in *@dependencies
+		f\write "depend = #{atom.name}\n"
 
-	for conflict in *@conflicts
-		f\write "conflict = #{conflict}\n"
+	for atom in *@conflicts
+		f\write "conflict = #{atom.name}\n"
 
-	for provide in *@provides
-		f\write "provides = #{provide}\n"
+	for atom in *@provides
+		f\write "provides = #{atom.name}\n"
 
 genPkginfo = (size) =>
 	f = io.open ".PKGINFO", "w"

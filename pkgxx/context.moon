@@ -8,6 +8,8 @@ fs = require "pkgxx.fs"
 Recipe = require "pkgxx.recipe"
 Module = require "pkgxx.module"
 
+loadstring = loadstring or load
+
 class
 	new: () =>
 		@configuration = {

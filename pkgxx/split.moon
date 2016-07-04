@@ -12,7 +12,9 @@ Class
 		@name = arg.name
 
 		@dependencies = {}
+		@conflicts = {}
 		@provides = {}
+
 		@groups = {}
 		@options = {}
 

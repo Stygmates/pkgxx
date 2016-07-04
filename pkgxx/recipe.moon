@@ -578,6 +578,13 @@ class
 		e
 
 	depTree: =>
+		isInstalled = -> false
+		with module = @context.modules[@context.packageManager]
+			if module and module.isInstalled
+				isInstalled = module.isInstalled
+			else
+				ui.warning "Unable to determine installed dependencies."
+
 		deps = {@}
 
 		depInTree = (name) ->
@@ -609,6 +616,12 @@ class
 							depFinder r
 
 							break
+
+				unless foundOne
+					foundOne = isInstalled dep
+
+					if foundOne
+						ui.debug "Dependency: <installed>, #{dep}"
 
 				unless foundOne
 					ui.warning "Dependency not found: '#{dep}'."

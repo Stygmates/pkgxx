@@ -2,6 +2,8 @@
 ui = require "pkgxx.ui"
 lfs = require "lfs"
 
+unpack = unpack or table.unpack
+
 {
 	mkdir: (dir) ->
 		local path

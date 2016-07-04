@@ -1,6 +1,8 @@
 
 fs = require "pkgxx.fs"
 
+unpack = unpack or table.unpack
+
 {
 	canConfigure: =>
 		(fs.attributes "#{@dirname}/Makefile.PL") ~= nil

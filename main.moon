@@ -33,6 +33,8 @@ parser = with argparse "pkgxx", "Packages builder."
 
 	\flag "-n --no-deps", "Do not build dependencies."
 
+	\flag "-d --deps", "Check and install dependencies before building"
+
 	with \option "-c --collection"
 		\target "collection"
 		\args 1
@@ -104,7 +106,8 @@ if #packagesList > 1
 local upToDate
 for recipe in *packagesList
 	if args.force or (not recipe.version) or recipe\buildNeeded!
-		recipe\checkDependencies!
+		if args.deps
+			recipe\checkDependencies!
 
 		if #packagesList > 1
 			ui.section "Building " ..

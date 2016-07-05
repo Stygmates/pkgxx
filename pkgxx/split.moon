@@ -86,6 +86,10 @@ Class
 				for string in *diff[variable]
 					table.insert @[variable], Atom string
 
+		if diff.buildDependencies
+			for string in *diff.buildDependencies
+				table.insert @origin.buildDependencies, Atom string
+
 		if diff.groups
 			@groups = diff.groups
 		if diff.options

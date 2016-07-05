@@ -102,10 +102,16 @@ makeRepository = =>
 		os.execute "apk add --allow-untrusted '#{name}'"
 
 	isInstalled: (name) ->
-		p = io.popen "apk add --interactive '#{name}'"
-		p\write "n\n"
-		p\read "*all"
+		p = io.popen "apk info"
+		for line in p\lines!
+			if line == name
+				p\close!
+
+				return true
+
 		p\close!
+
+		false
 }
 
 

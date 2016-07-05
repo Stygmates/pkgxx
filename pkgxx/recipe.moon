@@ -337,9 +337,9 @@ class
 			-- FIXME: Make this a real warning once it’s implemented.
 			return nil, "unable to check dependencies"
 
+		ui.info "Checking dependencies…"
+
 		deps = {}
-		for atom in *@dependencies
-			table.insert deps, atom
 		for atom in *@buildDependencies
 			table.insert deps, atom
 
@@ -348,7 +348,7 @@ class
 				-- FIXME: Check the configuration to make sure it’s tolerated.
 				--        If it isn’t, at least ask interactively.
 				ui.detail "Installing missing dependency: #{atom.name}"
-				@\installDependency name
+				@\installDependency atom.name
 
 	installDependency: (name) =>
 		module = @context.modules[@context.dependenciesManager]

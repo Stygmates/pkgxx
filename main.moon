@@ -104,7 +104,8 @@ if #packagesList > 1
 local upToDate
 for recipe in *packagesList
 	if args.force or (not recipe.version) or recipe\buildNeeded!
-		--recipe\checkDependencies!
+		recipe\checkDependencies!
+
 		if #packagesList > 1
 			ui.section "Building " ..
 				"#{recipe.name}-#{recipe.version or "%"}-#{recipe.release}."

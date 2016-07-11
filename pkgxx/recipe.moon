@@ -56,9 +56,6 @@ class
 
 		recipe = macro.parse recipe, macroList @
 
-		-- FIXME: sort by name or something.
-		@splits = @\parseSplits recipe
-
 		@name = recipe.name
 		@version = recipe.version
 		@release = recipe.release
@@ -90,6 +87,9 @@ class
 
 		@recipe = recipe -- Can be required for module-defined fields.
 		@recipeAttributes = lfs.attributes filename
+
+		-- FIXME: sort by name or something.
+		@splits = @\parseSplits recipe
 
 		@\applyDistributionRules recipe
 

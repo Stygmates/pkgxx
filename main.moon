@@ -57,7 +57,9 @@ if args.collection
 recipe = context\openRecipe "package.toml"
 
 if args.lint
-	os.exit recipe\lint!
+	count = recipe\lint!
+	context\close!
+	os.exit count
 
 local uid, gid
 

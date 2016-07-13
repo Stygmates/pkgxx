@@ -113,6 +113,18 @@ for recipe in *packagesList
 			ui.section "Building " ..
 				"#{recipe.name}-#{recipe.version or "%"}-#{recipe.release}."
 
+		if recipe.version and recipe.watch
+			r, ver, e = recipe\isUpToDate!
+
+			unless r
+				if e
+					ui.warning "Could not check whether this recipe is up to date."
+				else
+					ui.warning "A new version was published since this recipe was written!"
+					ui.warning "The version guessed is the following: #{ver}"
+			else
+				ui.detail "Recipe seems up to date."
+
 		assert recipe\download!
 
 		if not recipe.version

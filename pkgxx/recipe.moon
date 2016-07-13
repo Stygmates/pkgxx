@@ -66,6 +66,14 @@ class
 
 		@release = @release or 1
 
+		@watch = recipe.watch
+		if @watch
+			@watch.url = @watch.url or @url
+
+			unless @watch.selector or @watch.lasttar or @watch.execute
+				ui.warning "No selector in [watch]. Removing watch."
+				@watch = nil
+
 		@dirname = recipe.dirname
 		unless @dirname
 			if @version
@@ -579,7 +587,65 @@ class
 					ui.warning "no 'dependencies' field"
 					e = e + 1
 
+		unless @watch
+			ui.warning "no 'watch' section"
+		else
+			with @watch
+				unless .selector or .lasttar or .execute
+					ui.warning "unusable 'watch', needs a selector, " ..
+						"lasttar or execute field"
+
 		e
+
+	isUpToDate: =>
+		if @watch
+			ui.info "Checking if recipe is up to date…"
+
+			local p
+			-- FIXME: We need to abstract those curl calls.
+			-- FIXME: sort -n is a GNU extension.
+			-- FIXME: hx* come from the html-xml-utils from the w3c. That’s
+			--        an unusual external dependency we’d better get rid of.
+			--        We could switch to https://github.com/msva/lua-htmlparser,
+			--        but there could be issues with Lua 5.1. More testing needed.
+			if @watch.selector
+				ui.debug "Using the “selector” method."
+				p = io.popen "curl -sL '#{@watch.url}' | hxnormalize -x " ..
+					"| hxselect '#{@watch.selector}' -c"
+			elseif @watch.lasttar
+				ui.debug "Using the “lasttar” method."
+				p = io.popen "curl -sL '#{@watch.url}' | hxnormalize -x " ..
+					"| hxselect -c 'a' -s '\n' " ..
+					"| grep '#{@watch.lasttar}' " ..
+					"| sed 's&#{@watch.lasttar}&&;s&\\.tar\\..*$&&' | sort -rn"
+			elseif @watch.execute
+				ui.debug "Executing custom script."
+				p = io.popen @watch.execute
+
+			version = p\read "*line"
+			_, _, r = p\close!
+
+			unless r == 0 and version
+				return nil, nil, "could not check", "child process failed"
+
+			if version
+				version = version\gsub "^%s*", ""
+				version = version\gsub "%s*$", ""
+
+			if @watch.subs
+				for pair in *@watch.subs
+					unless (type pair) == "table" and #pair == 2
+						ui.warning "Invalid substitution. Substitution is not a pair."
+						continue
+
+					unless (type pair[1] == "string") and (type pair[2] == "string")
+						ui.warning "Invalid substitution. Substitution is not a pair of strings."
+
+						continue
+
+					version = version\gsub pair[1], pair[2]
+
+			return version == @version, version
 
 	depTree: =>
 		isInstalled = -> false

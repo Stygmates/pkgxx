@@ -130,7 +130,7 @@ Class
 			return
 
 		fs.changeDirectory (@\packagingDirectory!), ->
-			module.package @
+			module.package.build @
 
 	packagingDirectory: =>
 		@origin\packagingDirectory @name

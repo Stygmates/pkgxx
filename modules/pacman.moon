@@ -67,9 +67,6 @@ genPkginfo = (size) =>
 	f\close!
 
 {
-	target: => "#{@name}-#{@version}-#{@release}-" ..
-			"#{@architecture}.pkg.tar.xz"
-
 	check: =>
 		if @context.packageManager == "apk"
 			unless os.execute "abuild-sign --installed"
@@ -82,18 +79,21 @@ genPkginfo = (size) =>
 
 	_genPkginfo: genPkginfo
 
-	package: =>
-		unless @context.builder
-			ui.warning "No 'builder' was defined in your configuration!"
+	package:
+		target: => "#{@name}-#{@version}-#{@release}-" ..
+				"#{@architecture}.pkg.tar.xz"
+		build: =>
+			unless @context.builder
+				ui.warning "No 'builder' was defined in your configuration!"
 
-		size = getSize!
+			size = getSize!
 
-		genPkginfo @, size
+			genPkginfo @, size
 
-		ui.detail "Building '#{@target}'."
+			ui.detail "Building '#{@target}'."
 
-		os.execute "tar cJf " ..
-			"'#{@context.packagesDirectory}/#{@target}' " ..
-			".PKGINFO *"
+			os.execute "tar cJf " ..
+				"'#{@context.packagesDirectory}/#{@target}' " ..
+				".PKGINFO *"
 }
 

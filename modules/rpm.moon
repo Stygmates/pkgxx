@@ -69,35 +69,36 @@ dist = ->
 	return rpm_dist or ""
 
 {
-	target: =>
-		"#{@name}-#{@version}-#{@release}#{dist!}.#{rpmArch @}.rpm"
-	package: =>
-		dir = @name
-
-		ui.detail "Building '#{@target}'."
-
-		fs.changeDirectory "..", ->
+	package:
+		target: =>
+			"#{@name}-#{@version}-#{@release}#{dist!}.#{rpmArch @}.rpm"
+		build: =>
 			dir = @name
 
-			f = io.open "#{@name}.spec", "w"
-			writeSpec @, f
-			f\close!
+			ui.detail "Building '#{@target}'."
 
-			p = io.popen "pwd"
-			pwd = p\read "*line"
-			p\close!
+			fs.changeDirectory "..", ->
+				dir = @name
 
-			os.execute "rpmbuild --quiet" ..
-				" --define '_topdir #{pwd}/../RPM'" ..
-				" --define '_rpmdir #{pwd}/../'" ..
-				" --buildroot='#{pwd}/#{dir}'" ..
-				" -bb #{@name}.spec"
+				f = io.open "#{@name}.spec", "w"
+				writeSpec @, f
+				f\close!
 
-			arch = rpmArch @
+				p = io.popen "pwd"
+				pwd = p\read "*line"
+				p\close!
 
-			os.execute "mv" ..
-				" '#{pwd}/../#{arch}/#{@target}'" ..
-				" '#{@context.packagesDirectory}/#{@target}'"
+				os.execute "rpmbuild --quiet" ..
+					" --define '_topdir #{pwd}/../RPM'" ..
+					" --define '_rpmdir #{pwd}/../'" ..
+					" --buildroot='#{pwd}/#{dir}'" ..
+					" -bb #{@name}.spec"
+
+				arch = rpmArch @
+
+				os.execute "mv" ..
+					" '#{pwd}/../#{arch}/#{@target}'" ..
+					" '#{@context.packagesDirectory}/#{@target}'"
 
 	isInstalled: (name) ->
 		-- Being silent.

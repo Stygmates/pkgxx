@@ -67,44 +67,46 @@ copyright = (dest) =>
 
 	file\close!
 
+buildDeb: =>
+	unless @maintainer
+		ui.warning "No 'maintainer'!"
+	unless @description or @summary
+		ui.warning "No 'description' or 'summary'!"
+
+	ui.detail "Building '#{@target}'."
+
+	fs.mkdir "DEBIAN"
+
+	control @, "DEBIAN/control"
+
+	if @license and @copyright
+		copyright @, "DEBIAN/copyright"
+	else
+		ui.detail "No debian/copyright file will be generated "
+		ui.detail "due to no 'license' or 'copyright' field."
+
+	os.execute "dpkg-deb " ..
+		"-Zxz -z9 --deb-format=2.0 " ..
+		"--build '#{fs.currentDirectory!}' " ..
+		"'#{@context.packagesDirectory}/#{@target}'"
+
+	-- Cleaning package directory for further reuse.
+	fs.remove "DEBIAN"
+
 {
 	_debarch: debarch
-	target: =>
-		arch = if @hasOption "no-arch"
-				"all"
-			else
-				@architecture
+	package:
+		target: =>
+			arch = if @hasOption "no-arch"
+					"all"
+				else
+					@architecture
 
-		"#{@name\gsub "_", "-"}_#{@version}-#{@release}" ..
-			"_#{arch}.deb"
-	package: =>
-		unless @maintainer
-			ui.warning "No 'maintainer'!"
-		unless @description or @summary
-			ui.warning "No 'description' or 'summary'!"
-
-		ui.detail "Building '#{@target}'."
-
-		fs.mkdir "DEBIAN"
-
-		control @, "DEBIAN/control"
-
-		if @license and @copyright
-			copyright @, "DEBIAN/copyright"
-		else
-			ui.detail "No debian/copyright file will be generated "
-			ui.detail "due to no 'license' or 'copyright' field."
-
-		os.execute "dpkg-deb " ..
-			"-Zxz -z9 --deb-format=2.0 " ..
-			"--build '#{fs.currentDirectory!}' " ..
-			"'#{@context.packagesDirectory}/#{@target}'"
-
-		-- Cleaning package directory for further reuse.
-		fs.remove "DEBIAN"
-
-	installPackage: (filename) ->
-		false ~= os.execute "dpkg -i '#{filename}'"
+			"#{@name\gsub "_", "-"}_#{@version}-#{@release}" ..
+				"_#{arch}.deb"
+		build: buildDeb
+		install: (filename) ->
+			false ~= os.execute "dpkg -i '#{filename}'"
 
 	isInstalled: (name) ->
 		false ~= os.execute "dpkg -l | cut -d ' ' -f 3 | grep -q '^#{name}$'"

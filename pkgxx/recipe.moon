@@ -141,12 +141,12 @@ class
 	setTargets: =>
 		module = @context.modules[@context.packageManager]
 
-		unless module and module.target
+		unless module and module.package
 			ui.error "Could not set targets. Wrong package manager module?"
 			return nil
 
 		for split in *@splits
-			split.target = module.target split
+			split.target = module.package.target split
 
 		@target = @splits[1].target
 

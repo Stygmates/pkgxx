@@ -42,11 +42,6 @@ makeRepository = =>
 	os.execute "mv '#{index}.unsigned' '#{index}'"
 
 {
-	target: =>
-		-- We need to store the packages in a sub-directory to be able
-		-- to build valid apk repositories.
-		"#{@context.architecture}/" ..
-			"#{@name}-#{@version}-r#{@release - 1}.apk"
 	check: =>
 		unless os.execute "abuild-sign --installed"
 			ui.error "You need to generate a key with " ..
@@ -56,39 +51,45 @@ makeRepository = =>
 
 			return nil, "no abuild key"
 
-	package: =>
-		unless @context.builder
-			ui.warning "No 'builder' was defined in your configuration!"
+	package:
+		target: =>
+			-- We need to store the packages in a sub-directory to be able
+			-- to build valid apk repositories.
+			"#{@context.architecture}/" ..
+				"#{@name}-#{@version}-r#{@release - 1}.apk"
+		build: =>
+			unless @context.builder
+				ui.warning "No 'builder' was defined in your configuration!"
 
-		unless fs.attributes "#{@context.packagesDirectory}/#{@context.architecture}"
-			fs.mkdir "#{@context.packagesDirectory}/#{@context.architecture}"
+			unless fs.attributes "#{@context.packagesDirectory}/#{@context.architecture}"
+				fs.mkdir "#{@context.packagesDirectory}/#{@context.architecture}"
 
-		size = getSize!
+			size = getSize!
 
-		@context.modules.pacman._genPkginfo @, size
+			@context.modules.pacman._genPkginfo @, size
 
-		ui.detail "Building '#{@target}'."
-		fs.mkdir @context.packagesDirectory .. "/" ..
-			@context.architecture
-		os.execute [[
-			tar --xattrs -c * | abuild-tar --hash | \
-				gzip -9 > ../data.tar.gz
+			ui.detail "Building '#{@target}'."
+			fs.mkdir @context.packagesDirectory .. "/" ..
+				@context.architecture
+			os.execute [[
+				tar --xattrs -c * | abuild-tar --hash | \
+					gzip -9 > ../data.tar.gz
 
-			mv .PKGINFO ../
+				mv .PKGINFO ../
 
-			# append the hash for data.tar.gz
-			local sha256=$(sha256sum ../data.tar.gz | cut -f1 -d' ')
-			echo "datahash = $sha256" >> ../.PKGINFO
+				# append the hash for data.tar.gz
+				local sha256=$(sha256sum ../data.tar.gz | cut -f1 -d' ')
+				echo "datahash = $sha256" >> ../.PKGINFO
 
-			# control.tar.gz
-			cd ..
-			tar -c .PKGINFO | abuild-tar --cut \
-				| gzip -9 > control.tar.gz
-			abuild-sign -q control.tar.gz || exit 1
+				# control.tar.gz
+				cd ..
+				tar -c .PKGINFO | abuild-tar --cut \
+					| gzip -9 > control.tar.gz
+				abuild-sign -q control.tar.gz || exit 1
 
-			# create the final apk
-			cat control.tar.gz data.tar.gz > ]] ..
-				"'#{@context.packagesDirectory}/#{@target}'"
+				# create the final apk
+				cat control.tar.gz data.tar.gz > ]] ..
+					"'#{@context.packagesDirectory}/#{@target}'"
 
 	addToRepository: (target, opt) =>
 		makeRepository target, opt

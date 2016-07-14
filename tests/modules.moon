@@ -13,18 +13,19 @@ for name, module in pairs context.modules
 		it "has a name", -> assert module.name
 
 		-- package manager support
-		if module.target
+		if module.package
 			doesSomething = true
 
 			describe "package manager module", ->
 				it "builds packages", ->
-					assert module.package
+					assert module.package.target
+					assert module.package.build
 
 				it "installs packages", ->
-					assert module.installPackage
+					assert module.package.install
 
 				it "checks installed packages", ->
-					assert module.isInstalled
+					assert module.package.isInstalled
 
 		if module.download
 			doesSomething = true

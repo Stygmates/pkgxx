@@ -1,4 +1,6 @@
 
+ui = require "pkgxx.ui"
+
 class
 	new: (arg) =>
 		for key, value in pairs arg

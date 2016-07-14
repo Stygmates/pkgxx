@@ -3,10 +3,11 @@ ui = require "pkgxx.ui"
 fs = require "pkgxx.fs"
 
 {
-	target: => "#{@name}##{@version}-#{@release}.pkg.tar.xz"
-	package: =>
-		ui.detail "Building '#{@target}'."
-		false ~= os.execute "tar cJf '#{@context.packagesDirectory}/#{@target}' '.'"
+	package:
+		target: => "#{@name}##{@version}-#{@release}.pkg.tar.xz"
+		build: =>
+			ui.detail "Building '#{@target}'."
+			false ~= os.execute "tar cJf '#{@context.packagesDirectory}/#{@target}' '.'"
 
 	installPackage: (filename) ->
 		-- FIXME: check prior installation and use -u to update package

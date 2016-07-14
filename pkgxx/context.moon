@@ -130,9 +130,11 @@ class
 						code, e = loadstring content
 
 					if code
-						module = Module code!
-						@modules[name] = module
-						module.name = module.name or name
+						content = code!
+						content.name = content.name or name
+
+						module = Module content
+						@modules[module.name] = module
 
 						if module.name and not @modules[module.name]
 							@modules[module.name] = module

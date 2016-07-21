@@ -244,75 +244,11 @@ class
 			if split.name == name
 				return true
 
-	checkOwnership: =>
-		local uid, gid
-
-		ui.detail "Checking ownership..."
-
-		with io.popen "id -u"
-			uid = tonumber \read "*line"
-			\close!
-
-		with io.popen "id -g"
-			gid = tonumber \read "*line"
-			\close!
-
-	stripFiles: =>
-		ui.detail "Stripping binaries..."
-
-		fs.changeDirectory (@\packagingDirectory!), ->
-			find = io.popen "find . -type f"
-
-			line = find\read "*line"
-			while line
-				p = io.popen "file -b '#{line}'"
-				type = p\read "*line"
-				p\close!
-
-				if type\match ".*ELF.*executable.*not stripped"
-					ui.debug "Stripping '#{line}'."
-					os.execute "strip --strip-all '#{line}'"
-				elseif type\match ".*ELF.*shared object.*not stripped"
-					ui.debug "Stripping '#{line}'."
-					os.execute "strip --strip-unneeded '#{line}'"
-				elseif type\match "current ar archive"
-					ui.debug "Stripping '#{line}'."
-					os.execute "strip --strip-debug '#{line}'"
-
-				line = find\read "*line"
-
-			find\close!
-
-	compressManpages: =>
-		ui.detail "Compressing manpages..."
-
-		fs.changeDirectory (@\packagingDirectory!), ->
-			prefix = @\parse @context\getPrefix "mandir"
-
-			-- FIXME: hardcoded directory spotted.
-			unless fs.attributes "./#{prefix}"
-				ui.debug "No manpage found: not compressing manpages."
-				return
-
-			find = io.popen "find ./#{prefix} -type f"
-
-			file = find\read "*line"
-			while file
-				unless file\match "%.gz$" or file\match "%.xz$" or
-				       file\match "%.bz2$"
-					ui.debug "Compressing manpage: #{file}"
-
-					switch @context.compressionMethod
-						when "gz"
-							os.execute "gzip -9 '#{file}'"
-						when "bz2"
-							os.execute "bzip2 -9 '#{file}'"
-						when "xz"
-							os.execute "xz -9 '#{file}'"
-
-				file = find\read "*line"
-
-			find\close!
+	postBuildHooks: =>
+		for module in *@context.modules
+			if module.postBuild
+				fs.directory @\packagingDirectory!, ->
+					module.postBuild @
 
 	buildingDirectory: =>
 		"#{@context.buildingDirectory}/src/" ..
@@ -491,9 +427,7 @@ class
 			return nil, e
 
 		ui.info "Doing post-build verifications."
-		@\checkOwnership!
-		@\stripFiles!
-		@\compressManpages!
+		@\postBuildHooks!
 
 		true
 

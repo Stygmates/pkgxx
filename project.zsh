@@ -5,7 +5,7 @@ version=0.0.1
 variables=(LUA_VERSION 5.2)
 
 # Valid values: moon, script
-moon=script
+moon=moon
 
 for i in pkgxx/*.moon pkgxx.moon; do
 	if [[ "$moon" == moon ]]; then

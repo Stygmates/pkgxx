@@ -43,10 +43,10 @@ class
 		@context = context
 		@filename = filename
 
-		file = io.open filename, "r"
+		file, reason = io.open filename, "r"
 
 		unless file
-			error "could not open recipe", 0
+			error reason, 0
 
 		recipe, e = toml.parse (file\read "*all"), {strict: false}
 

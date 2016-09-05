@@ -54,7 +54,14 @@ if args.collection
 	print "Building in the following collection: #{args.collection}"
 	context.collection = args.collection
 
-recipe = context\openRecipe "package.toml"
+success, recipe = pcall -> context\openRecipe "package.toml"
+
+unless success
+	with reason = recipe
+		ui.error "Could not open recipe."
+		ui.error tostring reason
+
+		os.exit 1
 
 if args.lint
 	count = recipe\lint!

@@ -78,7 +78,7 @@ makeRepository = =>
 				mv .PKGINFO ../
 
 				# append the hash for data.tar.gz
-				local sha256=$(sha256sum ../data.tar.gz | cut -f1 -d' ')
+				sha256=$(sha256sum ../data.tar.gz | cut -f1 -d' ')
 				echo "datahash = $sha256" >> ../.PKGINFO
 
 				# control.tar.gz

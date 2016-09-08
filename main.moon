@@ -1,3 +1,4 @@
+#!/usr/bin/env moon
 
 toml = require "toml"
 argparse = require "argparse"

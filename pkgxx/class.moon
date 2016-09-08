@@ -1,16 +1,16 @@
 
-(arg) ->
-	unless arg.__index
-		arg.__index = arg
+(slots) ->
+	unless slots.__index
+		slots.__index = slots
 
-	setmetatable arg, {
+	setmetatable slots, {
 		__call: (...) =>
 			obj = setmetatable {
-				__class: arg
-			}, arg
+				__class: slots
+			}, slots
 
-			if arg.new
-				arg.new obj, ...
+			if slots.new
+				slots.new obj, ...
 
 			obj
 	}

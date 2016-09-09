@@ -4,6 +4,11 @@ sources = ["git+https://github.com/Lukc/pkgxx"]
 dirname = "pkgxx"
 
 summary = "Modular and extensible packages builder."
+description = """
+pkg++ is a tool to build packages of various formats on for many distributions.
+
+It uses a declarative recipe format and tries to be portable.
+"""
 url = "https://github.com/Lukc/pkgxx.moon"
 
 packager = "Luka Vandervelden <lukc@upyum.com>"

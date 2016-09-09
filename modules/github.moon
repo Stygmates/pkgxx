@@ -10,7 +10,5 @@ fs = require "pkgxx.fs"
 				url: @sources[1].url
 				selector: ".numbers-summary .commits .num.text-emphasized"
 			}
-		else
-			ui.info "Bleh."
 }
 

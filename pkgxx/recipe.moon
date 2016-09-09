@@ -331,11 +331,12 @@ class
 				continue
 
 			if module.getVersion
-				v = fs.changeDirectory @context.sourcesDirectory, ->
-					module.getVersion source
+				success, version = pcall ->
+					fs.changeDirectory @context.sourcesDirectory, ->
+						module.getVersion source
 
-				if not @version
-					@version = v
+				if success and not @version
+					@version = version
 
 		@\setTargets!
 
@@ -541,8 +542,6 @@ class
 
 	isUpToDate: =>
 		if @watch
-			ui.info "Checking if recipe is up to date…"
-
 			local p
 			-- FIXME: We need to abstract those curl calls.
 			-- FIXME: sort -n is a GNU extension.

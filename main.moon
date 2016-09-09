@@ -32,6 +32,9 @@ parser = with argparse "pkgxx", "Packages builder."
 	\flag "-l --lint",
 		"Print potential defects in the recipe instead of building."
 
+	\flag "-w --watch",
+		"Only checks whether the packages and recipes are up to date."
+
 	\flag "-n --no-deps", "Do not build dependencies."
 
 	\flag "-d --deps", "Check and install dependencies before building"
@@ -68,6 +71,28 @@ if args.lint
 	count = recipe\lint!
 	context\close!
 	os.exit count
+elseif args.watch
+	if not recipe.version
+		recipe\updateVersion!
+
+	if not recipe.version
+		ui.warning "no sources, no version information"
+		os.exit 3
+	elseif not recipe.watch
+		if recipe\buildNeeded!
+			ui.warning "no watch, build needed"
+		else
+			ui.warning "no watch"
+		os.exit 2
+	else
+		upToDate, lastVersion = recipe\isUpToDate!
+
+		if upToDate
+			ui.info "up to date, version is #{lastVersion}"
+			os.exit 0
+		else
+			ui.warning "outdated recipe, version is #{recipe.version} but should be #{lastVersion}"
+			os.exit 1
 
 local uid, gid
 
@@ -124,6 +149,8 @@ for recipe in *packagesList
 				"#{recipe.name}-#{recipe.version or "%"}-#{recipe.release}."
 
 		if recipe.version and recipe.watch
+			info "Checking if recipe is up to date…"
+
 			r, ver, e = recipe\isUpToDate!
 
 			unless r

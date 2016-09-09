@@ -332,12 +332,12 @@ class
 				continue
 
 			if module.getVersion
-				success, version = pcall ->
-					fs.changeDirectory @context.sourcesDirectory, ->
+				fs.changeDirectory @context.sourcesDirectory, ->
+					success, version = pcall ->
 						module.getVersion source
 
-				if success and not @version
-					@version = version
+					if success and not @version
+						@version = version
 
 		@\setTargets!
 

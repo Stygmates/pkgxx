@@ -93,6 +93,14 @@ class
 		for string in *(recipe.buildDependencies or {})
 			table.insert @buildDependencies, Atom string
 
+		if not @watch
+			for name, module in pairs context.modules
+				if module.watch
+					with watch = module.watch @
+						if watch
+							-- FIXME: Maybe we could do some additionnal checks.
+							@watch = watch
+
 		@recipe = recipe -- Can be required for module-defined fields.
 		@recipeAttributes = lfs.attributes filename
 

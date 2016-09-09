@@ -512,6 +512,14 @@ class
 			ui.warning "no 'packager' field"
 			e = e + 1
 
+		unless @watch
+			ui.warning "no 'watch' section"
+		else
+			with @watch
+				unless .selector or .lasttar or .execute
+					ui.warning "unusable 'watch', needs a selector, " ..
+						"lasttar or execute field"
+
 		for split in *@splits
 			with self = split
 				ui.detail @name
@@ -529,14 +537,6 @@ class
 				unless @dependencies
 					ui.warning "no 'dependencies' field"
 					e = e + 1
-
-		unless @watch
-			ui.warning "no 'watch' section"
-		else
-			with @watch
-				unless .selector or .lasttar or .execute
-					ui.warning "unusable 'watch', needs a selector, " ..
-						"lasttar or execute field"
 
 		e
 

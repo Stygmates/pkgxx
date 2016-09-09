@@ -18,11 +18,12 @@ ui = require "pkgxx.ui"
 			else
 				ui.warning "<modules/Fedora> Unrecognized class: '#{@class}'."
 	autosplits: =>
+		name = @splits[1].name
 		description = @splits[1].description
 
 		{
 			{
-				name: @name .. "-devel",
+				name: name .. "-devel",
 				summary: "Development files for #{@name}",
 				description: description
 				files: { "%{includedir}" }

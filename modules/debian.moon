@@ -20,11 +20,12 @@ ui = require "pkgxx.ui"
 				ui.warning "<modules/Debian> Unrecognized class: " ..
 					"'#{@class}'"
 	autosplits: =>
+		name = @splits[1].name
 		description = @splits[1].description
 
 		{
 			{
-				name: @name .. "-dev",
+				name: name .. "-dev",
 				summary: "Development files for #{@name}"
 				description: "#{description}\n\nThis package contains the header files and static libraries needed to compile applications or shared objects that use #{@name}."
 				files: { "%{includedir}" }

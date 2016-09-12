@@ -67,7 +67,7 @@ copyright = (dest) =>
 
 	file\close!
 
-buildDeb: =>
+buildDeb = =>
 	unless @maintainer
 		ui.warning "No 'maintainer'!"
 	unless @description or @summary

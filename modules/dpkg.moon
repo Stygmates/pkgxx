@@ -6,10 +6,10 @@ list = (a) ->
 	str = ""
 
 	for i = 1, #a
+		str ..= tostring a[i].name
+
 		if i != #a
-			str = str .. tostring a[i] .. ", "
-		else
-			str = str .. tostring a[i]
+			str ..= ", "
 
 	str
 

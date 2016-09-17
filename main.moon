@@ -112,7 +112,11 @@ unless args.targets or args.lint
 
 if args.targets
 	if not recipe.version
-		assert recipe\download!
+		unless recipe\download!
+			ui.error "The download has failed."
+
+			os.exit 1
+
 		recipe\updateVersion!
 
 	for target in recipe\getTargets!
@@ -162,14 +166,22 @@ for recipe in *packagesList
 			else
 				ui.detail "Recipe seems up to date."
 
-		assert recipe\download!
+		unless recipe\download!
+			ui.error "The download has failed."
+
+			os.exit 1
 
 		if not recipe.version
 			recipe\updateVersion!
 
 		-- Development packages might have set their versions by now.
 		if args.force or recipe\buildNeeded!
-			assert recipe\build!
+			unless recipe\build!
+				ui.error "You may want to look in the logs for more details."
+				ui.error "Log file: #{recipe\getLogFile!}"
+
+				os.exit 1
+
 			recipe\package!
 			recipe\clean!
 

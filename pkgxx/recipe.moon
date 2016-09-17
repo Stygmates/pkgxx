@@ -167,6 +167,9 @@ class
 			if i - 1 <= #@splits
 				return @splits[i - 1].target
 
+	getLogFile: =>
+		"#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
+
 	parseSplits: (recipe) =>
 		splits = {}
 
@@ -376,8 +379,7 @@ class
 			code = "set -x -e\n#{code}"
 
 			if @context.configuration.verbosity < 5
-				logfile =  "#{@context.packagesDirectory}/" ..
-					"#{@name}-#{@version}-#{@release}.log"
+				logfile = @\getLogFile!
 
 				lf = io.open logfile, "w"
 				if lf

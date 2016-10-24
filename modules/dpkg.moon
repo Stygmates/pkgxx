@@ -98,9 +98,9 @@ buildDeb = =>
 	package:
 		target: =>
 			arch = if @hasOption "no-arch"
-					"all"
-				else
-					@architecture
+				"all"
+			else
+				@architecture
 
 			"#{@name\gsub "_", "-"}_#{@version}-#{@release}" ..
 				"_#{arch}.deb"

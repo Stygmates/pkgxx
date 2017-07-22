@@ -153,7 +153,7 @@ for recipe in *packagesList
 				"#{recipe.name}-#{recipe.version or "%"}-#{recipe.release}."
 
 		if recipe.version and recipe.watch
-			info "Checking if recipe is up to date…"
+			ui.info "Checking if recipe is up to date…"
 
 			r, ver, e = recipe\isUpToDate!
 

@@ -165,7 +165,9 @@ class
 			i = i + 1
 
 			if i - 1 <= #@splits
-				return @splits[i - 1].target
+				split = @splits[i - 1]
+
+				return split.target, split
 
 	getLogFile: =>
 		"#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
@@ -196,12 +198,18 @@ class
 
 		splits
 
+	applyDistributionDiffs: (recipe, distribution) =>
+		if recipe.os and recipe.os[distribution]
+			@splits[1]\applyDiff recipe.os[distribution]
+
 	applyDistributionRules: (recipe) =>
 		distribution = @context.distribution
 		module = @context.modules[distribution]
 
-		if recipe.os and recipe.os[distribution]
-			@splits[1]\applyDiff recipe.os[distribution]
+		@\applyDistributionDiffs recipe, distribution
+
+		if module.alterRecipe
+			module.alterRecipe self, recipe
 
 		for split in *@splits
 			os = split.os

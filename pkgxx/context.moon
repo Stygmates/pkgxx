@@ -167,6 +167,15 @@ class
 	openRecipe: (filename) =>
 		Recipe (filename or "package.toml"), @
 
+	isAtomInstalled: (atom) =>
+		module = @modules[@packageManager]
+
+		unless module and module.isInstalled
+			-- FIXME: Make this a real warning once it’s implemented.
+			return nil, "unable to check dependencies"
+
+		module.isInstalled atom.name, atom
+
 	updateRepository: (opt) =>
 		unless @repositoryManager
 			return

@@ -29,7 +29,7 @@ Class
 		(rawget @, key) or @__class[key] or @origin[key]
 
 	applyDistributionRules: (recipe) =>
-		distribution = @context.configuration.distribution
+		distribution = @context.distribution
 		module = @context.modules[distribution]
 
 		if module

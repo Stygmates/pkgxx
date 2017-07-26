@@ -197,7 +197,7 @@ class
 		splits
 
 	applyDistributionRules: (recipe) =>
-		distribution = @context.configuration.distribution
+		distribution = @context.distribution
 		module = @context.modules[distribution]
 
 		if recipe.os and recipe.os[distribution]
@@ -287,12 +287,6 @@ class
 				return true
 
 	checkDependencies: =>
-		module = @context.modules[@context.packageManager]
-
-		unless module and module.isInstalled
-			-- FIXME: Make this a real warning once it’s implemented.
-			return nil, "unable to check dependencies"
-
 		ui.info "Checking dependencies…"
 
 		deps = {}
@@ -300,7 +294,7 @@ class
 			table.insert deps, atom
 
 		for atom in *deps
-			if not module.isInstalled atom.name
+			unless context\isAtomInstalled atom
 				-- FIXME: Check the configuration to make sure it’s tolerated.
 				--        If it isn’t, at least ask interactively.
 				ui.detail "Installing missing dependency: #{atom.name}"

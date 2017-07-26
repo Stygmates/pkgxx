@@ -61,16 +61,6 @@ Class
 			if os and os[distribution]
 				@@.applyDiff split, os[distribution]
 
-	guessClass: (split) ->
-		if split.name\match "-doc$"
-			"documentation"
-		elseif split.name\match "-dev$" or split.name\match "-devel$"
-			"headers"
-		elseif split.name\match "^lib"
-			"library"
-		else
-			"binary"
-
 	applyDiff: (diff) =>
 		if diff.name
 			@name = diff.name

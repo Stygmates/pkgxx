@@ -107,6 +107,9 @@ class
 		-- FIXME: sort by name or something.
 		@splits = @\parseSplits recipe
 
+		-- Per-split classes were defined in parseSplits.
+		@class or= @\guessClass!
+
 		@\applyDistributionRules recipe
 
 		-- Importing splits’ dependencies in the build-deps.
@@ -192,7 +195,7 @@ class
 
 				split\applyDiff data
 
-				split.class = split.class or @@.guessClass split
+				split.class = split.class or split\guessClass!
 
 				splits[#splits+1] = split
 

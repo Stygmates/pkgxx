@@ -29,6 +29,7 @@ ui = require "pkgxx.ui"
 				summary: "Development files for #{@name}"
 				description: "#{description}\n\nThis package contains the header files and static libraries needed to compile applications or shared objects that use #{@name}."
 				files: { "%{includedir}" }
+				options: {"no-arch"}
 			}
 		}
 }

@@ -567,9 +567,10 @@ class
 				p = io.popen @watch.execute
 
 			version = p\read "*line"
-			_, _, r = p\close!
+			success, _, r = p\close!
 
-			unless r == 0 and version
+			-- 5.1 compatibility sucks.
+			unless (r and r == 0 or success) and version
 				return nil, nil, "could not check", "child process failed"
 
 			if version

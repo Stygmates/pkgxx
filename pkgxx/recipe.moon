@@ -101,7 +101,7 @@ class
 							-- FIXME: Maybe we could do some additionnal checks.
 							@watch = watch
 
-		@recipe = recipe -- Can be required for module-defined fields.
+		@recipe = recipe -- FIXME: We shouldn’t depend on this.
 		@recipeAttributes = lfs.attributes filename
 
 		-- FIXME: sort by name or something.

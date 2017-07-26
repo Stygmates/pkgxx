@@ -72,6 +72,10 @@ for name, module in pairs context.modules
 		if module.postBuildHook
 			doesSomething = true
 
+		if module.watch
+			-- Can’t test much more than that without a true recipe.
+			doesSomething = true
+
 		it "does something", -> assert doesSomething
 
 context\close!

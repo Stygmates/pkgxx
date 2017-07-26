@@ -2,10 +2,10 @@
 package=pkgxx
 version=0.0.1
 
-variables=(LUA_VERSION 5.2)
+variables=(LUA_VERSION 5.1)
 
-# Valid values: moon, script
-moon=moon
+# Valid values: moon, script. Set to “moon” to compile to Lua.
+moon=script
 
 for i in pkgxx/*.moon pkgxx.moon; do
 	if [[ "$moon" == moon ]]; then
@@ -17,7 +17,7 @@ for i in pkgxx/*.moon pkgxx.moon; do
 	auto[$i]=true
 
 	case "$i" in
-		pkgxx.lua)
+		pkgxx.lua|pkgxx.moon)
 			install[$i]='$(SHAREDIR)/lua/$(LUA_VERSION)' ;;
 		*)
 			install[$i]='$(SHAREDIR)/lua/$(LUA_VERSION)/pkgxx' ;;

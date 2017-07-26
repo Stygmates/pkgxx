@@ -95,5 +95,7 @@ genPkginfo = (size) =>
 			os.execute "tar cJf " ..
 				"'#{@context.packagesDirectory}/#{@target}' " ..
 				".PKGINFO *"
+		install: =>
+			false ~= os.execute "pacman -U '#{filename}'"
 }
 

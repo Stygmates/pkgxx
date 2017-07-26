@@ -25,7 +25,7 @@ for name, module in pairs context.modules
 					assert module.package.install
 
 				it "checks installed packages", ->
-					assert module.package.isInstalled
+					assert module.isInstalled
 
 		if module.download
 			doesSomething = true
@@ -67,6 +67,9 @@ for name, module in pairs context.modules
 				assert module.addToRepository
 
 		if module.installDependency
+			doesSomething = true
+
+		if module.postBuildHook
 			doesSomething = true
 
 		it "does something", -> assert doesSomething

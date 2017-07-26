@@ -90,6 +90,8 @@ makeRepository = =>
 				# create the final apk
 				cat control.tar.gz data.tar.gz > ]] ..
 					"'#{@context.packagesDirectory}/#{@target}'"
+		install: (name) ->
+			os.execute "apk add --allow-untrusted '#{name}'"
 
 	addToRepository: (target, opt) =>
 		makeRepository target, opt
@@ -98,9 +100,6 @@ makeRepository = =>
 
 	installDependency: (name) ->
 		os.execute "apk add '#{name}'"
-
-	installPackage: (name) ->
-		os.execute "apk add --allow-untrusted '#{name}'"
 
 	isInstalled: (name) ->
 		p = io.popen "apk info"

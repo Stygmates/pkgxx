@@ -99,14 +99,13 @@ dist = ->
 				os.execute "mv" ..
 					" '#{pwd}/../#{arch}/#{@target}'" ..
 					" '#{@context.packagesDirectory}/#{@target}'"
+		install: (filename) ->
+			false ~= os.execute "rpm -i '#{filename}'"
 
 	isInstalled: (name) ->
 		-- Being silent.
 		p = io.popen "rpm -V --noscripts --nodeps --nofiles #{name}"
 		p\read "*all"
 		p\close!
-
-	installPackage: (filename) ->
-		false ~= os.execute "rpm -i '#{filename}'"
 }
 

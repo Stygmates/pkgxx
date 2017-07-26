@@ -133,13 +133,16 @@ class
 						content = code!
 						content.name = content.name or name
 
-						module = Module content
-						@modules[module.name] = module
-
-						if module.name and not @modules[module.name]
-							@modules[module.name] = module
+						@\loadModule content
 					else
 						io.stderr\write "module '#{name}' not loaded: #{e}\n"
+
+	loadModule: (content) =>
+		module = Module content
+		@modules[module.name] = module
+
+		if module.name and not @modules[module.name]
+			@modules[module.name] = module
 
 	checkConfiguration: =>
 		if not @modules[@packageManager]

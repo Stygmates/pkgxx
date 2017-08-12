@@ -1,4 +1,12 @@
 
+---
+-- @classmod Split
+--
+-- A subpackage defined by a Recipe.
+--
+-- @see Recipe
+---
+
 fs = require "pkgxx.fs"
 ui = require "pkgxx.ui"
 macro = require "pkgxx.macro"

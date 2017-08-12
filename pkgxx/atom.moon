@@ -1,4 +1,12 @@
 
+---
+-- @classmod Atom
+--
+-- An atom is a container for a package name and origin.
+--
+-- Version informations are planned to be added.
+---
+
 class
 	new: (s) =>
 		s = s\gsub "^%s*", ""

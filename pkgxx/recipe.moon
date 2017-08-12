@@ -1,4 +1,13 @@
 
+---
+-- @classmod Recipe
+--
+-- Operations and data on a recipe.
+--
+-- @see Split
+-- @see Context
+---
+
 toml = require "toml"
 
 ui = require "pkgxx.ui"
@@ -39,6 +48,13 @@ has = (e, t) ->
 			return true
 
 class
+	---
+	-- Throws errors when the file cannot be opened or parsed.
+	--
+	-- @param filename Filename of the recipe to parse.
+	-- @param context pkgxx Context in which to import the recipe.
+	--
+	-- @see Context
 	new: (filename, context) =>
 		@context = context
 		@filename = filename
@@ -164,6 +180,10 @@ class
 
 		@target = @splits[1].target
 
+	---
+	-- Lists the filenames and packages this recipe defines.
+	-- @return Iterator(filename, Split)
+	-- @see Split
 	getTargets: =>
 		i = 1
 
@@ -284,6 +304,9 @@ class
 
 		"#{@context.buildingDirectory}/pkg/#{name}"
 
+	---
+	-- Checks whether the recipe’s packages need updating or rebuilding.
+	-- @return Boolean.
 	buildNeeded: =>
 		for self in *self.splits
 			if self.automatic
@@ -298,6 +321,9 @@ class
 				ui.info "Recipe is newer than packages."
 				return true
 
+	---
+	-- Checks whether the recipe’s dependencies and build-dependencies are
+	-- installed, and tries to install them if they are not.
 	checkDependencies: =>
 		ui.info "Checking dependencies…"
 
@@ -312,7 +338,11 @@ class
 				ui.detail "Installing missing dependency: #{atom.name}"
 				@\installDependency atom.name
 
+	---
+	-- Installs a package by name.
+	-- @param name Name of the package to install.
 	installDependency: (name) =>
+		-- @fixme Should probably be in Context. =/
 		module = @context.modules[@context.dependenciesManager]
 		if not (module and module.installDependency)
 			module = @context.modules[@context.packageManager]
@@ -322,6 +352,10 @@ class
 
 		module.installDependency name
 
+	---
+	-- Downloads the recipe’s sources.
+	--
+	-- @return Boolean indicating whether or not the downloads succeeded.
 	download: =>
 		ui.info "Downloading…"
 
@@ -331,6 +365,12 @@ class
 
 		true
 
+	---
+	-- Generates the recipe’s version from its sources.
+	--
+	-- Is useless for recipes with static versions, but is useful if a recipe
+	-- is of a development version from a git repository or any similar
+	-- situation.
 	updateVersion: =>
 		for source in *@sources
 			module = @context.modules[source.protocol]
@@ -373,7 +413,11 @@ class
 						"'#{@context.sourcesDirectory}/" ..
 						"#{source.filename}' ./"
 
+	---
+	-- Used internally by @\build.
+	--
 	-- @param name The name of the “recipe function” to execute.
+	-- @see build
 	execute: (name, critical) =>
 		ui.debug "Executing '#{name}'."
 
@@ -420,6 +464,12 @@ class
 
 		return nil, "no suitable module found"
 
+	---
+	-- Builds the recipe.
+	--
+	-- This method does not build the packages themselves.
+	--
+	-- @see Package
 	build: =>
 		@\prepareBuild!
 
@@ -462,6 +512,8 @@ class
 		fs.execute "mv '#{@\packagingDirectory!}' " ..
 			"'#{@\packagingDirectory @splits[1].name}'"
 
+	---
+	-- Creates packages from the built software.
 	package: =>
 		ui.info "Packaging…"
 		@\split!
@@ -476,6 +528,8 @@ class
 			error "No module is available for the package manager "..
 				"'#{@configuration['package-manager']}'."
 
+	---
+	-- Removes the recipe’s temporary building directories.
 	clean: =>
 		ui.info "Cleaning…"
 		ui.detail "Removing '#{@\buildingDirectory!}'."
@@ -484,6 +538,8 @@ class
 		-- root-owned. And they have to if we want our packages to be valid.
 		os.execute "sudo rm -rf '#{@\buildingDirectory!}'"
 
+	---
+	-- Prints potential defects or missing data in the recipe.
 	lint: =>
 		e = 0
 
@@ -545,6 +601,12 @@ class
 
 		e
 
+	---
+	-- Checks whether or not the recipe is up to date.
+	--
+	-- It may need access to recent sources to do so.
+	--
+	-- @see download
 	isUpToDate: =>
 		if @watch
 			local p
@@ -594,6 +656,10 @@ class
 
 			return version == @version, version
 
+	---
+	-- Generates a dependency tree for the recipe.
+	--
+	-- May need access to other recipes.
 	depTree: =>
 		isInstalled = do
 			module = @context.modules[@context.packageManager]

@@ -1,4 +1,13 @@
 
+---
+-- @classmod Context
+--
+-- pkgxx’ main class.
+--
+-- The Context is a shared environment in which packages are built with
+-- a specific configuration and for a given package manager.
+---
+
 moonscript = require "moonscript"
 toml = require "toml"
 
@@ -11,6 +20,8 @@ Module = require "pkgxx.module"
 loadstring = loadstring or load
 
 class
+	---
+	-- Context constructor.
 	new: () =>
 		@configuration = {
 			verbosity: 4
@@ -167,9 +178,17 @@ class
 					ui.warning "No repository will be generated."
 					@repositoryManager = nil
 
+	---
+	-- Creates a Recipe object from a package.toml file.
+	-- @param filename Filename of the package.toml to parse into a Recipe.
+	-- @see Recipe
 	openRecipe: (filename) =>
 		Recipe (filename or "package.toml"), @
 
+	---
+	-- Asks the package manager whether a given package Atom is installed.
+	-- @param atom Atom describing a package whose installation is being tested.
+	-- @see Atom
 	isAtomInstalled: (atom) =>
 		module = @modules[@packageManager]
 
@@ -179,6 +198,12 @@ class
 
 		module.isInstalled atom.name, atom
 
+	---
+	-- Updates the context’s packages repository.
+	--
+	-- It can be used to register several new packages at once.
+	--
+	-- @param opt Options to provide to the repository manager’s module.
 	updateRepository: (opt) =>
 		unless @repositoryManager
 			return
@@ -190,12 +215,21 @@ class
 		else
 			ui.error "No module to build a repository."
 
+	---
+	-- Adds a package to the context’s repository.
+	--
+	-- @param target Filename of the package to add to the repository.
+	-- @param opt Options to provide to the repository manager’s module.
 	addToRepository: (target, opt) =>
 		module = @modules[@repositoryManager or @packageManager].addToRepository
 		if module
 			fs.changeDirectory @packagesDirectory, ->
 				module @, target, opt
 
+	---
+	-- Closes the context.
+	--
+	-- CAUTION: Doing so removes the context's temporary files.
 	close: =>
 		os.execute "rm -rf '#{@buildingDirectory}'"
 

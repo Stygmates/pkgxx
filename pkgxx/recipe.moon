@@ -207,7 +207,7 @@ class
 
 	applyDistributionRules: (recipe) =>
 		distribution = @context.distribution
-		module = @context.modules[distribution]
+		module = @context.modules[distribution] or {}
 
 		@\applyDistributionDiffs recipe, distribution
 

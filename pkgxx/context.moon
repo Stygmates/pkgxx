@@ -78,7 +78,7 @@ class
 			"MAKEFLAGS"
 		}
 			if configuration[variable]
-				context.exports[variable] = configuration[variable]
+				@exports[variable] = configuration[variable]
 
 		@prefixes = {}
 		for prefix in *@prefixes

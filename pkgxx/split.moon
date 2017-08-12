@@ -1,6 +1,7 @@
 
 fs = require "pkgxx.fs"
 ui = require "pkgxx.ui"
+macro = require "pkgxx.macro"
 
 Class = require "pkgxx.class"
 Atom = require "pkgxx.atom"
@@ -35,8 +36,6 @@ Class
 		if module
 			ui.debug "Distribution: #{module.name}"
 			if module.autosplits
-				oldIndex = #@splits
-
 				ui.debug "Trying module '#{module.name}'."
 				newSplits = module.autosplits @
 				newSplits = macro.parse newSplits, macroList @

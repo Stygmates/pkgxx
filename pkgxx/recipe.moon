@@ -48,7 +48,10 @@ class
 		unless file
 			error reason, 0
 
-		recipe, e = toml.parse (file\read "*all"), {strict: false}
+		recipe, reason = toml.parse (file\read "*all"), {strict: false}
+
+        unless recipe
+            error reason, 0
 
 		swapKeys recipe, "build-dependencies", "buildDependencies"
 
@@ -94,7 +97,7 @@ class
 			table.insert @buildDependencies, Atom string
 
 		if not @watch
-			for name, module in pairs context.modules
+			for _, module in pairs context.modules
 				if module.watch
 					with watch = module.watch @
 						if watch
@@ -102,7 +105,7 @@ class
 							@watch = watch
 
 		@recipe = recipe -- FIXME: We shouldn’t depend on this.
-		@recipeAttributes = lfs.attributes filename
+		@recipeAttributes = fs.attributes filename
 
 		-- FIXME: sort by name or something.
 		@splits = @\parseSplits recipe
@@ -224,8 +227,6 @@ class
 			ui.debug "Distribution: #{module.name}"
 
 			if module.autosplits
-				oldIndex = #@splits
-
 				ui.debug "Trying module '#{module.name}'."
 				newSplits = module.autosplits @
 				newSplits = macro.parse newSplits, macroList @
@@ -288,7 +289,7 @@ class
 			if self.automatic
 				continue
 
-			attributes = lfs.attributes "" ..
+			attributes = fs.attributes "" ..
 				"#{@context.packagesDirectory}/#{@target}"
 			unless attributes
 				return true
@@ -305,7 +306,7 @@ class
 			table.insert deps, atom
 
 		for atom in *deps
-			unless context\isAtomInstalled atom
+			unless @context\isAtomInstalled atom
 				-- FIXME: Check the configuration to make sure it’s tolerated.
 				--        If it isn’t, at least ask interactively.
 				ui.detail "Installing missing dependency: #{atom.name}"
@@ -331,8 +332,6 @@ class
 		true
 
 	updateVersion: =>
-		local v
-
 		for source in *@sources
 			module = @context.modules[source.protocol]
 
@@ -449,8 +448,6 @@ class
 		true
 
 	split: =>
-		mainPkgDir = @\packagingDirectory!
-
 		for split in *@splits
 			if split.files
 				if split.automatic and not split\hasFiles!
@@ -462,7 +459,7 @@ class
 		-- FIXME: A bit hacky. We need packaging directories and fake roots
 		--        to be different.
 		fs.remove @\packagingDirectory @splits[1].name
-		os.execute "mv '#{@\packagingDirectory!}' " ..
+		fs.execute "mv '#{@\packagingDirectory!}' " ..
 			"'#{@\packagingDirectory @splits[1].name}'"
 
 	package: =>
@@ -598,12 +595,14 @@ class
 			return version == @version, version
 
 	depTree: =>
-		isInstalled = -> false
-		with module = @context.modules[@context.packageManager]
-			if module and module.isInstalled
-				isInstalled = module.isInstalled
+		isInstalled = do
+			module = @context.modules[@context.packageManager]
+			f = if module
+				module.isInstalled
 			else
 				ui.warning "Unable to determine installed dependencies."
+
+			f or -> false
 
 		deps = {@}
 

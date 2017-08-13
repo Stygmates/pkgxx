@@ -71,7 +71,7 @@ makeRepository = =>
 			ui.detail "Building '#{@target}'."
 			fs.mkdir @context.packagesDirectory .. "/" ..
 				@context.architecture
-			os.execute [[
+			fs.execute @, [[
 				tar --xattrs -c * | abuild-tar --hash | \
 					gzip -9 > ../data.tar.gz
 

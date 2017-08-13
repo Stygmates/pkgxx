@@ -509,7 +509,7 @@ class
 		-- FIXME: A bit hacky. We need packaging directories and fake roots
 		--        to be different.
 		fs.remove @\packagingDirectory @splits[1].name
-		fs.execute "mv '#{@\packagingDirectory!}' " ..
+		fs.execute @, "mv '#{@\packagingDirectory!}' " ..
 			"'#{@\packagingDirectory @splits[1].name}'"
 
 	---

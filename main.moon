@@ -189,12 +189,12 @@ for recipe in *packagesList
 				force: args.force
 			}
 
-			for split in *recipe.splits
+			for package in *recipe.packages
 				-- FIXME: Should we check it’s been actually built instead?
-				if split.automatic and not split\hasFiles!
+				if package.automatic and not package\hasFiles!
 					continue
 
-				context\addToRepository split, {
+				context\addToRepository package, {
 					force: args.force
 				}
 		else

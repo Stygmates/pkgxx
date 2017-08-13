@@ -1,9 +1,7 @@
 
----
--- @classmod Split
+--- Package described and built from a Recipe.
 --
--- A subpackage defined by a Recipe.
---
+-- @classmod Package
 -- @see Recipe
 ---
 
@@ -45,28 +43,30 @@ Class
 			ui.debug "Distribution: #{module.name}"
 			if module.autosplits
 				ui.debug "Trying module '#{module.name}'."
-				newSplits = module.autosplits @
-				newSplits = macro.parse newSplits, macroList @
+				newPackages = module.autosplits @
+				newPackages = macro.parse newPackages, macroList @
 
-				for split in *@\parseSplits splits: newSplits
-					ui.debug "Registering automatic split: #{split.name}."
+				for package in *@\parsePackages splits: newPackages
+					ui.debug "Registering automatic package: #{package.name}."
 
-					if not @\hasSplit split.name
-						split.automatic = true
-						@splits[#@splits+1] = split
+					-- FIXME: Some of that code seems copied from Recipe.
+					--        Copying code is bad. But it might also be broken.
+					if not @\hasPackage package.name
+						package.automatic = true
+						@packages[#@packages+1] = package
 					else
-						ui.debug " ... split already exists."
+						ui.debug " ... package already exists."
 		else
 			ui.warning "No module found for this distribution: " ..
 				"'#{distribution}'."
 			ui.warning "Your package is very unlike to comply to " ..
 				"your OS’ packaging guidelines."
 
-		for split in *@splits
-			os = split.os
+		for package in *@packages
+			os = package.os
 
 			if os and os[distribution]
-				@@.applyDiff split, os[distribution]
+				@@.applyDiff package, os[distribution]
 
 	applyDiff: (diff) =>
 		if diff.name
@@ -106,12 +106,12 @@ Class
 			@class = diff.class
 
 	moveFiles: =>
-		ui.detail "Splitting '#{@name}'."
+		ui.detail "Packageting '#{@name}'."
 
 		for file in *@files
 			source = (@origin\packagingDirectory "_") .. file
 			destination = (@\packagingDirectory!) .. file
-			ui.debug "split: #{source} -> #{destination}"
+			ui.debug "package: #{source} -> #{destination}"
 
 			-- XXX: We need to be more cautious about
 			--      permissions here.
@@ -119,10 +119,10 @@ Class
 				fs.mkdir destination\gsub "/[^/]*$", ""
 				os.execute "mv '#{source}' '#{destination}'"
 
-	-- Checks that the split has the files it’s supposed to have in .files.
+	-- Checks that the package has the files it’s supposed to have in .files.
 	package: (module) =>
 		if @.automatic and not @\hasFiles!
-			ui.debug "Not building automatic split: #{@name}"
+			ui.debug "Not building automatic package: #{@name}"
 
 			return
 
@@ -152,7 +152,7 @@ Class
 
 	__tostring: =>
 		if @version
-			"<pkgxx:Split: #{@name}-#{@version}-#{@release}>"
+			"<pkgxx:Package: #{@name}-#{@version}-#{@release}>"
 		else
-			"<pkgxx:Split: #{@name}-[devel]-#{@release}>"
+			"<pkgxx:Package: #{@name}-[devel]-#{@release}>"
 

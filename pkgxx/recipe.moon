@@ -1,10 +1,10 @@
 
----
+--- Operations and data on single recipes.
+--
+-- It is useful to know that a Recipe can generate multiple packages.
+--
 -- @classmod Recipe
---
--- Operations and data on a recipe.
---
--- @see Split
+-- @see Package
 -- @see Context
 ---
 
@@ -16,7 +16,7 @@ macro = require "pkgxx.macro"
 sources = require "pkgxx.sources"
 
 Atom = require "pkgxx.atom"
-Split = require "pkgxx.split"
+Package = require "pkgxx.package"
 
 macroList = =>
 	l = {
@@ -56,7 +56,12 @@ class
 	--
 	-- @see Context
 	new: (filename, context) =>
+		--- Context in which the Recipe has been created.
+		-- @attribute context
 		@context = context
+
+		--- Name of the file from which the recipe has been generated.
+		-- @attribute filename
 		@filename = filename
 
 		file, reason = io.open filename, "r"
@@ -75,16 +80,36 @@ class
 
 		recipe = macro.parse recipe, macroList @
 
+		--- Name of the recipe.
+		-- @attribute name
 		@name = recipe.name
+		--- Version of the software to be packaged.
+		-- @attribute version
 		@version = recipe.version
-		@release = recipe.release
+		--- Version of the recipe itself.
+		--
+		-- The `release` attribute should always be incremented when the recipe is updated.
+		--
+		-- @attribute release
+		@release = recipe.release or 1
 
+		--- The person who wrote the recipe.
+		-- @attribute packager
 		@packager = recipe.packager
+		--- The person who updates and maintains the recipe.
+		-- Defaults to `@packager`.
+		-- @attribute maintainer
 		@maintainer = recipe.maintainer or @packager
+		--- Homepage of the packaged project.
+		-- @attribute url
 		@url = recipe.url
 
-		@release = @release or 1
+		--- Metadata to check automagically if the recipe is out of date.
+		-- @attribute watch
 
+		--- @fixme Should have its own class and do its own checks.
+
+		--- @fixme Is relatively easy to test… and yet has no test.
 		@watch = recipe.watch
 		if @watch
 			@watch.url = @watch.url or @url
@@ -93,6 +118,11 @@ class
 				ui.warning "No selector in [watch]. Removing watch."
 				@watch = nil
 
+		--- Describes the name of the directory in which the main sources are stored.
+		-- This value might be used by modules to configure their build process.
+		-- Defaults to `"#{@name}-#{@version}"` if `@version` exists.
+		-- Defaults to `@name` otherwise.
+		-- @attribute dirname
 		@dirname = recipe.dirname
 		unless @dirname
 			if @version
@@ -100,19 +130,49 @@ class
 			else
 				@dirname = recipe.name
 
+		--- Architecture the packages will be built for.
+		-- @attribute architecture
+
+		--- @fixme Will be removed from Recipe. Recipes having an architecture makes no sense.
 		@architecture = @context.architecture
+
+		--- List of sources linked to the recipe.
+		-- @see Source
+		-- @attribute sources
 		@sources = sources.parseAll recipe
 
+		--- Instructions to build the software.
+		-- Contains three fields: `configure`, `build` and `install`.
+		-- @attribute buildInstructions
+
+		--- @fixme Each field should be its own instance of the same, common class, and that class should have its own checks.
 		bs = recipe["build-system"]
 		@buildInstructions =
 			configure: recipe.configure or bs,
 			build: recipe.build or bs,
 			install: recipe.install or bs
+
+		--- A list of Atoms describing the recipe’s build-time dependencies.
+		-- @see Atom
+		-- @attribute buildDependencies
 		@buildDependencies = {}
 		for string in *(recipe.buildDependencies or {})
 			table.insert @buildDependencies, Atom string
 
-		if not @watch
+		--- The source upon which the recipe is built.
+		-- @attribute recipe
+		@recipe = recipe --- @fixme That field should be unavailable.
+		--- Attributes of the recipe’s file.
+		-- attribute recipeAttributes
+		@recipeAttributes = fs.attributes filename --- @fixme That field should be unavailable.
+
+		--- Packages described by the recipe.
+		-- @attribute packages
+		@packages = @\parsePackages recipe
+
+		-- @watch guess.
+		-- Is done very long after the possible static definition of watch because
+		unless @watch
 			for _, module in pairs context.modules
 				if module.watch
 					with watch = module.watch @
@@ -120,25 +180,27 @@ class
 							-- FIXME: Maybe we could do some additionnal checks.
 							@watch = watch
 
-		@recipe = recipe -- FIXME: We shouldn’t depend on this.
-		@recipeAttributes = fs.attributes filename
+		--- Class of the recipe.
+		-- @attribute class
+		-- @see Package.class
 
-		-- FIXME: sort by name or something.
-		@splits = @\parseSplits recipe
-
-		-- Per-split classes were defined in parseSplits.
+		--- @fixme Will be removed from Recipe. Recipes having a class makes no sense.
 		@class or= @\guessClass!
 
 		@\applyDistributionRules recipe
 
-		-- Importing splits’ dependencies in the build-deps.
-		for split in *@splits
-			for atom in *split.dependencies
+		-- Importing packages’ dependencies in the build-deps.
+		for package in *@packages
+			for atom in *package.dependencies
 				if not has atom, @buildDependencies
 					@buildDependencies[#@buildDependencies+1] = atom
 
+		--- Options with which to build the package.
+		-- See the various postBuild modules for specific entries to add to the `.options` field.
+		-- @attribute options
+
 		-- FIXME: Broken since Atom exist.
-		for package in *@splits
+		for package in *@packages
 			if @context.collection
 				package.name = @context.collection ..
 					"-" .. package.name
@@ -175,58 +237,58 @@ class
 			ui.error "Could not set targets. Wrong package manager module?"
 			return nil
 
-		for split in *@splits
-			split.target = module.package.target split
+		for package in *@packages
+			package.target = module.package.target package
 
-		@target = @splits[1].target
+		@target = @packages[1].target
 
 	---
 	-- Lists the filenames and packages this recipe defines.
-	-- @return Iterator(filename, Split)
-	-- @see Split
+	-- @return Iterator(filename, Package)
+	-- @see Package
 	getTargets: =>
 		i = 1
 
 		return ->
 			i = i + 1
 
-			if i - 1 <= #@splits
-				split = @splits[i - 1]
+			if i - 1 <= #@packages
+				package = @packages[i - 1]
 
-				return split.target, split
+				return package.target, package
 
 	getLogFile: =>
 		"#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
 
-	parseSplits: (recipe) =>
-		splits = {}
+	parsePackages: (recipe) =>
+		packages = {}
 
-		splits[1] = Split
+		packages[1] = Package
 			origin: @
 
-		splits[1]\applyDiff recipe
+		packages[1]\applyDiff recipe
 
 		if recipe.splits
-			for splitName, data in pairs recipe.splits
-				-- Splits will need much more data than this.
-				-- FIXME: Split!? Target!?
-				split = Split
-					name: splitName
+			for packageName, data in pairs recipe.packages
+				-- Packages will need much more data than this.
+				-- FIXME: Package!? Target!?
+				package = Package
+					name: packageName
 					origin: @
 					os: data.os
 					files: data.files
 
-				split\applyDiff data
+				package\applyDiff data
 
-				split.class = split.class or split\guessClass!
+				package.class = package.class or package\guessClass!
 
-				splits[#splits+1] = split
+				packages[#packages+1] = package
 
-		splits
+		packages
 
 	applyDistributionDiffs: (recipe, distribution) =>
 		if recipe.os and recipe.os[distribution]
-			@splits[1]\applyDiff recipe.os[distribution]
+			@packages[1]\applyDiff recipe.os[distribution]
 
 	applyDistributionRules: (recipe) =>
 		distribution = @context.distribution
@@ -237,40 +299,40 @@ class
 		if module.alterRecipe
 			module.alterRecipe self, recipe
 
-		for split in *@splits
-			os = split.os
+		for package in *@packages
+			os = package.os
 
 			if os and os[distribution]
-				split\applyDiff os[distribution]
+				package\applyDiff os[distribution]
 
 		if module
 			ui.debug "Distribution: #{module.name}"
 
 			if module.autosplits
 				ui.debug "Trying module '#{module.name}'."
-				newSplits = module.autosplits @
-				newSplits = macro.parse newSplits, macroList @
+				newPackages = module.autosplits @
+				newPackages = macro.parse newPackages, macroList @
 
-				for split in *@\parseSplits splits: newSplits
-					ui.debug "Registering automatic split: #{split.name}."
+				for package in *@\parsePackages splits: newPackages
+					ui.debug "Registering automatic package: #{package.name}."
 
-					if not @\hasSplit split.name
-						split.automatic = true
-						@splits[#@splits+1] = split
+					if not @\hasPackage package.name
+						package.automatic = true
+						@packages[#@packages+1] = package
 					else
-						ui.debug " ... split already exists."
+						ui.debug " ... package already exists."
 		else
 			ui.warning "No module found for this distribution: " ..
 				"'#{distribution}'."
 			ui.warning "Your package is unlikely to comply to " ..
 				"your OS’ packaging guidelines."
 
-	guessClass: (split) ->
-		if split.name\match "-doc$"
+	guessClass: (package) ->
+		if package.name\match "-doc$"
 			"documentation"
-		elseif split.name\match "-dev$" or split.name\match "-devel$"
+		elseif package.name\match "-dev$" or package.name\match "-devel$"
 			"headers"
-		elseif split.name\match "^lib"
+		elseif package.name\match "^lib"
 			"library"
 		else
 			"binary"
@@ -283,9 +345,9 @@ class
 			if e and not r
 				error e, 0
 
-	hasSplit: (name) =>
-		for split in *@splits
-			if split.name == name
+	hasPackage: (name) =>
+		for package in *@packages
+			if package.name == name
 				return true
 
 	postBuildHooks: =>
@@ -308,7 +370,7 @@ class
 	-- Checks whether the recipe’s packages need updating or rebuilding.
 	-- @return Boolean.
 	buildNeeded: =>
-		for self in *self.splits
+		for self in *self.packages
 			if self.automatic
 				continue
 
@@ -392,8 +454,8 @@ class
 		fs.mkdir @\buildingDirectory!
 		fs.mkdir @\packagingDirectory!
 
-		for split in *@splits
-			fs.mkdir @\packagingDirectory split.name
+		for package in *@packages
+			fs.mkdir @\packagingDirectory package.name
 
 	extract: =>
 		ui.info "Extracting…"
@@ -498,19 +560,19 @@ class
 		true
 
 	split: =>
-		for split in *@splits
-			if split.files
-				if split.automatic and not split\hasFiles!
-					ui.debug "No file detected for #{split.name}. Ignoring."
+		for package in *@packages
+			if package.files
+				if package.automatic and not package\hasFiles!
+					ui.debug "No file detected for #{package.name}. Ignoring."
 					continue
 
-				split\moveFiles!
+				package\moveFiles!
 
 		-- FIXME: A bit hacky. We need packaging directories and fake roots
 		--        to be different.
-		fs.remove @\packagingDirectory @splits[1].name
+		fs.remove @\packagingDirectory @packages[1].name
 		fs.execute @, "mv '#{@\packagingDirectory!}' " ..
-			"'#{@\packagingDirectory @splits[1].name}'"
+			"'#{@\packagingDirectory @packages[1].name}'"
 
 	---
 	-- Creates packages from the built software.
@@ -521,8 +583,8 @@ class
 		module = @context.modules[@context.packageManager]
 
 		if module.package
-			for split in *@splits
-				split\package module
+			for package in *@packages
+				package\package module
 		else
 			-- Should NOT happen.
 			error "No module is available for the package manager "..
@@ -581,8 +643,8 @@ class
 					ui.warning "unusable 'watch', needs a selector, " ..
 						"lasttar or execute field"
 
-		for split in *@splits
-			with self = split
+		for package in *@packages
+			with self = package
 				ui.detail @name
 				unless @summary
 					ui.warning "no 'summary' field"

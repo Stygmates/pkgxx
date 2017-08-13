@@ -170,8 +170,8 @@ class
 		-- @attribute packages
 		@packages = @\parsePackages recipe
 
-		-- @watch guess.
-		-- Is done very long after the possible static definition of watch because
+		-- self.watch guess.
+		-- Is done very long after the possible static definition of watch because modules may need to have access to other values.
 		unless @watch
 			for _, module in pairs context.modules
 				if module.watch

@@ -96,3 +96,11 @@ dependencies = ["zlib"]
 build-dependencies = ["zlib-devel"]
 ```
 
+## Dependencies
+
+  - [Moonscript](https://moonscript.org/)
+  - [lua-toml](https://github.com/jonstoler/lua-toml)
+  - [lua-argparse](https://github.com/mpeterv/argparse)
+  - [luafilesystem](https://github.com/keplerproject/luafilesystem)
+  - [build.zsh](https://github.com/Lukc/build.zsh)
+

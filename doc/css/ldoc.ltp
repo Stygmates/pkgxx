@@ -126,7 +126,7 @@
 		<table class="table is-fullwidth function_list">
 #  for item in items() do
 			<tr>
-				<td class="name $(nowrap)"><a href="#$(item.name)">$(display_name(item))</a></td>
+				<td class="name $(nowrap)"><a href="#$(no_spaces(item.name))">$(display_name(item))</a></td>
 				<td class="summary">$(M(item.summary,item))</td>
 			</tr>
 #  end -- for items

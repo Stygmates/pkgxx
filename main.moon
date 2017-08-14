@@ -1,5 +1,10 @@
 #!/usr/bin/env moon
 
+---
+-- pkgxx’ executable
+-- @script pkgxx
+---
+
 toml = require "toml"
 argparse = require "argparse"
 

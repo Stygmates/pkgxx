@@ -50,7 +50,7 @@ has = (e, t) ->
 class
 	--- Throws errors when the file cannot be opened or parsed.
 	--
-	-- @param context pkgxx Context in which to import the recipe.
+	-- @tparam Context context pkgxx Context in which to import the recipe.
 	--
 	-- @see Context
 	new: (context) =>
@@ -249,7 +249,7 @@ class
 
 	---
 	-- Lists the filenames and packages this recipe defines.
-	-- @return Iterator(filename, Package)
+	-- @treturn function Iterator over the pairs of filename and Package defined by the Recipe.
 	-- @see Package
 	getTargets: =>
 		i = 1
@@ -373,7 +373,7 @@ class
 
 	---
 	-- Checks whether the recipe’s packages need updating or rebuilding.
-	-- @return Boolean.
+	-- @treturn boolean Build status.
 	buildNeeded: =>
 		for self in *self.packages
 			if self.automatic
@@ -407,7 +407,7 @@ class
 
 	---
 	-- Installs a package by name.
-	-- @param name Name of the package to install.
+	-- @tparam string name Name of the package to install.
 	installDependency: (name) =>
 		-- @fixme Should probably be in Context. =/
 		module = @context.modules[@context.dependenciesManager]
@@ -422,7 +422,7 @@ class
 	---
 	-- Downloads the recipe’s sources.
 	--
-	-- @return Boolean indicating whether or not the downloads succeeded.
+	-- @treturn boolean Boolean indicating whether or not the downloads succeeded.
 	download: =>
 		ui.info "Downloading…"
 
@@ -484,7 +484,7 @@ class
 	-- Used internally by @\build.
 	--
 	-- @param name The name of the “recipe function” to execute.
-	-- @see build
+	-- @see Recipe\build
 	execute: (name, critical) =>
 		ui.debug "Executing '#{name}'."
 
@@ -537,6 +537,7 @@ class
 	-- This method does not build the packages themselves.
 	--
 	-- @see Package
+	-- @see Recipe\package
 	build: =>
 		@\prepareBuild!
 
@@ -581,6 +582,7 @@ class
 
 	---
 	-- Creates packages from the built software.
+	-- @see Recipe\build
 	package: =>
 		ui.info "Packaging…"
 		@\split!
@@ -673,7 +675,7 @@ class
 	--
 	-- It may need access to recent sources to do so.
 	--
-	-- @see download
+	-- @see Recipe\download
 	isUpToDate: =>
 		if @watch
 			local p

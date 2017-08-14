@@ -1,11 +1,10 @@
 
----
--- @classmod Context
---
--- pkgxx’ main class.
+--- pkgxx’ main class.
 --
 -- The Context is a shared environment in which packages are built with
 -- a specific configuration and for a given package manager.
+--
+-- @classmod Context
 ---
 
 moonscript = require "moonscript"

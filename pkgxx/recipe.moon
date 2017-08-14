@@ -48,18 +48,20 @@ has = (e, t) ->
 			return true
 
 class
-	---
-	-- Throws errors when the file cannot be opened or parsed.
+	--- Throws errors when the file cannot be opened or parsed.
 	--
-	-- @param filename Filename of the recipe to parse.
 	-- @param context pkgxx Context in which to import the recipe.
 	--
 	-- @see Context
-	new: (filename, context) =>
+	new: (context) =>
 		--- Context in which the Recipe has been created.
 		-- @attribute context
 		@context = context
 
+	--- Imports a recipe’s data from a package.toml file.
+	--
+	-- @param filename Filename of the recipe to parse.
+	importTOML: (filename) =>
 		--- Name of the file from which the recipe has been generated.
 		-- @attribute filename
 		@filename = filename
@@ -173,7 +175,7 @@ class
 		-- self.watch guess.
 		-- Is done very long after the possible static definition of watch because modules may need to have access to other values.
 		unless @watch
-			for _, module in pairs context.modules
+			for _, module in pairs @context.modules
 				if module.watch
 					with watch = module.watch @
 						if watch
@@ -217,6 +219,9 @@ class
 						package[list][index] = @context.collection ..
 							"-" .. name
 
+	---
+	-- Finalizes a recipe and makes it ready for use.
+	finalize: =>
 		@\setTargets!
 
 		@\checkRecipe!

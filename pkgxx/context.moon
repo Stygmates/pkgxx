@@ -179,11 +179,20 @@ class
 					@repositoryManager = nil
 
 	---
+	-- Creates an empty Recipe object.
+	-- @see Recipe
+	newRecipe: =>
+			Recipe @
+
+	---
 	-- Creates a Recipe object from a package.toml file.
+	-- THIS METHOD IS DEPRECATED
 	-- @param filename Filename of the package.toml to parse into a Recipe.
 	-- @see Recipe
 	openRecipe: (filename) =>
-		Recipe (filename or "package.toml"), @
+		with @\newRecipe @
+			\importTOML (filename or "package.toml")
+			\finalize!
 
 	---
 	-- Asks the package manager whether a given package Atom is installed.

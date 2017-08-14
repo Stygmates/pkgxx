@@ -13,7 +13,7 @@
 	<div class="navbar-brand">
 		<a class="navbar-item" href="">
 			<img src="https://lukc.upyum.com/pkgxx/old/pkgxx.svg"/>
-			<h1 class="title">$(ldoc.project)</h1>
+			<h1 class="title is-1">$(ldoc.project)</h1>
 		</a>
 	</div>
 	<div class="navbar-menu">
@@ -348,8 +348,8 @@
 # else -- if module; project-level contents
 
 # if ldoc.description then
-	<h1 class="title">$(ldoc.project)</h1>
-	<h2 class="subtitle">$(M(ldoc.description,nil))</h2>
+	<h1 class="title is-1">$(ldoc.project)</h1>
+	<h2 class="subtitle is-3">$(M(ldoc.description,nil))</h2>
 # end
 # if ldoc.full_description then
 	<p class="content">$(M(ldoc.full_description,nil))</p>

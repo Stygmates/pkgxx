@@ -71,8 +71,8 @@ class
 
 		recipe, reason = toml.parse (file\read "*all"), {strict: false}
 
-        unless recipe
-            error reason, 0
+		unless recipe
+			error reason, 0
 
 		swapKeys recipe, "build-dependencies", "buildDependencies"
 

@@ -50,8 +50,18 @@ Atom = require "pkgxx.atom"
 -- The recipe’s first package will have an empty list of files, as it will take any file not taken by another package.
 -- @attribute files
 
+---
+-- Constructor.
+--
+-- @function __init
+-- @tparam table arg
+-- @tparam Recipe arg.origin
+-- @tparam string arg.name
+-- @tparam table  arg.files
+-- @tparam string arg.files.1
 Class
-	new: (arg) =>
+	__init: (arg) =>
+		--- @fixme Constructor’s documentation is in the wrong place because LDoc is broken.
 		@origin = arg.origin
 		@name = arg.name
 
@@ -68,63 +78,62 @@ Class
 	---
 	-- Imports values from another object.
 	--
-	-- @tparam table     diff A list of named parameters.
-	-- @tparam string    diff.name New name of the package.
-	-- @tparam string    diff.version Version of the packaged software.
-	-- @tparam integer   diff.release Version of the package.
-	-- @tparam table     diff.dependencies A list of Atoms representing the package’s dependencies.
-	-- @tparam Atom      diff.dependencies.1
-	-- @tparam table     diff.conflicts A list of conflicts for this package.
-	-- @tparam Atom      diff.conflicts.1
-	-- @tparam table     diff.provides A list of virtual packages provided.
-	-- @tparam Atom      diff.provides.1
-	-- @tparam table     diff.buildDependencies A list of build-time dependencies needed for this package and its recipe.
-	-- @tparam Atom      diff.buildDependencies.1
-	-- @tparam table     diff.groups Legacy option for old RPMs.
-	-- @tparam string    diff.groups.1
-	-- @tparam table     diff.options A list of options to pass to pkgxx modules.
-	-- @tparam string    diff.summary Short description of the packaged software.
-	-- @tparam string    diff.description Long description of the packaged software.
-	-- @tparam string    diff.license License of the packaged software.
-	-- @tparam string    diff.copyright One-line copyright statement to generate debian/copyright.
-	-- @tparam string    diff.class Package class.
-	applyDiff: (diff) =>
-		--- @warning That method will be renamed. That whole “diff” concept is somewhat broken ATM.
-		if diff.name
-			@name = diff.name
-		if diff.version
-			@version = diff.version
-		if diff.release
-			@release = diff.release
+	-- @tparam table     data A list of named parameters.
+	-- @tparam string    data.name New name of the package.
+	-- @tparam string    data.version Version of the packaged software.
+	-- @tparam integer   data.release Version of the package.
+	-- @tparam table     data.dependencies A list of Atoms representing the package’s dependencies.
+	-- @tparam Atom      data.dependencies.1
+	-- @tparam table     data.conflicts A list of conflicts for this package.
+	-- @tparam Atom      data.conflicts.1
+	-- @tparam table     data.provides A list of virtual packages provided.
+	-- @tparam Atom      data.provides.1
+	-- @tparam table     data.buildDependencies A list of build-time dependencies needed for this package and its recipe.
+	-- @tparam Atom      data.buildDependencies.1
+	-- @tparam table     data.groups Legacy option for old RPMs.
+	-- @tparam string    data.groups.1
+	-- @tparam table     data.options A list of options to pass to pkgxx modules.
+	-- @tparam string    data.summary Short description of the packaged software.
+	-- @tparam string    data.description Long description of the packaged software.
+	-- @tparam string    data.license License of the packaged software.
+	-- @tparam string    data.copyright One-line copyright statement to generate debian/copyright.
+	-- @tparam string    data.class Package class.
+	import: (data) =>
+		if data.name
+			@name = data.name
+		if data.version
+			@version = data.version
+		if data.release
+			@release = data.release
 
 		for variable in *{"dependencies", "conflicts", "provides"}
-			if diff[variable]
+			if data[variable]
 				@[variable] = {}
 
-				for string in *diff[variable]
+				for string in *data[variable]
 					table.insert @[variable], Atom string
 
-		if diff.buildDependencies
-			for string in *diff.buildDependencies
+		if data.buildDependencies
+			for string in *data.buildDependencies
 				table.insert @origin.buildDependencies, Atom string
 
-		if diff.groups
-			@groups = diff.groups
-		if diff.options
-			@options = diff.options
+		if data.groups
+			@groups = data.groups
+		if data.options
+			@options = data.options
 
-		if diff.summary
-			@summary = diff.summary
-		if diff.description
-			@description = diff.description
+		if data.summary
+			@summary = data.summary
+		if data.description
+			@description = data.description
 
-		if diff.license
-			@license = diff.license
-		if diff.copyright
-			@copyright = diff.copyright
+		if data.license
+			@license = data.license
+		if data.copyright
+			@copyright = data.copyright
 
-		if diff.class
-			@class = diff.class
+		if data.class
+			@class = data.class
 
 	applyDistributionRules: (recipe) =>
 		distribution = @context.distribution
@@ -157,7 +166,7 @@ Class
 			os = package.os
 
 			if os and os[distribution]
-				@@.applyDiff package, os[distribution]
+				@@.import package, os[distribution]
 
 	moveFiles: =>
 		ui.detail "Packageting '#{@name}'."
@@ -226,7 +235,7 @@ Class
 	-- @tparam variable key
 	__index: (key) =>
 		-- The order is: package data, class, recipe data
-		(rawget @, key) or @__class[key] or @origin[key]
+		rawget(@, key) or getmetatable(self)[key] or rawget(self, "origin")[key]
 
 	---
 	-- Package can be transformed to a string for debug operations.

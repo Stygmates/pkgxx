@@ -121,10 +121,20 @@
 # if not ldoc.no_summary then
 # -- bang out the tables of item types for this module (e.g Functions, Tables, etc)
 # for kind,items in module.kinds() do
+#  if kind ~= "Issues" then
 	<nav>
 		<h2 class="title is-2">$(kind)</h2>
 		<table class="table is-fullwidth function_list">
-#  for item in items() do
+#   for item in items() do
+#    if kind == "Issues" then
+#     item.name = item.name:gsub('^.*%.', '.')
+#    elseif kind == "Attributes" then
+#     item.name = item.name:gsub('^.*%.', '.')
+#    elseif kind == "Methods" then
+#     item.name = item.name:gsub('^.*\\', '\\')
+#    elseif kind == "Metamethods" then
+#     item.name = item.name:gsub('^.*\\', '')
+#    end
 			<tr>
 				<td class="name $(nowrap)"><a href="#$(no_spaces(item.name))">$(display_name(item))</a></td>
 				<td class="summary">$(M(item.summary,item))</td>
@@ -132,6 +142,7 @@
 #  end -- for items
 		</table>
 	</nav>
+#   end -- if not Issues
 #end -- for kinds
 
 #end -- if not no_summary
@@ -145,6 +156,7 @@
 # for kind, items in module.kinds() do
 #   local kitem = module.kinds:get_item(kind)
 #   local has_description = kitem and ldoc.descript(kitem) ~= ""
+#   if kind ~= "Issues" then
 <section class="section">
 	<h2 class="title is-2 section-header $(has_description and 'has-description')" id="$(no_spaces(kind))">
 		$(kind)
@@ -166,11 +178,7 @@
 #   end
 	<dl class="function">
 #  for item in items() do
-#   if kind == "Issues" then
-		<div class="card has-text-danger">
-#   else
 		<div class="card">
-#   end
 			<dt class="card-header" id="$(no_spaces(item.name))">
 				<div class="card-header-title">
 				<h3 class="title is-4">
@@ -316,11 +324,41 @@
 				$(M(item.raise,item))
 #   end
 
+# for kind, items in module.kinds() do
+#  if kind == "Issues" then
+#   for issue in items() do
+#    local name = issue.name:gsub("^.*%.", ".")
+#    local class = "danger"
+#    if name:match("^" .. item.name) then
+#     if name:match("warning[0-9]*$") then
+#      class = "warning"
+#     elseif name:match("todo[0-9]*$") then
+#      class = "info"
+#     end
+				<div class="message is-$(class)">
+					<div class="message-body">
+						$(issue.summary)
+					</div>
+				</div>
+#    end
+#   end
+#  end
+# end
+
 #   if item.see then
 #     local li,il = use_li(item.see)
 				<p class="menu-label">See also:</p>
 				<table class="table is-fullwidth">
 #     for see in iter(item.see) do
+#      local shortLabel = see.label:gsub('^.*[\\.]', '')
+#      for kind, items in module.kinds() do
+#       for item in items() do
+#        if item.name:match("^." .. shortLabel) then
+#         see.name = item.name:match("^." .. shortLabel)
+#         see.label = item.name:match("^." .. shortLabel)
+#        end
+#       end
+#      end
 					<tr>
 						<td class="name">
 							<a href="$(ldoc.href(see))">$(see.label)</a>
@@ -353,6 +391,7 @@
 # end -- for items
 	</dl>
 </section>
+#  end
 # end -- for kinds
 
 # else -- if module; project-level contents
@@ -394,6 +433,16 @@
 						</div>
 						<div class="title">
 							<a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a>
+						</div>
+					</div>
+				</div>
+				<div class="level-item has-text-centered">
+					<div>
+						<div class="heading">
+							Helped by
+						</div>
+						<div class="title">
+							<a href="https://bulma.io/">Bulma 0.5.1</a>
 						</div>
 					</div>
 				</div>

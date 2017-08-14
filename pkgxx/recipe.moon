@@ -266,7 +266,7 @@ class
 		packages[1] = Package
 			origin: @
 
-		packages[1]\applyDiff recipe
+		packages[1]\import recipe
 
 		if recipe.splits
 			for packageName, data in pairs recipe.packages
@@ -278,7 +278,7 @@ class
 					os: data.os
 					files: data.files
 
-				package\applyDiff data
+				package\import data
 
 				package.class = package.class or package\guessClass!
 
@@ -288,7 +288,7 @@ class
 
 	applyDistributionDiffs: (recipe, distribution) =>
 		if recipe.os and recipe.os[distribution]
-			@packages[1]\applyDiff recipe.os[distribution]
+			@packages[1]\import recipe.os[distribution]
 
 	applyDistributionRules: (recipe) =>
 		distribution = @context.distribution
@@ -303,7 +303,7 @@ class
 			os = package.os
 
 			if os and os[distribution]
-				package\applyDiff os[distribution]
+				package\import os[distribution]
 
 		if module
 			ui.debug "Distribution: #{module.name}"

@@ -39,3 +39,25 @@ pre .preprocessor, pre .prepro { color: #a33243; }
 pre .global { color: #800080; }
 pre .prompt { color: #558817; }
 pre .url { color: #272fc2; text-decoration: underline; }
+
+/* Compensating Bulma. */
+.number{
+	-webkit-box-align: inherit;
+	-ms-flex-align: inherit;
+	align-items: inherit;
+	background-color: inherit;
+	border-radius: inherit;
+	display: inline;
+	display: inline;
+	display: inline;
+	font-size: inherit;
+	height: inherit;
+	-webkit-box-pack: inherit;
+	-ms-flex-pack: inherit;
+	justify-content: inherit;
+	margin-right: inherit;
+	min-width: inherit;
+	padding: inherit;
+	text-align: inherit;
+	vertical-align: inherit;
+}

@@ -6,6 +6,7 @@
 -- @classmod Recipe
 -- @see Package
 -- @see Context
+-- @see Atom
 ---
 
 toml = require "toml"

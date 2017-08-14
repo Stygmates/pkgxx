@@ -216,11 +216,6 @@
 				<ul>
 #   for parm in iter(item.params) do
 #     local param,sublist = item:subparam(parm)
-#     if sublist then
-				<li>
-				<span class="parameter">$(sublist)</span>$(M(item.params.map[sublist],item))
-				<ul>
-#     end
 				<table class="table is-fullwidth">
 					<thead>
 						<th>Type</th>
@@ -229,6 +224,19 @@
 						<th></th>
 					</thead>
 					<tbody>
+#     if sublist then
+					<tr>
+						<td class="types">
+							$(ldoc.typename(item:type_of_param(sublist)))
+						</td>
+						<td class="parameter">
+							$(sublist)
+						</td>
+						<td class="description">
+							$(M(item.params.map[sublist], item))
+						</td>
+					</tr>
+#     end
 #     for p in iter(param) do
 #        local name,tp,def = item:display_name_of(p), ldoc.typename(item:type_of_param(p)), item:default_of_param(p)
 					<tr>
@@ -237,7 +245,13 @@
 							$(tp)
 #       end
 						</td>
-						<td class="parameter"><strong>$(name)</strong></td>
+						<td class="parameter">
+#     if sublist then
+							<span class="sublist">$(sublist)</span><span class="sublist-separator">.</span><strong>$(name)</strong>
+#     else
+							<strong>$(name)</strong>
+#     end
+						</td>
 						<td class="description">
 					        $(M(item.params.map[p],item))
 						</td>
@@ -255,10 +269,6 @@
 #     end
 					</tbody>
 				</table>
-#     if sublist then
-				</li>
-				</ul>
-#     end
 #   end -- for
 				</ul>
 #   end -- if params

@@ -132,12 +132,6 @@ class
 			else
 				@dirname = recipe.name
 
-		--- Architecture the packages will be built for.
-		-- @attribute architecture
-
-		--- @fixme Will be removed from Recipe. Recipes having an architecture makes no sense.
-		@architecture = @context.architecture
-
 		--- List of sources linked to the recipe.
 		-- @see Source
 		-- @attribute sources

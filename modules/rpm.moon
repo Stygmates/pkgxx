@@ -55,7 +55,7 @@ writeSpec = (f) =>
 
 -- FIXME: We need the list of RPM architectures.
 rpmArch = =>
-	arch = @architecture
+	arch = @context.architecture
 	if @hasOption "no-arch"
 		arch = "noarch"
 

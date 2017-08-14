@@ -17,7 +17,7 @@ debarch = =>
 	if @hasOption and @hasOption "no-arch"
 		"all"
 	else
-		switch @architecture
+		switch @context.architecture
 			when "x86_64"
 				"amd64"
 			else
@@ -100,7 +100,7 @@ buildDeb = =>
 			arch = if @hasOption "no-arch"
 				"all"
 			else
-				@architecture
+				@context.architecture
 
 			"#{@name\gsub "_", "-"}_#{@version}-#{@release}" ..
 				"_#{arch}.deb"

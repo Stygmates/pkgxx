@@ -49,10 +49,13 @@ has = (e, t) ->
 			return true
 
 class
-	--- Throws errors when the file cannot be opened or parsed.
+	--- Recipe constructor, that’s meant to be used privately only.
+	--
+	-- Throws errors when the file cannot be opened or parsed.
 	--
 	-- @tparam Context context pkgxx Context in which to import the recipe.
 	--
+	-- @see Context.newRecipe
 	-- @see Context
 	new: (context) =>
 		--- Context in which the Recipe has been created.

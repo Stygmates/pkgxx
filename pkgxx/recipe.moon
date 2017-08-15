@@ -162,8 +162,9 @@ class
 		--- The source upon which the recipe is built.
 		-- @attribute recipe
 		@recipe = recipe --- @fixme That field should be unavailable.
+
 		--- Attributes of the recipe’s file.
-		-- attribute recipeAttributes
+		-- @attribute recipeAttributes
 		@recipeAttributes = fs.attributes filename --- @fixme That field should be unavailable.
 
 		--- Packages described by the recipe.

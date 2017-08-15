@@ -333,14 +333,21 @@
 #   for issue in items() do
 #    local name = issue.name:gsub("^.*%.", ".")
 #    local class = "danger"
-#    if name:match("^" .. item.name) then
+#    local className = "Code defect"
+#    -- May start by '.' or '\\'.
+#    if name:match("^." .. item.name:sub(2, #item.name) .. "%-") then
 #     if name:match("warning[0-9]*$") then
 #      class = "warning"
+#      className = "Warning"
 #     elseif name:match("todo[0-9]*$") then
 #      class = "info"
+#      className = "Info"
 #     end
-				<div class="message is-$(class)">
-					<div class="message-body">
+				<div class="tags has-addons">
+					<div class="tag is-$(class) is-medium">
+						$(className)
+					</div>
+					<div class="tag is-dark is-medium is-fullwidth">
 						$(issue.summary)
 					</div>
 				</div>

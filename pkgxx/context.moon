@@ -185,10 +185,10 @@ class
 
 	---
 	-- Creates a Recipe object from a package.toml file.
-	-- THIS METHOD IS DEPRECATED
 	-- @param filename Filename of the package.toml to parse into a Recipe.
 	-- @see Recipe
 	openRecipe: (filename) =>
+		--- @warning This method is deprecated.
 		with @\newRecipe @
 			\importTOML (filename or "package.toml")
 			\finalize!
@@ -236,9 +236,8 @@ class
 
 	---
 	-- Closes the context.
-	--
-	-- CAUTION: Doing so removes the context's temporary files.
 	close: =>
+		--- @warning This method removes the context's temporary files.
 		os.execute "rm -rf '#{@buildingDirectory}'"
 
 	__tostring: =>

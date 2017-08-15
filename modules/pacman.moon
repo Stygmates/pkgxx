@@ -46,7 +46,7 @@ pkginfo = (size, f) =>
 		f\write "license = #{@license}\n"
 
 	f\write "size = #{size}\n"
-	f\write "arch = #{@architecture}\n"
+	f\write "arch = #{@context.architecture}\n"
 	f\write "origin = #{@origin.name}\n"
 
 	for group in *@groups
@@ -81,7 +81,7 @@ genPkginfo = (size) =>
 
 	package:
 		target: => "#{@name}-#{@version}-#{@release}-" ..
-				"#{@architecture}.pkg.tar.xz"
+				"#{@context.architecture}.pkg.tar.xz"
 		build: =>
 			unless @context.builder
 				ui.warning "No 'builder' was defined in your configuration!"

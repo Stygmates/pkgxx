@@ -124,11 +124,11 @@ if args.targets
 
 		recipe\updateVersion!
 
-	for target in recipe\getTargets!
+	for target in *recipe.packages
 		if ui.getVerbosity! > 3
-			ui.detail target
+			ui.detail package.target
 		else
-			io.stdout\write target, "\n"
+			io.stdout\write package.target, "\n"
 
 	context\close!
 

@@ -1,5 +1,5 @@
 
-describe "pkgxx.Source", ->
+describe "Source", ->
 	Source = require "pkgxx.source"
 
 	it "parses local Source", ->

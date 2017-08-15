@@ -33,7 +33,7 @@ unpack = unpack or table.unpack
 
 		os.execute "rm -r #{opt} '#{filename}'"
 
-	-- That particular function is hell. Please add debuggings stuff
+	-- That particular function is hell. Please add debugging stuff
 	-- to it.
 	changeDirectory: (newDir, f) ->
 		oldDir = lfs.currentdir!

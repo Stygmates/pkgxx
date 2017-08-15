@@ -328,34 +328,6 @@
 				$(M(item.raise,item))
 #   end
 
-# for kind, items in module.kinds() do
-#  if kind == "Issues" then
-#   for issue in items() do
-#    local name = issue.name:gsub("^.*%.", ".")
-#    local class = "danger"
-#    local className = "Code defect"
-#    -- May start by '.' or '\\'.
-#    if name:match("^." .. item.name:sub(2, #item.name) .. "%-") then
-#     if name:match("warning[0-9]*$") then
-#      class = "warning"
-#      className = "Warning"
-#     elseif name:match("todo[0-9]*$") then
-#      class = "info"
-#      className = "Info"
-#     end
-				<div class="tags has-addons">
-					<div class="tag is-$(class) is-medium">
-						$(className)
-					</div>
-					<div class="tag is-dark is-medium is-fullwidth">
-						$(issue.summary)
-					</div>
-				</div>
-#    end
-#   end
-#  end
-# end
-
 #   if item.see then
 #     local li,il = use_li(item.see)
 				<p class="menu-label">See also:</p>
@@ -395,6 +367,34 @@
 #     end -- for
 				</ul>
 #   end -- if usage
+
+# for kind, items in module.kinds() do
+#  if kind == "Issues" then
+#   for issue in items() do
+#    local name = issue.name:gsub("^.*%.", ".")
+#    local class = "danger"
+#    local className = "Code defect"
+#    -- May start by '.' or '\\'.
+#    if name:match("^." .. item.name:sub(2, #item.name) .. "%-") then
+#     if name:match("warning[0-9]*$") then
+#      class = "warning"
+#      className = "Warning"
+#     elseif name:match("todo[0-9]*$") then
+#      class = "info"
+#      className = "Missing feature"
+#     end
+				<div class="tags has-addons">
+					<div class="tag is-$(class) is-medium">
+						$(className)
+					</div>
+					<div class="tag is-dark is-medium is-fullwidth">
+						$(issue.summary)
+					</div>
+				</div>
+#    end
+#   end
+#  end
+# end
 
 			</dd>
 		</div>

@@ -58,6 +58,11 @@ class
 		--- Context in which the Recipe has been created.
 		-- @attribute context
 		@context = context
+		@packages = {
+			Package {
+				origin: self
+			}
+		}
 
 	--- Imports a recipe’s data from a package.toml file.
 	--
@@ -166,26 +171,72 @@ class
 
 		--- Packages described by the recipe.
 		-- @attribute packages
-		@packages = @\parsePackages recipe
+		@packages = @\parsePackages @recipe or self
+
+		@\finalize!
+
+	---
+	-- Adds sources to the Recipe.
+	--
+	-- If the sources are provided as a URL, they will automatically be converted to a Source.
+	-- The arrow notation (url -> filename) is supported if you want or need to name the downloaded file.
+	--
+	-- @tparam string||Source source URL or Source that describes the sources to add.
+	addSource: (source) =>
+		if type(source) == "string"
+			source = Source.fromString source
+
+		@sources or= {}
+
+		for s in *@sources
+			if s.filename == source.filename
+				return nil, "filename already used by another source"
+
+		table.insert @sources, source
+
+		true
+
+	addPackage: (name) =>
+		package = Package {
+			origin: self
+			:name
+		}
+
+		table.insert @packages, package
+
+		package
+
+	---
+	-- Finalizes a recipe and makes it ready for use.
+	--
+	-- All missing or uninitialized attributes will be set to safe values for further operations.
+	--
+	-- Recipes *must* be finalized before calling @{Recipe\build} or @{Recipe\package}.
+	finalize: =>
+		unless @name
+			return nil, "cannot finalize a recipe without @name"
+
+		@release or= 1
+		@sources or= {}
+		@buildDependencies or= {}
 
 		-- self.watch guess.
 		-- Is done very long after the possible static definition of watch because modules may need to have access to other values.
 		unless @watch
 			for _, module in pairs @context.modules
 				if module.watch
-					with watch = module.watch @
+					with watch = module.watch self
 						if watch
 							-- FIXME: Maybe we could do some additionnal checks.
 							@watch = watch
 
 		--- Class of the recipe.
 		-- @attribute class
-		-- @see Package.class
 
 		--- @fixme Will be removed from Recipe. Recipes having a class makes no sense.
 		@class or= @\guessClass!
 
-		@\applyDistributionRules recipe
+		@\applyDistributionRules @recipe or self
 
 		-- Importing packages’ dependencies in the build-deps.
 		for package in *@packages
@@ -215,12 +266,11 @@ class
 						package[list][index] = @context.collection ..
 							"-" .. name
 
-	---
-	-- Finalizes a recipe and makes it ready for use.
-	finalize: =>
 		@\setTargets!
 
 		@\checkRecipe!
+
+		true
 
 	parse: (string) =>
 		parsed = true
@@ -229,9 +279,13 @@ class
 
 		string
 
+	--- @local
+	-- Used internally.
+	--
 	-- Is meant to be usable after package manager or architecture
 	-- changes, avoiding the creation of a new context.
 	setTargets: =>
+		--- @fixme Will be removed.
 		module = @context.modules[@context.packageManager]
 
 		unless module and module.package
@@ -248,6 +302,7 @@ class
 	-- @treturn function Iterator over the pairs of filename and Package defined by the Recipe.
 	-- @see Package
 	getTargets: =>
+		--- @fixme Will be removed. Use `ipairs recipe.packages`.
 		i = 1
 
 		return ->
@@ -297,8 +352,9 @@ class
 
 		@\applyDistributionDiffs recipe, distribution
 
-		if module.alterRecipe
-			module.alterRecipe self, recipe
+		for package in *@packages
+			if module.alterRecipe
+				module.alterRecipe package, recipe
 
 		for package in *@packages
 			os = package.os
@@ -346,7 +402,13 @@ class
 			if e and not r
 				error e, 0
 
+	---
+	-- Checks that a Recipe defines a Package.
+	--
+	-- @tparam string name name of the package.
+	-- @treturn boolean Whether the Recipe contains a Package of a given name or not.
 	hasPackage: (name) =>
+		--- @todo Should also identify Atoms and not just strings.
 		for package in *@packages
 			if package.name == name
 				return true
@@ -534,7 +596,9 @@ class
 	--
 	-- @see Package
 	-- @see Recipe\package
+	-- @see Recipe\finalize
 	build: =>
+		--- @warning \finalize! must have been called first.
 		@\prepareBuild!
 
 		@\extract!
@@ -579,7 +643,9 @@ class
 	---
 	-- Creates packages from the built software.
 	-- @see Recipe\build
+	-- @see Recipe\finalize
 	package: =>
+		--- @warning \finalize! must have been called first.
 		ui.info "Packaging…"
 		@\split!
 

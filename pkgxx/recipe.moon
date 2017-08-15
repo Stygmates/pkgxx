@@ -14,8 +14,8 @@ toml = require "toml"
 ui = require "pkgxx.ui"
 fs = require "pkgxx.fs"
 macro = require "pkgxx.macro"
-sources = require "pkgxx.sources"
 
+Source = require "pkgxx.source"
 Atom = require "pkgxx.atom"
 Package = require "pkgxx.package"
 
@@ -139,7 +139,7 @@ class
 		--- List of sources linked to the recipe.
 		-- @see Source
 		-- @attribute sources
-		@sources = sources.parseAll recipe
+		@sources = Source.fromVariable recipe.sources
 
 		--- Instructions to build the software.
 		-- Contains three fields: `configure`, `build` and `install`.
@@ -425,7 +425,7 @@ class
 		ui.info "Downloading…"
 
 		for source in *@sources
-			if (sources.download source, @context) ~= true
+			if (source\download @context) ~= true
 				return
 
 		true

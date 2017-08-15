@@ -53,5 +53,13 @@ else
 	filename[main]=pkgxx
 fi
 
-dist=(project.zsh Makefile)
+dist=(
+	**/*.moon
+	# Build system.
+	project.zsh Makefile
+	# Documentation.
+	config.ld doc/css/ldoc.{css,ltp}
+	doc/examples/*.moon
+	README.md
+)
 

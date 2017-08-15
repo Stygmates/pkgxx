@@ -75,6 +75,13 @@ Class = setmetatable {},
 
 		unless def.__index
 			def.__index = (key) =>
+				__getters = def.__getters
+				if __getters
+					getter = __getters[key]
+
+					if getter
+						return getter self
+
 				value = rawget self, key
 
 				if value
@@ -84,6 +91,17 @@ Class = setmetatable {},
 
 				if value
 					return value
+
+		unless def.__newindex
+			def.__newindex = (key, value) =>
+				__setters = def.__setters
+				if __setters
+					setter = __setters[key]
+
+					if setter
+						return setter self, value
+
+				rawset self, key, value
 
 		__class = ClassData def, def.__class
 

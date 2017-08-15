@@ -45,7 +45,7 @@ pre .url { color: #272fc2; text-decoration: underline; }
 	-webkit-box-align: inherit;
 	-ms-flex-align: inherit;
 	align-items: inherit;
-	background-color: inherit;
+	background-color: transparent;
 	border-radius: inherit;
 	display: inline;
 	display: inline;
@@ -57,7 +57,7 @@ pre .url { color: #272fc2; text-decoration: underline; }
 	justify-content: inherit;
 	margin-right: inherit;
 	min-width: inherit;
-	padding: inherit;
+	padding: 0;
 	text-align: inherit;
 	vertical-align: inherit;
 }

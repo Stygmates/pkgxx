@@ -74,7 +74,11 @@
 
 	<div class="hero">
 # if ldoc.body then -- verbatim HTML as contents; 'non-code' entries
-	$(ldoc.body)
+		<div class="content">
+			$(ldoc.body)
+		</div>
+	</div>
+</section>
 # elseif module then -- module documentation
 		<h1 class="title is-1">$(ldoc.module_typename(module)) <code>$(module.name)</code></h1>
 		<div class="hero-body">

@@ -7,6 +7,11 @@
 --	pkgxx = require "pkgxx"
 --
 --	context = with pkgxx.newContext!
+--		\loadModules!
+--
+--		.packageManager = "dpkg"
+--		.distribution = "Debian"
+--
 --		.packagesDirectory = os.getenv "HOME"
 --
 --		recipe = with \openRecipe "package.toml"

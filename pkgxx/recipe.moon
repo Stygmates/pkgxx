@@ -18,6 +18,7 @@ macro = require "pkgxx.macro"
 Source = require "pkgxx.source"
 Atom = require "pkgxx.atom"
 Package = require "pkgxx.package"
+Builder = require "pkgxx.builder"
 
 macroList = =>
 	l = {
@@ -61,6 +62,27 @@ class
 		@packages = {
 			Package {
 				origin: self
+			}
+		}
+
+		@buildInstructions = {
+			Builder {
+				name: "configure"
+				critical: false
+				context: @context
+				recipe: self
+			}
+			Builder {
+				name: "build"
+				critical: true
+				context: @context
+				recipe: self
+			}
+			Builder {
+				name: "install"
+				critical: true
+				context: @context
+				recipe: self
 			}
 		}
 
@@ -126,17 +148,7 @@ class
 				ui.warning "No selector in [watch]. Removing watch."
 				@watch = nil
 
-		--- Describes the name of the directory in which the main sources are stored.
-		-- This value might be used by modules to configure their build process.
-		-- Defaults to `"#{@name}-#{@version}"` if `@version` exists.
-		-- Defaults to `@name` otherwise.
-		-- @attribute dirname
 		@dirname = recipe.dirname
-		unless @dirname
-			if @version
-				@dirname = "#{@name}-#{@version}"
-			else
-				@dirname = recipe.name
 
 		--- List of sources linked to the recipe.
 		-- @see Source
@@ -148,11 +160,21 @@ class
 		-- @attribute buildInstructions
 
 		--- @fixme Each field should be its own instance of the same, common class, and that class should have its own checks.
-		bs = recipe["build-system"]
-		@buildInstructions =
-			configure: recipe.configure or bs,
-			build: recipe.build or bs,
-			install: recipe.install or bs
+		do
+			bs = recipe["build-system"]
+			modules = @context.modules
+
+			instructions = (name) ->
+				if modules[recipe[name]]
+					modules[recipe[name]]
+				elseif modules[bs]
+					modules[bs]
+				elseif recipe[name]
+					recipe[name]
+
+			@buildInstructions[1]\setInstructions instructions "configure"
+			@buildInstructions[1]\setInstructions instructions "build"
+			@buildInstructions[1]\setInstructions instructions "install"
 
 		--- A list of Atoms describing the recipe’s build-time dependencies.
 		-- @see Atom
@@ -219,6 +241,16 @@ class
 		@release or= 1
 		@sources or= {}
 		@buildDependencies or= {}
+
+		--- Describes the name of the directory in which the main sources are stored.
+		-- This value might be used by modules to configure their build process.
+		-- Defaults to `"#{@name}-#{@version}"` if `@version` exists.
+		-- Defaults to `@name` otherwise.
+		-- @attribute dirname
+		@dirname or= if @version
+			@dirname = "#{@name}-#{@version}"
+		else
+			@dirname = @name
 
 		-- self.watch guess.
 		-- Is done very long after the possible static definition of watch because modules may need to have access to other values.
@@ -539,57 +571,6 @@ class
 						"#{source.filename}' ./"
 
 	---
-	-- Used internally by @\build.
-	--
-	-- @param name The name of the “recipe function” to execute.
-	-- @see Recipe\build
-	execute: (name, critical) =>
-		ui.debug "Executing '#{name}'."
-
-		if (type @buildInstructions[name]) == "table"
-			code = table.concat @buildInstructions[name], "\n"
-
-			code = "set -x -e\n#{code}"
-
-			if @context.configuration.verbosity < 5
-				logfile = @\getLogFile!
-
-				lf = io.open logfile, "w"
-				if lf
-					lf\close!
-
-				code = "(#{code}) 2>> #{logfile} >> #{logfile}"
-
-			fs.changeDirectory @\buildingDirectory!, ->
-				return os.execute code
-		else
-			@\executeModule name, critical
-
-	executeModule: (name, critical) =>
-		if (type @buildInstructions[name]) == "string"
-			module = @context.modules[@buildInstructions[name]]
-
-			return fs.changeDirectory @\buildingDirectory!, ->
-				module[name] @
-		else
-			testName = "can#{(name\sub 1, 1)\upper!}#{name\sub 2, #name}"
-
-			for _, module in pairs @context.modules
-				if module[name]
-					local finished
-
-					r, e = fs.changeDirectory @\buildingDirectory!, ->
-						if module[testName] @
-							finished = true
-
-							return module[name] @
-
-					if finished
-						return r, e
-
-		return nil, "no suitable module found"
-
-	---
 	-- Builds the recipe.
 	--
 	-- This method does not build the packages themselves.
@@ -605,20 +586,14 @@ class
 
 		ui.info "Building…"
 
-		success, e = @\execute "configure"
-		if not success
-			ui.error "Build failure. Could not configure."
-			return nil, e
+		for step, builder in ipairs @buildInstructions
+			success, e = builder\execute!
 
-		success, e = @\execute "build", true
-		if not success
-			ui.error "Build failure. Could not build."
-			return nil, e
-
-		success, e = @\execute "install"
-		if not success
-			ui.error "Build failure. Could not install."
-			return nil, e
+			if not success
+				if builder.critical
+					return nil, e
+				elseif e
+					ui.warning e
 
 		ui.info "Doing post-build verifications."
 		@\postBuildHooks!

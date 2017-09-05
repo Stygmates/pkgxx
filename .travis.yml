@@ -11,6 +11,9 @@ env:
 
 install:
     - luarocks install moonscript
+    - luarocks install lua-toml
+    - luarocks install argparse
+    - luarocks install luafilesystem
     - luarocks install busted
 
 before_install:

@@ -12,7 +12,6 @@ valueOf = (variable, root, presets) ->
 		ui.warning "Undefined macro: #{variable}"
 		""
 
--- FIXME: Check for circular references.
 parseString = (string, root, presets) ->
 	parsed = true
 
@@ -36,7 +35,6 @@ parseString = (string, root, presets) ->
 
 	string
 
--- FIXME: Works destructively.
 parseHelper = (t, root, presets) ->
 	parsed = true
 
@@ -53,9 +51,12 @@ parseHelper = (t, root, presets) ->
 	parsed
 
 {
+	---
+	-- @warning No check is done for circular references.
 	parseString: (s, b, p) ->
 		parseString s, b, (p or {})
-	-- FIXME: Works destructively.
+	---
+	-- @warning Works destructively.
 	parse: (t, b) ->
 		parseHelper t, t, b
 

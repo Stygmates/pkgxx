@@ -1,14 +1,4 @@
 
---- Package described and built from a Recipe.
---
--- Packages dynamically inherit most of their attributes from their Recipe.
--- As a consequence, a way to easily share values between packages is to put them inside their common Recipe.
---
--- @classmod Package
--- @see Recipe
--- @see Atom
----
-
 fs = require "pkgxx.fs"
 ui = require "pkgxx.ui"
 macro = require "pkgxx.macro"
@@ -16,50 +6,30 @@ macro = require "pkgxx.macro"
 Class = require "pkgxx.class"
 Atom = require "pkgxx.atom"
 
---- Name of the package.
--- @attribute name
-
---- Version of the packaged software or content.
--- @attribute version
-
---- Version of the package or its recipe.
--- @attribute release
-
---- Short (one-line) description of the packaged software or content.
--- @attribute summary
-
---- Long (multi-line) description of the packaged software or content.
--- @attribute description
-
---- Dependencies the package needs to be installed.
--- @attribute dependencies
-
---- Packages that must not be installed at the same time as the generated package.
--- @attribute conflicts
-
---- Virtual packages that this package will provide.
--- @attribute provides
-
---- Legacy options for some RPM distributions.
--- @attribute groups
-
---- Generic options field for build and packaging modules.
--- @attribute options
-
---- List of files that will have to be taken from the fake installation root of the recipe and saved into this package.
--- The recipe’s first package will have an empty list of files, as it will take any file not taken by another package.
--- @attribute files
-
 ---
--- Constructor.
+-- Package described and built from a Recipe.
 --
--- @function __init
--- @tparam table arg
--- @tparam Recipe arg.origin
--- @tparam string arg.name
--- @tparam table  arg.files
--- @tparam string arg.files.1
-Class
+-- Packages dynamically inherit most of their attributes from their Recipe.
+-- As a consequence, a way to easily share values between packages is to put them inside their common Recipe.
+--
+-- @see Recipe
+-- @see Atom
+---
+Class "Package",
+	---
+	-- Constructor.
+	--
+	-- Takes an array of named parameters to set attributes during construction.
+	-- Example below.
+	--
+	-- ```
+	-- Package
+	--   origin: some_recipe -- Recipe object
+	--   name: "hello-bin"
+	--   files: {"/usr/bin/hello"}
+	-- ```
+	--
+	-- @param arg (table) Array of named parameters.
 	__init: (arg) =>
 		--- @fixme Constructor’s documentation is in the wrong place because LDoc is broken.
 		@origin = arg.origin
@@ -76,28 +46,102 @@ Class
 		@files = arg.files or {}
 
 	---
+	-- Package’s name.
+	-- @type (string | nil)
+	name: nil
+
+	---
+	-- Version of the packaged software or content.
+	--
+	-- @type (string | nil)
+	version: nil
+
+	---
+	-- Version of the package’s recipe itself.
+	--
+	-- `@release` must *always* be an integer.
+	-- Its minimum legal value is 1.
+	--
+	-- @warning This field might be removed from Package and left to inherit from its `@origin` Recipe.
+	-- @type (number)
+	release: 1
+
+
+	---
+	-- Short (one-line) description of the packaged software or content.
+	--
+	-- @type (string | nil)
+	summary: nil
+
+	---
+	-- Long (multi-line) description of the packaged software or content.
+	--
+	-- @type (string | nil)
+	description: nil
+
+	---
+	-- Dependencies the package needs to be installed.
+	--
+	-- @type (table)
+	dependencies: nil
+
+	---
+	-- Packages that must not be installed at the same time as the generated package.
+	--
+	-- @type (table)
+	conflicts: nil
+
+	---
+	-- Virtual packages that this package will provide.
+	--
+	-- @type (table)
+	provides: nil
+
+	---
+	-- Generic options field for build and packaging modules.
+	--
+	-- @type (table)
+	options: nil
+
+	---
+	-- Legacy options for some RPM-based distributions.
+	--
+	-- @warning This option will probably never be used anymore, and might get removed in the future. Send an issue if you need its feature.
+	-- @type (table)
+	groups: nil
+
+	---
+	-- List of files that will have to be taken from the fake installation root of the recipe and saved into this package.
+	-- The recipe’s first package will have an empty list of files, as it will take any file not taken by another package.
+	--
+	-- The files are represented by paths relative to their fake installation root.
+	--
+	-- @type (table)
+	files: nil
+
+	---
 	-- Imports values from another object.
 	--
-	-- @tparam table     data A list of named parameters.
-	-- @tparam string    data.name New name of the package.
-	-- @tparam string    data.version Version of the packaged software.
-	-- @tparam integer   data.release Version of the package.
-	-- @tparam table     data.dependencies A list of Atoms representing the package’s dependencies.
-	-- @tparam Atom      data.dependencies.1
-	-- @tparam table     data.conflicts A list of conflicts for this package.
-	-- @tparam Atom      data.conflicts.1
-	-- @tparam table     data.provides A list of virtual packages provided.
-	-- @tparam Atom      data.provides.1
-	-- @tparam table     data.buildDependencies A list of build-time dependencies needed for this package and its recipe.
-	-- @tparam Atom      data.buildDependencies.1
-	-- @tparam table     data.groups Legacy option for old RPMs.
-	-- @tparam string    data.groups.1
-	-- @tparam table     data.options A list of options to pass to pkgxx modules.
-	-- @tparam string    data.summary Short description of the packaged software.
-	-- @tparam string    data.description Long description of the packaged software.
-	-- @tparam string    data.license License of the packaged software.
-	-- @tparam string    data.copyright One-line copyright statement to generate debian/copyright.
-	-- @tparam string    data.class Package class.
+	-- #### `arg` fields
+	--
+	-- type    | field              | description
+	-- --------|--------------------|------------------------------------------
+	-- string  | name               | New name of the package.
+	-- string  | version            | Version of the packaged software.
+	-- integer | release            | Version of the package.
+	-- table   | dependencies       | A list of Atoms representing the package’s dependencies.
+	-- table   | conflicts          | A list of conflicts for this package.
+	-- table   | provides           | A list of virtual packages provided.
+	-- table   | buildDependencies  | A list of build-time dependencies needed for this package and its recipe.
+	-- table   | groups             | Legacy option for old RPMs.
+	-- table   | options            | A list of options to pass to pkgxx modules.
+	-- string  | summary            | Short description of the packaged software.
+	-- string  | description        | Long description of the packaged software.
+	-- string  | license            | License of the packaged software.
+	-- string  | copyright          | One-line copyright statement to generate debian/copyright.
+	-- string  | class              | Package class.
+	--
+	-- @return nil
 	import: (data) =>
 		if data.name
 			@name = data.name
@@ -135,6 +179,11 @@ Class
 		if data.class
 			@class = data.class
 
+	---
+	-- Looks like it does some automated splitting and other distro-related checks.
+	-- Also applies diffs.
+	--
+	-- @hidden Not really publicly usable for now. Needs a well-defined behavior.
 	applyDistributionRules: (recipe) =>
 		distribution = @context.distribution
 		module = @context.modules[distribution]
@@ -168,6 +217,10 @@ Class
 			if os and os[distribution]
 				@@.import package, os[distribution]
 
+	---
+	-- Prepares files for splits, by moving them from the main packaging directory to those of their respective splits.
+	-- @issue Should be renamed. That name is not representative of what it does in any way.
+	-- @hidden
 	moveFiles: =>
 		ui.detail "Packageting '#{@name}'."
 
@@ -185,9 +238,10 @@ Class
 	---
 	-- Creates a package using the package manager module passed as parameter.
 	--
-	-- Checks that the package has the files it’s supposed to have in .files.
+	-- Checks that the package has the files it’s supposed to have in `@files`.
 	--
-	-- @tparam table module Package manager module.
+	-- @param module (Module) Package manager module.
+	-- @return true | nil, string
 	package: (module) =>
 		if @.automatic and not @\hasFiles!
 			ui.debug "Not building automatic package: #{@name}"
@@ -197,12 +251,18 @@ Class
 		fs.changeDirectory (@\packagingDirectory!), ->
 			module.package.build @
 
+	---
+	-- @return (string) The directory this package will be built in.
+	-- @see Recipe\packagingDirectory
 	packagingDirectory: =>
 		@origin\packagingDirectory @name
 
-	--- Checks the Package possesses any specific option.
-	-- @tparam string option Any arbitrary package option.
-	-- @treturn boolean Whether the package has the given option or not.
+	---
+	-- Checks the Package possesses any specific option.
+	--
+	-- @param option (string) Any arbitrary package option.
+	-- @return (boolean) Whether the package has the given option or not.
+	--
 	-- @see Package.options
 	hasOption: (option) =>
 		for element in *@options
@@ -212,11 +272,12 @@ Class
 		false
 
 	---
-	-- Indicates whether the package is empty or not.
+	-- Indicates whether the package’s expected files have been built or not.
 	--
 	-- This method is meant to be used after Recipe\build has been called.
 	--
-	-- @treturn boolean Whether the Package would be built with any file at all.
+	-- @return (boolean) Whether the Package can be build with all of its files.
+	--
 	-- @see Recipe\build
 	hasFiles: =>
 		baseDir = @\packagingDirectory!
@@ -231,8 +292,11 @@ Class
 
 	---
 	-- Dynamic inheritance that obtains missing attributes or methods in `@recipe`.
+	--
+	-- The order in which values are accessed is the following: self, class, origin (Recipe).
+	--
 	-- @see Recipe
-	-- @tparam variable key
+	-- @param key (object)
 	__index: (key) =>
 		-- The order is: package data, class, recipe data
 		rawget(@, key) or getmetatable(self)[key] or rawget(self, "origin")[key]

@@ -1,14 +1,4 @@
 
---- Operations and data on single recipes.
---
--- It is useful to know that a Recipe can generate multiple packages.
---
--- @classmod Recipe
--- @see Package
--- @see Context
--- @see Atom
----
-
 toml = require "toml"
 
 ui = require "pkgxx.ui"
@@ -49,11 +39,24 @@ has = (e, t) ->
 		if e == i
 			return true
 
+---
+-- Operations and data on single recipes.
+--
+-- It is useful to know that a Recipe can generate multiple packages.
+--
+-- Recipes are created with one default package, that will inherit most of its properties, including its name, version, and so on.
+--
+-- @see Package
+-- @see Context
+-- @see Atom
+---
 class
-	--- Recipe constructor, that’s meant to be used privately only.
+	---
+	-- Recipe constructor, that’s meant to be used privately only.
 	--
-	-- @tparam Context context pkgxx Context in which to import the recipe.
+	-- To create new Recipe objects, use Context\newRecipe.
 	--
+	-- @param context (Context) pkgxx Context in which to import the recipe.
 	-- @see Context.newRecipe
 	new: (context) =>
 		--- Context in which the Recipe has been created.
@@ -86,9 +89,119 @@ class
 			}
 		}
 
-	--- Imports a recipe’s data from a package.toml file.
+	---
+	-- Name of the recipe.
 	--
-	-- @param filename Filename of the recipe to parse.
+	-- @type (string | nil)
+	name: nil
+
+	---
+	-- Version of the software or content to be packaged.
+	--
+	-- @type (string | nil)
+	version: nil
+
+	---
+	-- Version of the recipe itself.
+	--
+	-- The `release` attribute *should* always be incremented when the recipe is updated.
+	--
+	-- This attribute *must* have a minimum value of 1 and *must* be an integer.
+	--
+	-- @type (number)
+	release: 1
+
+	---
+	-- The person who wrote the recipe.
+	--
+	-- Should have the following format: `packager name <mail@example>`.
+	--
+	-- @type (string | nil)
+	packager: nil
+
+	---
+	-- The person who updates and maintains the recipe.
+	--
+	-- Recipes imported from `package.toml` files have their maintainer default to `@packager`.
+	--
+	-- The format of this field is the same as that of `@packager`.
+	--
+	-- @see packager
+	-- @type (string | nil)
+	maintainer: nil
+
+	---
+	-- Homepage of the packaged project.
+	--
+	-- @type (string | nil)
+	url: nil
+
+	---
+	-- List of sources needed to build the recipe and its packages.
+	--
+	-- Each member of this field *must* be an instance of `Source`.
+	--
+	-- @see Source
+	-- @see addSource
+	-- @type (table)
+	sources: nil
+
+	---
+	-- Instructions to build the software.
+	-- 
+	-- Contains three fields: `configure`, `build` and `install`, which must all be instances of `Builder`.
+	--
+	-- @issue Not enough documentation over here~
+	--
+	-- @type ({configure: Builder, build: Builder, install: Builder})
+	-- @see Builder
+	buildInstructions: nil
+
+	---
+	-- A list of Atoms describing the recipe’s build-time dependencies.
+	--
+	-- Build-dependencies are shared between all packages described by a recipe.
+	--
+	-- @see Atom
+	-- @type (table)
+	buildDependencies: nil
+
+	---
+	-- Metadata to check automagically if the recipe is out of date.
+	--
+	-- @type (table | nil)
+	-- @issue There should be a Watch class instead of arbitrary, unchecked tables.
+	-- @issue @watch is relatively easy to test… and yet has no test.
+	-- @issue A part of it also depends on html-xml-utils or something like that…
+	watch: nil
+
+	---
+	-- Describes the name of the directory in which the main sources are stored.
+	--
+	-- This value might be used by modules to configure their build process.
+	--
+	-- Several default values can be applied during `Recipe\finalize`:
+	--
+	--   - set to `"#{@name}-#{@version}"` if `@version` exists,
+	--   - set to `@name` otherwise.
+	--
+	-- @type (string | nil)
+	dirname: nil
+
+	---
+	-- Options with which to build the package.
+	--
+	-- `.options` is a field of arbitrary strings from which modules can take instructions.
+	--
+	-- See the various postBuild modules for specific entries to add to the `.options` field.
+	--
+	-- @type table
+	options: nil
+
+	---
+	-- Imports a recipe’s data from a package.toml file.
+	--
+	-- @param filename (string) Filename of the recipe to parse.
 	importTOML: (filename) =>
 		--- Name of the file from which the recipe has been generated.
 		-- @attribute filename
@@ -110,36 +223,14 @@ class
 
 		recipe = macro.parse recipe, macroList @
 
-		--- Name of the recipe.
-		-- @attribute name
 		@name = recipe.name
-		--- Version of the software to be packaged.
-		-- @attribute version
 		@version = recipe.version
-		--- Version of the recipe itself.
-		--
-		-- The `release` attribute should always be incremented when the recipe is updated.
-		--
-		-- @attribute release
 		@release = recipe.release or 1
 
-		--- The person who wrote the recipe.
-		-- @attribute packager
 		@packager = recipe.packager
-		--- The person who updates and maintains the recipe.
-		-- Defaults to `@packager`.
-		-- @attribute maintainer
 		@maintainer = recipe.maintainer or @packager
-		--- Homepage of the packaged project.
-		-- @attribute url
 		@url = recipe.url
 
-		--- Metadata to check automagically if the recipe is out of date.
-		-- @attribute watch
-
-		--- @fixme Should have its own class and do its own checks.
-
-		--- @fixme Is relatively easy to test… and yet has no test.
 		@watch = recipe.watch
 		if @watch
 			@watch.url = @watch.url or @url
@@ -150,16 +241,8 @@ class
 
 		@dirname = recipe.dirname
 
-		--- List of sources linked to the recipe.
-		-- @see Source
-		-- @attribute sources
 		@sources = Source.fromVariable recipe.sources
 
-		--- Instructions to build the software.
-		-- Contains three fields: `configure`, `build` and `install`.
-		-- @attribute buildInstructions
-
-		--- @fixme Each field should be its own instance of the same, common class, and that class should have its own checks.
 		do
 			bs = recipe["build-system"]
 			modules = @context.modules
@@ -176,24 +259,19 @@ class
 			@buildInstructions[1]\setInstructions instructions "build"
 			@buildInstructions[1]\setInstructions instructions "install"
 
-		--- A list of Atoms describing the recipe’s build-time dependencies.
-		-- @see Atom
-		-- @attribute buildDependencies
 		@buildDependencies = {}
 		for string in *(recipe.buildDependencies or {})
 			table.insert @buildDependencies, Atom string
 
-		--- The source upon which the recipe is built.
-		-- @attribute recipe
-		@recipe = recipe --- @fixme That field should be unavailable.
+		--- FIXME That field should be removed.
+		@recipe = recipe
 
-		--- Attributes of the recipe’s file.
-		-- @attribute recipeAttributes
-		@recipeAttributes = fs.attributes filename --- @fixme That field should be unavailable.
+		-- FIXME: Thas field should be removed.
+		@recipeAttributes = fs.attributes filename
 
 		--- Packages described by the recipe.
 		-- @attribute packages
-		@packages = @\parsePackages @recipe or self
+		@packages = @\parsePackages recipe or self
 
 		@\finalize!
 
@@ -203,7 +281,10 @@ class
 	-- If the sources are provided as a URL, they will automatically be converted to a Source.
 	-- The arrow notation (url -> filename) is supported if you want or need to name the downloaded file.
 	--
-	-- @tparam string||Source source URL or Source that describes the sources to add.
+	-- @param source (string | Source) URL or Source that describes the sources to add.
+	--
+	-- @return (true) All clear.
+	-- @return (nil, string) Source parsing error or filename collision.
 	addSource: (source) =>
 		if type(source) == "string"
 			source = Source.fromString source
@@ -218,6 +299,11 @@ class
 
 		true
 
+	---
+	-- Defines a new Package in the recipe.
+	--
+	-- @param name (string) The `name` attribute of the Package to create.
+	-- @return (Package) The newly created Package.
 	addPackage: (name) =>
 		package = Package {
 			origin: self
@@ -234,6 +320,8 @@ class
 	-- All missing or uninitialized attributes will be set to safe values for further operations.
 	--
 	-- Recipes *must* be finalized before calling @{Recipe\build} or @{Recipe\package}.
+	--
+	-- @return nil
 	finalize: =>
 		unless @name
 			return nil, "cannot finalize a recipe without @name"
@@ -242,17 +330,12 @@ class
 		@sources or= {}
 		@buildDependencies or= {}
 
-		--- Describes the name of the directory in which the main sources are stored.
-		-- This value might be used by modules to configure their build process.
-		-- Defaults to `"#{@name}-#{@version}"` if `@version` exists.
-		-- Defaults to `@name` otherwise.
-		-- @attribute dirname
 		@dirname or= if @version
 			@dirname = "#{@name}-#{@version}"
 		else
 			@dirname = @name
 
-		-- self.watch guess.
+		-- @watch guess.
 		-- Is done very long after the possible static definition of watch because modules may need to have access to other values.
 		unless @watch
 			for _, module in pairs @context.modules
@@ -262,10 +345,7 @@ class
 							-- FIXME: Maybe we could do some additionnal checks.
 							@watch = watch
 
-		--- Class of the recipe.
-		-- @attribute class
-
-		--- @fixme Will be removed from Recipe. Recipes having a class makes no sense.
+		-- FIXME: Remove. Recipes having a class makes no sense.
 		@class or= @\guessClass!
 
 		@\applyDistributionRules @recipe or self
@@ -275,10 +355,6 @@ class
 			for atom in *package.dependencies
 				if not has atom, @buildDependencies
 					@buildDependencies[#@buildDependencies+1] = atom
-
-		--- Options with which to build the package.
-		-- See the various postBuild modules for specific entries to add to the `.options` field.
-		-- @attribute options
 
 		-- FIXME: Broken since Atom exist.
 		for package in *@packages
@@ -304,6 +380,8 @@ class
 
 		true
 
+	--- @hidden
+	-- FIXME: This should probably be moved to macro, or at least somewhat overhauled.
 	parse: (string) =>
 		parsed = true
 		while parsed
@@ -311,7 +389,7 @@ class
 
 		string
 
-	--- @local
+	--- @hidden
 	-- Used internally.
 	--
 	-- Is meant to be usable after package manager or architecture
@@ -331,7 +409,8 @@ class
 
 	---
 	-- Lists the filenames and packages this recipe defines.
-	-- @treturn function Iterator over the pairs of filename and Package defined by the Recipe.
+	--
+	-- @return (function) Iterator over the pairs of filename and Package defined by the Recipe.
 	-- @see Package
 	getTargets: =>
 		--- @fixme Will be removed. Use `ipairs recipe.packages`.
@@ -345,9 +424,13 @@ class
 
 				return package.target, package
 
+	---
+	-- @return (string) Location of the recipe’s log file.
 	getLogFile: =>
 		"#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
 
+	--- @hidden
+	-- FIXME: The package.toml specific code should just move somewhere else.
 	parsePackages: (recipe) =>
 		packages = {}
 
@@ -374,10 +457,14 @@ class
 
 		packages
 
+	--- @hidden
+	-- Hidden until semantics clarification and lots of grooming.
 	applyDistributionDiffs: (recipe, distribution) =>
 		if recipe.os and recipe.os[distribution]
 			@packages[1]\import recipe.os[distribution]
 
+	--- @hidden
+	-- Hidden until semantics clarification and lots of grooming.
 	applyDistributionRules: (recipe) =>
 		distribution = @context.distribution
 		module = @context.modules[distribution] or {}
@@ -416,6 +503,8 @@ class
 			ui.warning "Your package is unlikely to comply to " ..
 				"your OS’ packaging guidelines."
 
+	--- @hidden
+	-- FIXME: remove
 	guessClass: (package) ->
 		if package.name\match "-doc$"
 			"documentation"
@@ -437,24 +526,34 @@ class
 	---
 	-- Checks that a Recipe defines a Package.
 	--
-	-- @tparam string name name of the package.
-	-- @treturn boolean Whether the Recipe contains a Package of a given name or not.
+	-- @param name (string) Name of the package.
+	-- @return (boolean) Whether the Recipe contains a Package with the given name or not.
+	--
+	-- @info Will probably get patched to identify Packages based on an Atom and not just a name string.
 	hasPackage: (name) =>
-		--- @todo Should also identify Atoms and not just strings.
 		for package in *@packages
 			if package.name == name
 				return true
 
+		false
+
+	--- @hidden
+	-- Used during build.
+	-- Hidden until semantics clarification and lots of grooming.
 	postBuildHooks: =>
 		for module in *@context.modules
 			if module.postBuild
 				fs.directory @\packagingDirectory!, ->
 					module.postBuild @
 
+	---
+	-- @return (string) The directory in which the software will be built.
 	buildingDirectory: =>
 		"#{@context.buildingDirectory}/src/" ..
 			"#{@name}-#{@version}-#{@release}"
 
+	---
+	-- @return (string) The “fake installation root” of the package, as used during build.
 	packagingDirectory: (name) =>
 		unless name
 			name = "_"
@@ -463,7 +562,9 @@ class
 
 	---
 	-- Checks whether the recipe’s packages need updating or rebuilding.
-	-- @treturn boolean Build status.
+	--
+	-- @return (true)  Recipe needs rebuild.
+	-- @return (false) Everything is up to date.
 	buildNeeded: =>
 		for self in *self.packages
 			if self.automatic
@@ -478,9 +579,12 @@ class
 				ui.info "Recipe is newer than packages."
 				return true
 
+		false
+
 	---
-	-- Checks whether the recipe’s dependencies and build-dependencies are
-	-- installed, and tries to install them if they are not.
+	-- Checks whether the recipe’s dependencies and build-dependencies are installed, and tries to install them if they are not.
+	--
+	-- @return nil
 	checkDependencies: =>
 		ui.info "Checking dependencies…"
 
@@ -497,7 +601,9 @@ class
 
 	---
 	-- Installs a package by name.
-	-- @tparam string name Name of the package to install.
+	--
+	-- @param name (string) Name of the package to install.
+	-- @issue Will be moved to Context at some point.
 	installDependency: (name) =>
 		-- @fixme Should probably be in Context. =/
 		module = @context.modules[@context.dependenciesManager]
@@ -512,22 +618,20 @@ class
 	---
 	-- Downloads the recipe’s sources.
 	--
-	-- @treturn boolean Boolean indicating whether or not the downloads succeeded.
+	-- @return (boolean) Boolean indicating whether or not the downloads succeeded.
 	download: =>
 		ui.info "Downloading…"
 
 		for source in *@sources
 			if (source\download @context) ~= true
-				return
+				return false
 
 		true
 
 	---
 	-- Generates the recipe’s version from its sources.
 	--
-	-- Is useless for recipes with static versions, but is useful if a recipe
-	-- is of a development version from a git repository or any similar
-	-- situation.
+	-- Is useless for recipes with static versions, but is useful if a recipe is of a development version from a git repository or any similar situation.
 	updateVersion: =>
 		for source in *@sources
 			module = @context.modules[source.protocol]
@@ -545,6 +649,8 @@ class
 
 		@\setTargets!
 
+	--- @hidden
+	-- Hidden until clarified semantics and some grooming.
 	prepareBuild: =>
 		fs.mkdir @\buildingDirectory!
 		fs.mkdir @\packagingDirectory!
@@ -552,6 +658,8 @@ class
 		for package in *@packages
 			fs.mkdir @\packagingDirectory package.name
 
+	--- @hidden
+	-- Hidden until clarified semantics and some grooming.
 	extract: =>
 		ui.info "Extracting…"
 
@@ -574,6 +682,7 @@ class
 	-- Builds the recipe.
 	--
 	-- This method does not build the packages themselves.
+	-- The `package` method does that.
 	--
 	-- @see Package
 	-- @see Recipe\package
@@ -600,6 +709,8 @@ class
 
 		true
 
+	--- @hidden
+	-- Hidden until clarified semantics and moderate amounts of grooming.
 	split: =>
 		for package in *@packages
 			if package.files
@@ -636,6 +747,8 @@ class
 
 	---
 	-- Removes the recipe’s temporary building directories.
+	--
+	-- @return (boolean) Whether removing the files succeeded or not.
 	clean: =>
 		ui.info "Cleaning…"
 		ui.detail "Removing '#{@\buildingDirectory!}'."
@@ -646,6 +759,10 @@ class
 
 	---
 	-- Prints potential defects or missing data in the recipe.
+	--
+	-- It prints the defects themselves on stderr, and returns the number of defects found.
+	--
+	-- @return (number) Number of defects found in the recipe’s current configuration.
 	lint: =>
 		e = 0
 
@@ -713,6 +830,9 @@ class
 	-- It may need access to recent sources to do so.
 	--
 	-- @see Recipe\download
+	--
+	-- @return (true, string) Version is up to date. Also returns the version.
+	-- @return (false, string) Recipe is outdated. Returns the latest version available.
 	isUpToDate: =>
 		if @watch
 			local p
@@ -821,6 +941,8 @@ class
 
 		return deps
 
+	---
+	-- Recipe can be safely converted to a debug string.
 	__tostring: =>
 		if @version
 			"<pkgxx:Recipe: #{@name}-#{@version}-#{@release}>"

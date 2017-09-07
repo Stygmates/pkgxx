@@ -1,23 +1,24 @@
 
---- An atom is a container for a package name and origin.
+Class = require "pkgxx.class"
+
+---
+-- An atom is a container for a package name and origin.
 --
 -- Version informations are planned to be added.
---
--- @classmod Atom
 ---
-
-class
+Class "Atom",
 	---
 	-- Atoms’ constructor.
 	--
-	-- @usage
+	-- ```
 	--   atom = Atom "package@recipeName"
 	--   
 	--   print atom.name, atom.origin
 	--   -- package, recipeName
+	-- ```
 	--
-	-- @tparam string s A string representing a package.
-	new: (s) =>
+	-- @param s (string) A string representing a package.
+	__init: (s) =>
 		s = s\gsub "^%s*", ""
 		s = s\gsub "%s*$", ""
 
@@ -37,7 +38,7 @@ class
 	--
 	-- Their names and origins must be equal for two atoms to be equal.
 	--
-	-- @tparam Atom other Any arbitrary Atom.
+	-- @param other (Atom) Any arbitrary Atom.
 	__eq: (other) =>
 		return @name == other.name and @origin == other.origin
 

@@ -9,6 +9,7 @@ Class = require "pkgxx.class"
 ui = require "pkgxx.ui"
 fs = require "pkgxx.fs"
 
+local Source
 
 --- Name of the local file in which to store the source once downloaded.
 -- @attribute filename
@@ -22,25 +23,32 @@ fs = require "pkgxx.fs"
 --- Protocol used to download.
 -- @attribute protocol
 
---- Empty constructor.
---
--- @function __init
---
--- @tparam table arg
--- @tparam string arg.protocol
--- @tparam string arg.filename
--- @tparam string arg.url
-Source = do Class "Source",
+Source = Class "Source",
+	---
+	-- Empty constructor.
+	--
+	-- Attributes can be set by passing them through `arg`.
+	-- Example below.
+	--
+	-- ```
+	-- Source
+	--   protocol: "git"
+	--   filename: "local_name"
+	--   url: "https://github.com/Lukc/pkgxx"
+	-- ```
+	--
+	-- @param arg (table) Table of named parameters.
 	__init: (arg) =>
 		@protocol = arg.protocol
 		@filename = arg.filename
 		@url =      arg.url
 
 	__class: {
-		--- Parses a URL string and converts it into a Source.
+		---
+		-- Parses a URL string and converts it into a Source.
 		-- 
-		-- @function Source.fromString
-		-- @tparam string string Input string to parse.
+		-- @param string (string) Input string to parse.
+		-- @constructor
 		fromString: (string) ->
 			url = string\gsub "%s*->%s*.*", ""
 			protocol = url\gsub ":.*", ""
@@ -62,15 +70,16 @@ Source = do Class "Source",
 				url: url
 			}
 
-		--- Converts a Lua variable into a Source.
+		---
+		-- Converts a Lua variable into a Source.
 		-- 
 		--   - Parses it if it’s a string.
 		--   - Returns an empty array if it’s nil.
 		--   - Will try to parse it as an array of strings otherwise.
 		--     Things will probably go wrong at this point, however.
 		--
-		-- @function Source.fromVariable
-		-- @tparam variable variable Input value to convert.
+		-- @param variable (object) Input value to convert.
+		-- @constructor
 		fromVariable: (variable) ->
 			sources = switch type variable
 				when "string"
@@ -96,8 +105,7 @@ Source = do Class "Source",
 	--
 	-- Access to a @{Context} is needed to obtain pkg++ modules and downloader backends, as well as the configuration of which directories should store the sources.
 	--
-	-- @function download
-	-- @tparam Context context Context to use to access backends and configuration.
+	-- @param context (Context) Context to use to access backends and configuration.
 	download: (context) =>
 		{:filename, :url, :protocol} = self
 

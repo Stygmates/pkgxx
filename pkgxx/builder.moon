@@ -21,8 +21,7 @@ Class "Builder",
 		"<Builder: #{@name}>"
 
 	---
-	-- @todo No checking is currently done concerning the quality of the provided instructions.
-	-- @tparam variable instructions
+	-- @warning No checking is currently done concerning the quality of the provided instructions.
 	setInstructions: (instructions) =>
 		@instructions = instructions
 

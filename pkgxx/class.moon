@@ -1,7 +1,14 @@
 
+ClassData = (_class, data) ->
+	data or= {}
+
+	setmetatable data,
+		__tostring: =>
+			"<ClassData: #{_class}>"
+
+	data
+
 ---
--- @classmod Class
---
 -- A homemade class system, designed to use metatables extensively and to be extremely dynamic.
 -- 
 -- Differences with moonscript’s builtin class:
@@ -12,7 +19,7 @@
 --   - No built-in inheritance mechanism, but __index can be set.
 --   - class variables are defined through the __class array, and not through `@variable:` definitions.
 --
--- @usage
+-- ```
 -- MyClass = Class
 -- 	__init: (arg) =>
 -- 		self.value = arg.value
@@ -33,33 +40,8 @@
 -- 
 -- print Static.Foo
 -- -- 42
+-- ```
 ---
-
----
--- @attribute __name
----
-
----
--- @attribute __call
----
-
----
--- @attribute __index
----
-
----
--- @attribute __tostring
----
-
-ClassData = (_class, data) ->
-	data or= {}
-
-	setmetatable data,
-		__tostring: =>
-			"<ClassData: #{_class}>"
-
-	data
-
 Class = setmetatable {},
 	__tostring: => "<Class>"
 	__call: (name, def) =>

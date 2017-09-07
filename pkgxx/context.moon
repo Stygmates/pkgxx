@@ -1,12 +1,4 @@
 
---- pkgxx’ main class.
---
--- The Context is a shared environment in which packages are built with
--- a specific configuration and for a given package manager.
---
--- @classmod Context
----
-
 moonscript = require "moonscript"
 toml = require "toml"
 
@@ -18,7 +10,15 @@ Module = require "pkgxx.module"
 
 loadstring = loadstring or load
 
-class
+---
+-- pkgxx’ main class.
+--
+-- The Context is a shared environment in which packages are built with
+-- a specific configuration and for a given package manager.
+--
+-- Its most-used method is probably [newRecipe](#newRecipe).
+---
+class Context
 	---
 	-- Context constructor.
 	new: () =>
@@ -62,6 +62,11 @@ class
 
 		@\loadModules!
 
+	---
+	-- Loads the system-wide pkg++ configuration, usually stored in `/etc/pkg++.conf`.
+	--
+	-- @param filename (string) Path to a configuration file to load instead of the default one.
+	-- @return nil
 	importConfiguration: (filename) =>
 		f = io.open filename
 
@@ -108,6 +113,14 @@ class
 				ui.debug "Registering collection '#{name}'."
 				@collections[name] = col
 
+	---
+	-- Loads the default pkg++ modules, installed in the system directories.
+	-- Those directories are usually `/usr/share/pkgxx` and its `/usr/local` variant.
+	--
+	-- @issue Broken modules will likely throw errors.
+	-- @warning Modules from the `./modules` directories are also currently loaded, for development reasons.
+	--
+	-- @return nil
 	loadModules: =>
 		@modules = {}
 
@@ -147,6 +160,15 @@ class
 					else
 						io.stderr\write "module '#{name}' not loaded: #{e}\n"
 
+	---
+	-- Creates a module and loads it into the Context.
+	--
+	-- This methods allows the dynamic creation of modules in pkg++.
+	--
+	-- @param content (table) Module content.
+	-- @return nil
+	--
+	-- @see Module
 	loadModule: (content) =>
 		module = Module content
 		@modules[module.name] = module
@@ -154,6 +176,10 @@ class
 		if module.name and not @modules[module.name]
 			@modules[module.name] = module
 
+	---
+	-- Prints warnings on stderr if important configuration elements are missing.
+	--
+	-- @return nil
 	checkConfiguration: =>
 		if not @modules[@packageManager]
 			ui.warning "No module for the following package manager: " ..
@@ -178,24 +204,31 @@ class
 					@repositoryManager = nil
 
 	---
-	-- Creates an empty Recipe object.
-	-- @see Recipe
+	-- Creates a new empty Recipe object.
+	--
+	-- The only difference with the default Recipe constructor is that the current Context is provided.
+	--
+	-- @return (Recipe)
 	newRecipe: =>
 			Recipe @
 
 	---
 	-- Creates a Recipe object from a package.toml file.
-	-- @param filename Filename of the package.toml to parse into a Recipe.
+	--
+	-- @param filename (string) Filename of the package.toml to read and parse into a Recipe.
 	-- @see Recipe
-	openRecipe: (filename) =>
-		--- @warning This method is deprecated.
+	--
+	-- @warning This method is deprecated. Use newRecipe instead.
+	openRecipe: (filename = "package.toml") =>
 		with @\newRecipe @
-			\importTOML (filename or "package.toml")
+			\importTOML filename
 			\finalize!
 
 	---
 	-- Asks the package manager whether a given package Atom is installed.
-	-- @param atom Atom describing a package whose installation is being tested.
+	--
+	-- @param atom (Atom) Atom describing a package whose installation is being tested.
+	-- @return (boolean) Whether the atom installed or not.
 	-- @see Atom
 	isAtomInstalled: (atom) =>
 		module = @modules[@packageManager]
@@ -211,7 +244,10 @@ class
 	--
 	-- It can be used to register several new packages at once.
 	--
-	-- @param opt Options to provide to the repository manager’s module.
+	-- @param opt (table) Options to provide to the repository manager’s module.
+	--
+	-- @return (boolean) Value returned by the repository manager’s module.
+	-- @return (nil) No module could be used to update the repository.
 	updateRepository: (opt) =>
 		unless @repositoryManager
 			return
@@ -226,8 +262,11 @@ class
 	---
 	-- Adds a package to the context’s repository.
 	--
-	-- @param target Filename of the package to add to the repository.
-	-- @param opt Options to provide to the repository manager’s module.
+	-- @param target (string) Filename of the package to add to the repository.
+	-- @param opt (table) Options to provide to the repository manager’s module.
+	--
+	-- @return (boolean) Value returned by the repository manager’s module.
+	-- @return (nil) No module could be used to update the repository.
 	addToRepository: (target, opt) =>
 		module = @modules[@repositoryManager or @packageManager].addToRepository
 		if module
@@ -236,13 +275,17 @@ class
 
 	---
 	-- Closes the context.
+	--
+	-- @warning This method removes the context's temporary files.
 	close: =>
-		--- @warning This method removes the context's temporary files.
 		os.execute "rm -rf '#{@buildingDirectory}'"
 
 	__tostring: =>
 		"<pkgxx:Context: #{@pid}-#{@randomKey}>"
 
+	---
+	-- Array of prefix names.
+	-- Used for macro substitutions and for some auto-configuration within modules.
 	prefixes: {
 		"prefix",
 		"bindir",
@@ -258,6 +301,10 @@ class
 		"opt",
 	}
 
+	---
+	-- Gets the current path for a specific prefix.
+	--
+	-- @param name (string) One of the values in @prefixes.
 	getPrefix: (name) =>
 		defaults = {
 			prefix:     "/usr",

@@ -1,7 +1,7 @@
 
 ui = require "pkgxx.ui"
 
-class
+class Module
 	new: (arg) =>
 		for key, value in pairs arg
 			@[key] = value

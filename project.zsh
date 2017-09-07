@@ -1,6 +1,6 @@
 
 package=pkgxx
-version=0.0.1
+version=0.2.0
 
 variables=(LUA_VERSION 5.1)
 

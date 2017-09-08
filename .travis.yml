@@ -15,6 +15,7 @@ install:
     - luarocks install argparse
     - luarocks install luafilesystem
     - luarocks install busted
+    - luarocks install luacov-coveralls
 
 before_install:
     - pip install hererocks
@@ -23,4 +24,7 @@ before_install:
 
 script:
     - busted --verbose
+
+after_success:
+    - luacov-coveralls -i "%.moon" -e "spec"
 

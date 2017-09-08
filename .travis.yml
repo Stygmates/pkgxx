@@ -12,7 +12,7 @@ env:
 install:
     - luarocks install moonscript
     # - luarocks install lua-toml # Broken rockspec being hosted on Luarocks.
-    - git clone https://github.com/jonstoler/lua-toml && cd lua-toml/toml.lua .
+    - git clone https://github.com/jonstoler/lua-toml && cp lua-toml/toml.lua .
     - luarocks install argparse
     - luarocks install luafilesystem
     - luarocks install busted

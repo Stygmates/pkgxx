@@ -1,11 +1,11 @@
 return {
   _all = {
     ROOT = {
-		"tests/recipe.moon",
-		"tests/sources.moon",
-		"tests/macro.moon",
-		"tests/atom.moon",
-		"tests/modules.moon"
+		"spec/recipe.moon",
+		"spec/sources.moon",
+		"spec/macro.moon",
+		"spec/atom.moon",
+		"spec/modules.moon"
 	},
     verbose = true
   }

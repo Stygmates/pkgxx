@@ -18,6 +18,7 @@ install:
     - luarocks install luafilesystem
     - luarocks install busted
     - luarocks install luacov-coveralls
+    - luarocks install luajson # For .coveralls.
     - (cd .coveralls; make)
 
 before_install:

@@ -4,20 +4,27 @@ require "coveralls.coveralls"
 output = ->
 	Coveralls.service_name = Coveralls.Local if os.getenv 'LOCAL'
 	Coveralls.service_name = Coveralls.Debug if os.getenv 'COVERALLS_DEBUG'
-	defout = (assert require "busted.outputHandlers.TAP") {}
-	formatted_status = defout.formatted_status
-	header = defout.header
 
-	defout.header = (desc, test_count) ->
+	defout = (assert require "busted.outputHandlers.utfTerminal") {}
+	suiteEnd = defout.suiteEnd
+	suiteStart = defout.suiteStart
+
+	defout.suiteStart = (desc, test_count) ->
 		Coveralls\start!
-		return header desc, test_count
+		if suiteStart
+			return suiteStart desc, test_count
+		else
+			return nil, true
 
-	defout.formatted_status = (statuses, options, ms) ->
+	defout.suiteEnd = (statuses, options, ms) ->
 		Coveralls\stop!
 		Coveralls\coverDir Coveralls.dirname, Coveralls.ext if Coveralls.dirname != ""
 		Coveralls\cover src for src in *Coveralls.srcs
 		Coveralls\send!
-		return formatted_status statuses, options, ms if formatted_status
+		if suiteEnd
+			return suiteEnd statuses, options, ms if suiteEnd
+		else
+			return nil, true
 
 	defout
 

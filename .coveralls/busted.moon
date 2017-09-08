@@ -5,6 +5,8 @@ output = ->
 	Coveralls.service_name = Coveralls.Local if os.getenv 'LOCAL'
 	Coveralls.service_name = Coveralls.Debug if os.getenv 'COVERALLS_DEBUG'
 
+	Coveralls.dirname = "./"
+
 	defout = (assert require "busted.outputHandlers.utfTerminal") {}
 	suiteEnd = defout.suiteEnd
 	suiteStart = defout.suiteStart
@@ -20,7 +22,7 @@ output = ->
 		Coveralls\stop!
 		Coveralls\coverDir Coveralls.dirname, Coveralls.ext if Coveralls.dirname != ""
 		Coveralls\cover src for src in *Coveralls.srcs
-		Coveralls\send!
+		print Coveralls\send!
 		if suiteEnd
 			return suiteEnd statuses, options, ms if suiteEnd
 		else

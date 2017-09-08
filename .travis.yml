@@ -29,3 +29,8 @@ script:
 after_success:
     - luacov-coveralls -i "%.moon" -e "spec"
 
+cache:
+    directories:
+        - lua_install
+
+

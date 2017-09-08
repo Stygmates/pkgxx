@@ -19,7 +19,7 @@ install:
     - luarocks install luacov-coveralls
 
 before_install:
-    - pip install hererocks
+    - pip3 install hererocks
     - hererocks lua_install -r^ --$LUA
     - export PATH=$PATH:$PWD/lua_install/bin
 

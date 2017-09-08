@@ -1,6 +1,6 @@
 
 language: c
-sudo: false
+sudo: required
 dist: trusty
 
 env:
@@ -20,7 +20,7 @@ install:
     - luarocks install luacov-coveralls
 
 before_install:
-    - pip3 install hererocks
+    - sudo pip3 install hererocks
     - hererocks lua_install -r^ --$LUA
     - export PATH=$PATH:$PWD/lua_install/bin
 

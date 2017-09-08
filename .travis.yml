@@ -1,6 +1,7 @@
 
 language: c
-sudo: true
+sudo: false
+dist: trusty
 
 env:
     - LUA="lua=5.1"

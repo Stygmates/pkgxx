@@ -1,12 +1,7 @@
 return {
   _all = {
-    ROOT = {
-		"spec/recipe.moon",
-		"spec/sources.moon",
-		"spec/macro.moon",
-		"spec/atom.moon",
-		"spec/modules.moon"
-	},
+    ROOT = {"spec"},
+	pattern = "%.moon",
     verbose = true
   }
 }

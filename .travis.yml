@@ -25,7 +25,7 @@ before_install:
     - export PATH=$PATH:$PWD/lua_install/bin
 
 script:
-    - busted --verbose
+    - busted --verbose --coverage
 
 after_success:
     - luacov-coveralls -i "%.moon" -e "spec"

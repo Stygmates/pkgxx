@@ -630,11 +630,11 @@ $(PACKAGE)-$(VERSION).tar.gz: distdir
 		$(PACKAGE)-$(VERSION)/pkgxx/recipe.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/source.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/ui.moon \
-		$(PACKAGE)-$(VERSION)/tests/atom.moon \
-		$(PACKAGE)-$(VERSION)/tests/macro.moon \
-		$(PACKAGE)-$(VERSION)/tests/modules.moon \
-		$(PACKAGE)-$(VERSION)/tests/recipe.moon \
-		$(PACKAGE)-$(VERSION)/tests/sources.moon \
+		$(PACKAGE)-$(VERSION)/spec/atom.moon \
+		$(PACKAGE)-$(VERSION)/spec/macro.moon \
+		$(PACKAGE)-$(VERSION)/spec/modules.moon \
+		$(PACKAGE)-$(VERSION)/spec/recipe.moon \
+		$(PACKAGE)-$(VERSION)/spec/sources.moon \
 		$(PACKAGE)-$(VERSION)/project.zsh \
 		$(PACKAGE)-$(VERSION)/Makefile \
 		$(PACKAGE)-$(VERSION)/config.ld \
@@ -688,11 +688,11 @@ $(PACKAGE)-$(VERSION).tar.xz: distdir
 		$(PACKAGE)-$(VERSION)/pkgxx/recipe.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/source.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/ui.moon \
-		$(PACKAGE)-$(VERSION)/tests/atom.moon \
-		$(PACKAGE)-$(VERSION)/tests/macro.moon \
-		$(PACKAGE)-$(VERSION)/tests/modules.moon \
-		$(PACKAGE)-$(VERSION)/tests/recipe.moon \
-		$(PACKAGE)-$(VERSION)/tests/sources.moon \
+		$(PACKAGE)-$(VERSION)/spec/atom.moon \
+		$(PACKAGE)-$(VERSION)/spec/macro.moon \
+		$(PACKAGE)-$(VERSION)/spec/modules.moon \
+		$(PACKAGE)-$(VERSION)/spec/recipe.moon \
+		$(PACKAGE)-$(VERSION)/spec/sources.moon \
 		$(PACKAGE)-$(VERSION)/project.zsh \
 		$(PACKAGE)-$(VERSION)/Makefile \
 		$(PACKAGE)-$(VERSION)/config.ld \
@@ -746,11 +746,11 @@ $(PACKAGE)-$(VERSION).tar.bz2: distdir
 		$(PACKAGE)-$(VERSION)/pkgxx/recipe.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/source.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/ui.moon \
-		$(PACKAGE)-$(VERSION)/tests/atom.moon \
-		$(PACKAGE)-$(VERSION)/tests/macro.moon \
-		$(PACKAGE)-$(VERSION)/tests/modules.moon \
-		$(PACKAGE)-$(VERSION)/tests/recipe.moon \
-		$(PACKAGE)-$(VERSION)/tests/sources.moon \
+		$(PACKAGE)-$(VERSION)/spec/atom.moon \
+		$(PACKAGE)-$(VERSION)/spec/macro.moon \
+		$(PACKAGE)-$(VERSION)/spec/modules.moon \
+		$(PACKAGE)-$(VERSION)/spec/recipe.moon \
+		$(PACKAGE)-$(VERSION)/spec/sources.moon \
 		$(PACKAGE)-$(VERSION)/project.zsh \
 		$(PACKAGE)-$(VERSION)/Makefile \
 		$(PACKAGE)-$(VERSION)/config.ld \

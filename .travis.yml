@@ -1,6 +1,6 @@
 
 language: c
-sudo: false
+sudo: true
 
 env:
     - LUA="lua=5.1"

@@ -18,6 +18,7 @@ install:
     - luarocks install luafilesystem
     - luarocks install busted
     - luarocks install luacov-coveralls
+    - (cd .coveralls; make)
 
 before_install:
     - sudo pip3 install hererocks
@@ -25,10 +26,7 @@ before_install:
     - export PATH=$PATH:$PWD/lua_install/bin
 
 script:
-    - busted --verbose --coverage
-
-after_success:
-    - luacov-coveralls -i "%.moon" -e "spec"
+    - LUA_PATH="./.?.lua;;" busted --verbose -o coveralls.busted
 
 cache:
     directories:

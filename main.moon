@@ -187,7 +187,12 @@ for recipe in *packagesList
 
 				os.exit 1
 
-			recipe\package!
+			unless recipe\package!
+				ui.error "An error occured while assembling the package."
+				context\close!
+
+				os.exit 1
+
 			recipe\clean!
 
 			context\updateRepository {

@@ -88,6 +88,8 @@ class Context
 		@repositoryManager = configuration["repository-manager"]
 		@dependenciesManager = configuration["dependencies-manager"]
 
+		@repositoryDescription = configuration["repository-description"]
+
 		for variable in *{
 			"CFLAGS", "CPPFLAGS", "CXXFLAGS", "FFLAGS", "LDFLAGS",
 			"MAKEFLAGS"

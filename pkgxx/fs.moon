@@ -1,6 +1,7 @@
 
 ui = require "pkgxx.ui"
 lfs = require "lfs"
+process = require "process"
 
 unpack = unpack or table.unpack
 
@@ -53,16 +54,44 @@ unpack = unpack or table.unpack
 	dir: lfs.dir,
 
 	execute: (arg) =>
-		arg = "set -e; " .. arg
 		exports = ""
 
 		for key, value in pairs @context.exports
-			exports = exports .. "export #{key}='#{value}';"
+			exports = exports .. "export #{key}='#{value}'\n"
 
-		if ui.getVerbosity! < 6
-			logfile = "#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
-			arg = "#{exports} (set -x; #{arg}) 2>> #{logfile} >> #{logfile} "
+		logfile = "#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
 
-		os.execute arg
+	--	if ui.getVerbosity! < 6
+	--		logfile = "#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
+	--		arg = "#{exports} (set -x; #{arg}) 2>> #{logfile} >> #{logfile} "
+
+		child = process.exec "sh", {"-c", "set -e -x\n#{exports}\n#{arg}"}
+
+		while true
+			stdout, stdoutError, stdoutAgain = child\stdout!
+			stderr, stderrError, stderrAgain = child\stderr!
+
+			if stderr
+				io.stderr\write stderr
+
+			if stderrError
+				io.stderr\write stderrError
+
+			if stdout
+				io.stdout\write stdout
+
+			if stdoutError
+				io.stderr\write stdoutError
+
+			if not stdout and not stdoutAgain and not stderr and not stderrAgain
+				break
+
+		status = process.waitpid child\pid!
+
+		if status.exit != 0
+			io.stderr\write "Last command returned #{status.exit}"
+			return false, status.exit
+
+		true
 }
 

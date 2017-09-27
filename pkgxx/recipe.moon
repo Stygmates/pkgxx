@@ -256,8 +256,8 @@ class
 					recipe[name]
 
 			@buildInstructions[1]\setInstructions instructions "configure"
-			@buildInstructions[1]\setInstructions instructions "build"
-			@buildInstructions[1]\setInstructions instructions "install"
+			@buildInstructions[2]\setInstructions instructions "build"
+			@buildInstructions[3]\setInstructions instructions "install"
 
 		@buildDependencies = {}
 		for string in *(recipe.buildDependencies or {})
@@ -331,9 +331,9 @@ class
 		@buildDependencies or= {}
 
 		@dirname or= if @version
-			@dirname = "#{@name}-#{@version}"
+			"#{@name}-#{@version}"
 		else
-			@dirname = @name
+			@name
 
 		-- @watch guess.
 		-- Is done very long after the possible static definition of watch because modules may need to have access to other values.
@@ -698,7 +698,7 @@ class
 		for step, builder in ipairs @buildInstructions
 			success, e = builder\execute!
 
-			if not success
+			unless success
 				if builder.critical
 					return nil, e
 				elseif e
@@ -739,7 +739,10 @@ class
 
 		if module.package
 			for package in *@packages
-				package\package module
+				unless package\package module
+					return nil
+
+			return true
 		else
 			-- Should NOT happen.
 			error "No module is available for the package manager "..

@@ -53,6 +53,8 @@ unpack = unpack or table.unpack
 	attributes: lfs.attributes,
 	dir: lfs.dir,
 
+	---
+	-- FIXME: Move to Context.
 	execute: (arg) =>
 		exports = ""
 
@@ -61,9 +63,7 @@ unpack = unpack or table.unpack
 
 		logfile = "#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
 
-	--	if ui.getVerbosity! < 6
-	--		logfile = "#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
-	--		arg = "#{exports} (set -x; #{arg}) 2>> #{logfile} >> #{logfile} "
+		verbosity = ui.getVerbosity!
 
 		child = process.exec "sh", {"-c", "set -e -x\n#{exports}\n#{arg}"}
 
@@ -72,16 +72,29 @@ unpack = unpack or table.unpack
 			stderr, stderrError, stderrAgain = child\stderr!
 
 			if stderr
-				io.stderr\write stderr
+				@context\log stderr
+
+				-- FIXME: Who ever though integers were good enough for this?
+				if verbosity >= 5
+					io.stderr\write stderr
 
 			if stderrError
-				io.stderr\write stderrError
+				@context\log stderrError
+
+				if verbosity >= 3
+					io.stderr\write stderrError
 
 			if stdout
-				io.stdout\write stdout
+				@context\log stdout
+
+				if verbosity >= 6
+					io.stdout\write stdout
 
 			if stdoutError
-				io.stderr\write stdoutError
+				@context\log stdoutError
+
+				if verbosity >= 3
+					io.stderr\write stdoutError
 
 			if not stdout and not stdoutAgain and not stderr and not stderrAgain
 				break

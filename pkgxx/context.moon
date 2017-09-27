@@ -40,6 +40,8 @@ class Context
 		@packagesDirectory = "#{home}"
 		@buildingDirectory = "/tmp/pkgxx-#{pid}-#{@randomKey}"
 
+		@logFilePath = "/var/log/pkgxx-#{pid}-#{@randomKey}.log"
+
 		@collections = {}
 
 		@compressionMethod = "gz"
@@ -59,6 +61,8 @@ class Context
 		p\close!
 
 		fs.mkdir @buildingDirectory
+
+		@logFile = io.open @logFilePath, "w"
 
 		@\loadModules!
 
@@ -275,11 +279,15 @@ class Context
 			fs.changeDirectory @packagesDirectory, ->
 				module @, target, opt
 
+	log: (...) =>
+		@logFile\write ...
+
 	---
 	-- Closes the context.
 	--
 	-- @warning This method removes the context's temporary files.
 	close: =>
+		@logFile\close!
 		os.execute "rm -rf '#{@buildingDirectory}'"
 
 	__tostring: =>

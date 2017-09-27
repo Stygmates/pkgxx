@@ -426,8 +426,8 @@ class
 
 	---
 	-- @return (string) Location of the recipe’s log file.
-	getLogFile: =>
-		"#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
+	-- @deprecated
+	getLogFile: => @context.logFilePath
 
 	--- @hidden
 	-- FIXME: The package.toml specific code should just move somewhere else.

@@ -848,7 +848,7 @@ class
 			if @watch.selector
 				ui.debug "Using the “selector” method."
 				p = io.popen "curl -sL '#{@watch.url}' | hxnormalize -x " ..
-					"| hxselect '#{@watch.selector}' -c"
+					"| hxselect -c '#{@watch.selector}'"
 			elseif @watch.lasttar
 				ui.debug "Using the “lasttar” method."
 				p = io.popen "curl -sL '#{@watch.url}' | hxnormalize -x " ..

@@ -27,7 +27,7 @@ makeRepository = =>
 	output = " --output '#{index}.unsigned'"
 
 	r, e = os.execute "apk index --quiet #{oldIndex} #{output}" ..
-		" --description 'test test'" ..
+		" --description '#{@context.repositoryDescription or "pkgxx-generated repository"}'" ..
 		" --rewrite-arch '#{@context.architecture}'" ..
 		" #{@context.packagesDirectory}/#{@context.architecture}/*.apk"
 

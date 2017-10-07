@@ -231,6 +231,8 @@ class
 		@maintainer = recipe.maintainer or @packager
 		@url = recipe.url
 
+		@options = recipe.options
+
 		@watch = recipe.watch
 		if @watch
 			@watch.url = @watch.url or @url

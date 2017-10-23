@@ -10,10 +10,10 @@ ui = require "pkgxx.ui"
 				@name = @name\gsub "^liblib", "lib"
 			when "headers"
 				@name = @name .. "-dev"
-				@name = @name\gsub "-dev-dev$", "-dev"
+				@name = @name\gsub "%-dev%-dev$", "%-dev"
 			when "documentation"
 				@name = @name .. "-doc"
-				@name = @name\gsub "-doc-doc$", "-doc"
+				@name = @name\gsub "%-doc%-doc$", "%-doc"
 			when "binary"
 				true -- Do nothing.
 			else

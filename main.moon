@@ -124,7 +124,7 @@ if args.targets
 
 		recipe\updateVersion!
 
-	for target in *recipe.packages
+	for package in *recipe.packages
 		if ui.getVerbosity! > 3
 			ui.detail package.target
 		else

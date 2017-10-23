@@ -14,7 +14,7 @@ ui = require "pkgxx.ui"
 		f = io.open "conf/distributions", "w"
 		f\write "Codename: #{@configuration["distribution-codename"]}\n"
 		f\write "Components: main\n"
-		f\write "Architectures: #{@modules.dpkg._debarch @}\n"
+		f\write "Architectures: #{@modules.dpkg._debarch context: self}\n"
 		f\write "\n"
 		f\close!
 
@@ -28,7 +28,7 @@ ui = require "pkgxx.ui"
 		if opt.force
 			-- Just in case?
 			os.execute "reprepro -Vb." ..
-				" -A #{@modules.dpkg._debarch @}" ..
+				" -A #{@modules.dpkg._debarch context: self}" ..
 				" remove '#{cn}' '#{package.name}'"
 
 		os.execute "reprepro -Vb ." ..

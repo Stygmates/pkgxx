@@ -39,6 +39,8 @@ testContext = ->
 		.packageManager = "test"
 		.distribution = "test"
 
+		.logFile = io.stderr
+
 ---
 -- Creates a recipe, runs code over it, and then cleans and closes
 -- the test Context.

@@ -2,7 +2,8 @@
 pkgxx = require "pkgxx"
 ui = require "pkgxx.ui"
 
-context = pkgxx\newContext!
+context = with pkgxx\newContext!
+	.logFile = io.stderr
 
 ui.setVerbosity 0
 

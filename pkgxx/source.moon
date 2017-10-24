@@ -113,7 +113,7 @@ Source = Class "Source",
 			fs.changeDirectory context.sourcesDirectory, ->
 				module = context.modules[protocol]
 				if module and module.download
-					module.download self
+					module.download self, context
 				else
 					ui.error "Does not know how to download: #{url}"
 		else

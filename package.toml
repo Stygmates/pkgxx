@@ -5,7 +5,7 @@ dirname = "pkgxx"
 
 summary = "Modular and extensible packages builder."
 description = """
-pkg++ is a tool to build packages of various formats on for many distributions.
+pkg++ is a tool to build packages of various formats on many distributions.
 
 It uses a declarative recipe format and tries to be portable.
 """

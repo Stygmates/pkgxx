@@ -243,8 +243,11 @@ Class "Package",
 	-- @param module (Module) Package manager module.
 	-- @return true | nil, string
 	package: (module) =>
-		if @.automatic and not @\hasFiles!
-			ui.debug "Not building automatic package: #{@name}"
+		hasFiles, missingFile = @\hasFiles!
+
+		unless hasFiles
+			ui.error "Some files could not be split properly for package '#{@name}'"
+			ui.detail "Missing file: #{missingFile}"
 
 			return
 
@@ -286,7 +289,7 @@ Class "Package",
 			filename = baseDir .. "/" .. file
 
 			if not fs.attributes filename
-				return false
+				return false, filename
 
 		true
 

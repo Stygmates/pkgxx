@@ -275,6 +275,15 @@ class
 		-- @attribute packages
 		@packages = @\parsePackages recipe or self
 
+		os = package.os
+		if os and os[distribution]
+			buildDeps = os[distribution].buildDependencies
+			if buildDeps
+				@buildDependencies = [Atom(str) for str in *buildDeps]
+
+			for package in *@packages
+				package\import os[distribution]
+
 		@\finalize!
 
 	---
@@ -346,9 +355,6 @@ class
 						if watch
 							-- FIXME: Maybe we could do some additionnal checks.
 							@watch = watch
-
-		-- FIXME: Remove. Recipes having a class makes no sense.
-		@class or= @\guessClass!
 
 		@\applyDistributionRules @recipe or self
 
@@ -442,7 +448,7 @@ class
 		packages[1]\import recipe
 
 		if recipe.splits
-			for packageName, data in pairs recipe.packages
+			for packageName, data in pairs recipe.splits
 				-- Packages will need much more data than this.
 				-- FIXME: Package!? Target!?
 				package = Package
@@ -476,12 +482,6 @@ class
 		for package in *@packages
 			if module.alterRecipe
 				module.alterRecipe package, recipe
-
-		for package in *@packages
-			os = package.os
-
-			if os and os[distribution]
-				package\import os[distribution]
 
 		if module
 			ui.debug "Distribution: #{module.name}"
@@ -741,6 +741,10 @@ class
 
 		if module.package
 			for package in *@packages
+				if package.automatic and not package\hasFiles!
+					ui.debug "Not building (empty) automatic package: #{package.name}"
+					continue
+
 				unless package\package module
 					return nil
 

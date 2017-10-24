@@ -102,7 +102,7 @@ unpack = unpack or table.unpack
 		status = process.waitpid child\pid!
 
 		if status.exit != 0
-			io.stderr\write "Last command returned #{status.exit}"
+			io.stderr\write "Last command returned #{status.exit}\n"
 			return false, status.exit
 
 		true

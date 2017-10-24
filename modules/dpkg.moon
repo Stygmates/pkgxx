@@ -85,13 +85,15 @@ buildDeb = =>
 		ui.detail "No debian/copyright file will be generated "
 		ui.detail "due to no 'license' or 'copyright' field."
 
-	os.execute "dpkg-deb " ..
+	rValue = fs.execute @, "dpkg-deb " ..
 		"-Zxz -z9 --deb-format=2.0 " ..
 		"--build '#{fs.currentDirectory!}' " ..
 		"'#{@context.packagesDirectory}/#{@target}'"
 
 	-- Cleaning package directory for further reuse.
 	fs.remove "DEBIAN"
+
+	rValue
 
 {
 	_debarch: debarch

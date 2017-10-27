@@ -1,7 +1,6 @@
 
 ui = require "pkgxx.ui"
 lfs = require "lfs"
-process = require "process"
 
 unpack = unpack or table.unpack
 
@@ -61,50 +60,30 @@ unpack = unpack or table.unpack
 		for key, value in pairs @context.exports
 			exports = exports .. "export #{key}='#{value}'\n"
 
-		logfile = "#{@context.packagesDirectory}/#{@name}-#{@version}-#{@release}.log"
-
 		verbosity = ui.getVerbosity!
 
-		child = process.exec "sh", {"-c", "set -e -x\n#{exports}\n#{arg}"}
+		arg = "set -e -x\n#{exports}\n#{arg}"
 
-		while true
-			stdout, stdoutError, stdoutAgain = child\stdout!
-			stderr, stderrError, stderrAgain = child\stderr!
+		arg = "sh -c \"#{arg\gsub("\\$", "\\$")\gsub("\\", "\\\\")\gsub("\"", "\\\"")}\""
 
-			if stderr
-				@context\log stderr
+		@context.logFile\flush!
+		if verbosity >= 5
+			arg = "#{arg} 2>&1 | tee -a #{@context.logFilePath}"
+		else
+			arg = "#{arg} >> #{@context.logFilePath} 2>&1"
 
-				-- FIXME: Who ever though integers were good enough for this?
-				if verbosity >= 5
-					io.stderr\write stderr
+		success, _, status = os.execute arg
 
-			if stderrError
-				@context\log stderrError
+		if type(success) == "number"
+			status = success
 
-				if verbosity >= 3
-					io.stderr\write stderrError
+			if status >= 256
+				status = status / 256
 
-			if stdout
-				@context\log stdout
+		if status != 0
+			io.stderr\write "Last command returned #{status}\n"
+			return false, status
 
-				if verbosity >= 6
-					io.stdout\write stdout
-
-			if stdoutError
-				@context\log stdoutError
-
-				if verbosity >= 3
-					io.stderr\write stdoutError
-
-			if not stdout and not stdoutAgain and not stderr and not stderrAgain
-				break
-
-		status = process.waitpid child\pid!
-
-		if status.exit != 0
-			io.stderr\write "Last command returned #{status.exit}\n"
-			return false, status.exit
-
-		true
+		true, 0
 }
 

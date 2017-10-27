@@ -40,7 +40,8 @@ class Context
 		@packagesDirectory = "#{home}"
 		@buildingDirectory = "/tmp/pkgxx-#{pid}-#{@randomKey}"
 
-		@logFilePath = "/var/log/pkgxx-#{pid}-#{@randomKey}.log"
+		fs.mkdir "/var/log/pkgxx"
+		@logFilePath = "/var/log/pkgxx/#{pid}-#{@randomKey}.log"
 
 		@collections = {}
 

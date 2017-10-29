@@ -110,7 +110,7 @@ buildDeb = =>
 		install: (filename) ->
 			false ~= os.execute "dpkg -i '#{filename}'"
 
-	isInstalled: (name) ->
-		false ~= os.execute "dpkg -l | cut -d ' ' -f 3 | grep -q '^#{name}$'"
+	isInstalled: (name) =>
+		fs.execute context: self, "dpkg -l | cut -d ' ' -f 3 | grep -q '^#{name}$'"
 }
 

@@ -68,7 +68,13 @@ unpack = unpack or table.unpack
 
 		@context.logFile\flush!
 		if verbosity >= 5
-			arg = "#{arg} 2>&1 | tee -a #{@context.logFilePath}"
+			-- omg
+			arg = "returnFile=\"`mktemp`\";" ..
+				"{ #{arg}; echo \"$?\n\" > $returnFile; } 2>&1 |" ..
+					"tee -a #{@context.logFilePath};" ..
+				"returnValue=\"$(cat $returnFile)\";" ..
+				"rm -f \"$returnFile\";" ..
+				"exit $returnValue"
 		else
 			arg = "#{arg} >> #{@context.logFilePath} 2>&1"
 
@@ -82,8 +88,8 @@ unpack = unpack or table.unpack
 
 		if status != 0
 			io.stderr\write "Last command returned #{status}\n"
-			return false, status
-
-		true, 0
+			false, status
+		else
+			true, 0
 }
 

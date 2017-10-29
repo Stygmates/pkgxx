@@ -102,10 +102,7 @@ dist = ->
 		install: (filename) ->
 			false ~= os.execute "rpm -i '#{filename}'"
 
-	isInstalled: (name) ->
-		-- Being silent.
-		p = io.popen "rpm -V --noscripts --nodeps --nofiles #{name}"
-		p\read "*all"
-		p\close!
+	isInstalled: (name) =>
+		fs.execute context: self, "rpm -V --noscripts --nodeps --nofiles #{name}"
 }
 

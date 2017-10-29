@@ -101,17 +101,8 @@ makeRepository = =>
 	installDependency: (name) ->
 		os.execute "apk add '#{name}'"
 
-	isInstalled: (name) ->
-		p = io.popen "apk info"
-		for line in p\lines!
-			if line == name
-				p\close!
-
-				return true
-
-		p\close!
-
-		false
+	isInstalled: (name) =>
+		fs.execute context: self, "apk info | grep -q '#{name}'"
 }
 
 

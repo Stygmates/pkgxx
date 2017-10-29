@@ -12,7 +12,7 @@ fs = require "pkgxx.fs"
 		install: (filename) ->
 			-- FIXME: check prior installation and use -u to update package
 			false ~= os.execute "pkgadd '#{filename}'"
-	isInstalled: (name) ->
-		false ~= os.execute "pkginfo -i | grep -q '^#{name}$'"
+	isInstalled: (name) =>
+		fs.execute context: self, "pkginfo -i | grep -q '^#{name}$'"
 }
 

@@ -921,8 +921,6 @@ class
 			for atom in *dependencies
 				foundOne = false
 
-				-- FIXME: Check if it’s in the distribution’s package manager
-				--        if stuff fails.
 				for repository in *@context.repositories
 					success, r = pcall ->
 						@context\openRecipe "#{repository}/#{atom.origin}/package.toml"
@@ -938,7 +936,7 @@ class
 							break
 
 				unless foundOne
-					foundOne = isInstalled atom.name
+					foundOne = isInstalled @context, atom.name
 
 					if foundOne
 						ui.debug "Dependency: <installed>, #{atom}"

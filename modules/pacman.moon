@@ -97,7 +97,7 @@ genPkginfo = (size) =>
 				".PKGINFO *"
 		install: (filename) ->
 			false ~= os.execute "pacman -U '#{filename}'"
-	isInstalled: (name) ->
-		false ~= os.execute "pacman -Q #{name} > /dev/null"
+	isInstalled: (name) =>
+		fs.execute context: self, "pacman -Q '#{name}' > /dev/null 2>&1"
 }
 

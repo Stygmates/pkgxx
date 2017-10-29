@@ -244,7 +244,7 @@ class Context
 			-- FIXME: Make this a real warning once it’s implemented.
 			return nil, "unable to check dependencies"
 
-		module.isInstalled atom.name, atom
+		module.isInstalled self, atom.name, atom
 
 	---
 	-- Updates the context’s packages repository.

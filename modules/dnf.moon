@@ -1,6 +1,6 @@
 
 {
-	installDependency: (name) ->
-		os.execute "dnf install -qy '#{name}'"
+	installDependency: (name) =>
+		fs.execute context: self, "dnf install -qy '#{name}'"
 }
 

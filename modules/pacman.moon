@@ -95,9 +95,11 @@ genPkginfo = (size) =>
 			os.execute "tar cJf " ..
 				"'#{@context.packagesDirectory}/#{@target}' " ..
 				".PKGINFO *"
-		install: (filename) ->
-			false ~= os.execute "pacman -U '#{filename}'"
+		install: (filename) =>
+			fs.execute context: self, "pacman -U '#{filename}'"
 	isInstalled: (name) =>
-		fs.execute context: self, "pacman -Q '#{name}' > /dev/null 2>&1"
+		fs.execute context: self, "pacman -Q '#{name}'"
+	installDependency: (name) =>
+		fs.execute context: self, "pacman -S --noconfirm '#{name}'"
 }
 

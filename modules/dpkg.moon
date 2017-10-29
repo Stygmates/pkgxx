@@ -107,8 +107,8 @@ buildDeb = =>
 			"#{@name\gsub "_", "-"}_#{@version}-#{@release}" ..
 				"_#{arch}.deb"
 		build: buildDeb
-		install: (filename) ->
-			false ~= os.execute "dpkg -i '#{filename}'"
+		install: (filename) =>
+			fs.execute context: self, "dpkg -i '#{filename}'"
 
 	isInstalled: (name) =>
 		fs.execute context: self, "dpkg -l | cut -d ' ' -f 3 | grep -q '^#{name}$'"

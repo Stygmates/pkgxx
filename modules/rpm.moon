@@ -99,8 +99,8 @@ dist = ->
 				os.execute "mv" ..
 					" '#{pwd}/../#{arch}/#{@target}'" ..
 					" '#{@context.packagesDirectory}/#{@target}'"
-		install: (filename) ->
-			false ~= os.execute "rpm -i '#{filename}'"
+		install: (filename) =>
+			fs.execute context: self, "rpm -i '#{filename}'"
 
 	isInstalled: (name) =>
 		fs.execute context: self, "rpm -V --noscripts --nodeps --nofiles #{name}"

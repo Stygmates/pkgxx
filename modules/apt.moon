@@ -1,6 +1,6 @@
 
 {
-	installDependency: (name) ->
-		os.execute "apt install -y '#{name}'"
+	installDependency: (name) =>
+		fs.execute context: self, "apt install -y '#{name}'"
 }
 

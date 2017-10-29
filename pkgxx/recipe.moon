@@ -615,7 +615,7 @@ class
 		if not (module and module.installDependency)
 			return nil, "no way to install packages"
 
-		module.installDependency name
+		module.installDependency @context, name
 
 	---
 	-- Downloads the recipe’s sources.

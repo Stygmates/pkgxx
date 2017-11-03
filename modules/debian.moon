@@ -17,7 +17,7 @@ ui = require "pkgxx.ui"
 			when "binary"
 				true -- Do nothing.
 			else
-				ui.warning "<modules/Debian> Unrecognized class: " ..
+				@context\warning "<modules/Debian> Unrecognized class: " ..
 					"'#{@class}'"
 	autosplits: =>
 		name = @name

@@ -8,7 +8,7 @@ ui = require "pkgxx.ui"
 		if fs.attributes "conf/distributions"
 			return
 
-		ui.info "Building PPA."
+		@\info "Building PPA."
 		fs.mkdir "conf"
 
 		f = io.open "conf/distributions", "w"
@@ -19,7 +19,7 @@ ui = require "pkgxx.ui"
 		f\close!
 
 	addToRepository: (package, opt) =>
-		ui.info "Adding '#{package.target}' to PPA."
+		@\info "Adding '#{package.target}' to PPA."
 
 		cn = @configuration["distribution-codename"]
 

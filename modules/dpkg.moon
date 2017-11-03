@@ -69,11 +69,11 @@ copyright = (dest) =>
 
 buildDeb = =>
 	unless @maintainer
-		ui.warning "No 'maintainer'!"
+		@context\warning "No 'maintainer'!"
 	unless @description or @summary
-		ui.warning "No 'description' or 'summary'!"
+		@context\warning "No 'description' or 'summary'!"
 
-	ui.detail "Building '#{@target}'."
+	@context\detail "Building '#{@target}'."
 
 	fs.mkdir "DEBIAN"
 
@@ -82,8 +82,8 @@ buildDeb = =>
 	if @license and @copyright
 		copyright @, "DEBIAN/copyright"
 	else
-		ui.detail "No debian/copyright file will be generated "
-		ui.detail "due to no 'license' or 'copyright' field."
+		@context\detail "No debian/copyright file will be generated "
+		@context\detail "due to no 'license' or 'copyright' field."
 
 	rValue = fs.execute @, "dpkg-deb " ..
 		"-Zxz -z9 --deb-format=2.0 " ..

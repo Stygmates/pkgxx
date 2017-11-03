@@ -3,7 +3,7 @@
 	postBuildHook: =>
 		local uid, gid
 
-		ui.detail "Checking ownership..."
+		@\detail "Checking ownership..."
 
 		with io.popen "id -u"
 			uid = tonumber \read "*line"

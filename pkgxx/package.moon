@@ -189,14 +189,14 @@ Class "Package",
 		module = @context.modules[distribution]
 
 		if module
-			ui.debug "Distribution: #{module.name}"
+			@context\debug "Distribution: #{module.name}"
 			if module.autosplits
-				ui.debug "Trying module '#{module.name}'."
+				@context\debug "Trying module '#{module.name}'."
 				newPackages = module.autosplits @
 				newPackages = macro.parse newPackages, macroList @
 
 				for package in *@\parsePackages splits: newPackages
-					ui.debug "Registering automatic package: #{package.name}."
+					@context\debug "Registering automatic package: #{package.name}."
 
 					-- FIXME: Some of that code seems copied from Recipe.
 					--        Copying code is bad. But it might also be broken.
@@ -204,11 +204,11 @@ Class "Package",
 						package.automatic = true
 						@packages[#@packages+1] = package
 					else
-						ui.debug " ... package already exists."
+						@context\debug " ... package already exists."
 		else
-			ui.warning "No module found for this distribution: " ..
+			@context\warning "No module found for this distribution: " ..
 				"'#{distribution}'."
-			ui.warning "Your package is very unlike to comply to " ..
+			@context\warning "Your package is very unlike to comply to " ..
 				"your OS’ packaging guidelines."
 
 		for package in *@packages
@@ -222,12 +222,12 @@ Class "Package",
 	-- @issue Should be renamed. That name is not representative of what it does in any way.
 	-- @hidden
 	moveFiles: =>
-		ui.detail "Packageting '#{@name}'."
+		@context\detail "Packageting '#{@name}'."
 
 		for file in *@files
 			source = (@origin\packagingDirectory "_") .. file
 			destination = (@\packagingDirectory!) .. file
-			ui.debug "package: #{source} -> #{destination}"
+			@context\debug "package: #{source} -> #{destination}"
 
 			-- XXX: We need to be more cautious about
 			--      permissions here.
@@ -246,8 +246,8 @@ Class "Package",
 		hasFiles, missingFile = @\hasFiles!
 
 		unless hasFiles
-			ui.error "Some files could not be split properly for package '#{@name}'"
-			ui.detail "Missing file: #{missingFile}"
+			@context\error "Some files could not be split properly for package '#{@name}'"
+			@context\detail "Missing file: #{missingFile}"
 
 			return
 

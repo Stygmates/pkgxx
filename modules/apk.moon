@@ -14,7 +14,7 @@ getSize = ->
 	size
 
 makeRepository = =>
-	ui.info "Building 'apk' repository."
+	@\info "Building 'apk' repository."
 
 	index = "#{@context.packagesDirectory}/#{@context.architecture}/APKINDEX.tar.gz"
 
@@ -44,9 +44,9 @@ makeRepository = =>
 {
 	check: =>
 		unless os.execute "abuild-sign --installed"
-			ui.error "You need to generate a key with " ..
+			@context\error "You need to generate a key with " ..
 				"'abuild-keygen -a'."
-			ui.error "No APK package can be built without " ..
+			@context\error "No APK package can be built without " ..
 				"being signed."
 
 			return nil, "no abuild key"
@@ -59,7 +59,7 @@ makeRepository = =>
 				"#{@name}-#{@version}-r#{@release - 1}.apk"
 		build: =>
 			unless @context.builder
-				ui.warning "No 'builder' was defined in your configuration!"
+				@context\warning "No 'builder' was defined in your configuration!"
 
 			unless fs.attributes "#{@context.packagesDirectory}/#{@context.architecture}"
 				fs.mkdir "#{@context.packagesDirectory}/#{@context.architecture}"
@@ -68,7 +68,7 @@ makeRepository = =>
 
 			@context.modules.pacman._genPkginfo @, size
 
-			ui.detail "Building '#{@target}'."
+			@\detail "Building '#{@target}'."
 			fs.mkdir @context.packagesDirectory .. "/" ..
 				@context.architecture
 			fs.execute @, [[

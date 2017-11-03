@@ -10,10 +10,10 @@ fs = require "pkgxx.fs"
 		--        We need to have some sort of abstraction over Lua’s APIs.
 		a = fs.attributes filename
 		if a
-			ui.detail "Updating local repository for '#{filename}'."
+			context.detail "Updating local repository for '#{filename}'."
 			fs.execute {:context}, "cd '#{filename}' && git pull '#{url}'"
 		else
-			ui.detail "Cloning repository for '#{filename}'."
+			context.detail "Cloning repository for '#{filename}'."
 			fs.execute {:context}, "git clone '#{url}' '#{filename}'"
 	getVersion: (source) ->
 		{:filename, :url} = source

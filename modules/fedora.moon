@@ -16,7 +16,7 @@ ui = require "pkgxx.ui"
 			when "binary"
 				true -- Do nothing.
 			else
-				ui.warning "<modules/Fedora> Unrecognized class: '#{@class}'."
+				@context\warning "<modules/Fedora> Unrecognized class: '#{@class}'."
 	autosplits: =>
 		name = @splits[1].name
 		description = @splits[1].description

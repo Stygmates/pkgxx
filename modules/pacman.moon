@@ -70,9 +70,9 @@ genPkginfo = (size) =>
 	check: =>
 		if @context.packageManager == "apk"
 			unless os.execute "abuild-sign --installed"
-				ui.error "You need to generate a key with " ..
+				@context\error "You need to generate a key with " ..
 					"'abuild-keygen -a'."
-				ui.error "No APK package can be built without " ..
+				@context\error "No APK package can be built without " ..
 					"being signed."
 
 				return nil, "no abuild key"
@@ -84,13 +84,13 @@ genPkginfo = (size) =>
 				"#{@context.architecture}.pkg.tar.xz"
 		build: =>
 			unless @context.builder
-				ui.warning "No 'builder' was defined in your configuration!"
+				@context\warning "No 'builder' was defined in your configuration!"
 
 			size = getSize!
 
 			genPkginfo @, size
 
-			ui.detail "Building '#{@target}'."
+			@context\detail "Building '#{@target}'."
 
 			os.execute "tar cJf " ..
 				"'#{@context.packagesDirectory}/#{@target}' " ..

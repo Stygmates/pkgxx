@@ -9,7 +9,7 @@ valueOf = (variable, root, presets) ->
 		string.gsub presets[variable],
 			"%%", "%%%%"
 	else
-		ui.warning "Undefined macro: #{variable}"
+		@context\warning "Undefined macro: #{variable}"
 		""
 
 parseString = (string, root, presets) ->

@@ -4,14 +4,14 @@ fs = require "pkgxx.fs"
 
 {
 	postBuildHook: =>
-		ui.detail "Compressing manpages..."
+		@\detail "Compressing manpages..."
 
 		fs.changeDirectory (@\packagingDirectory!), ->
 			prefix = @\parse @context\getPrefix "mandir"
 
 			-- FIXME: hardcoded directory spotted.
 			unless fs.attributes "./#{prefix}"
-				ui.debug "No manpage found: not compressing manpages."
+				@context\debug "No manpage found: not compressing manpages."
 				return
 
 			find = io.popen "find ./#{prefix} -type f"
@@ -20,7 +20,7 @@ fs = require "pkgxx.fs"
 			while file
 				unless file\match "%.gz$" or file\match "%.xz$" or
 				       file\match "%.bz2$"
-					ui.debug "Compressing manpage: #{file}"
+					@context\debug "Compressing manpage: #{file}"
 
 					switch @context.compressionMethod
 						when "gz"

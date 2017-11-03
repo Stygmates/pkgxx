@@ -115,11 +115,11 @@ Source = Class "Source",
 				if module and module.download
 					module.download self, context
 				else
-					ui.error "Does not know how to download: #{url}"
+					context\error "Does not know how to download: #{url}"
 		else
 			-- Files are built-in.
 			if fs.attributes filename
-				ui.detail "Copying file: #{filename}"
+				context\detail "Copying file: #{filename}"
 				a = os.execute "cp '#{filename}' '#{context.sourcesDirectory}/#{filename}'"
 
 				if (type a) == "number" then
@@ -127,7 +127,7 @@ Source = Class "Source",
 
 				return a
 			else
-				ui.detail "Already downloaded: #{filename}."
+				context\detail "Already downloaded: #{filename}."
 				true
 
 Source

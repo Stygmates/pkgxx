@@ -75,7 +75,7 @@ dist = ->
 		build: =>
 			dir = @name
 
-			ui.detail "Building '#{@target}'."
+			@context\detail "Building '#{@target}'."
 
 			fs.changeDirectory "..", ->
 				dir = @name

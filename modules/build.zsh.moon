@@ -9,7 +9,7 @@ fs = require "pkgxx.fs"
 		fs.changeDirectory @dirname, ->
 			if fs.attributes "./project.zsh"
 				if fs.attributes "Makefile"
-					ui.debug "Configuration not done because Makefile already generated."
+					@context\debug "Configuration not done because Makefile already generated."
 					true
 				else
 					fs.execute @, "build.zsh -c -g"

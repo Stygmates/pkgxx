@@ -43,7 +43,7 @@ Class "Builder",
 				if module
 					-> module[@name] @recipe
 				else
-					return nil, "Could not find module."
+					return nil, "Could not find module for '#{@name}' phase."
 			else
 				return nil, "Builder cannot execute #{type(@instructions)}."
 

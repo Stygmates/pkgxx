@@ -238,7 +238,7 @@ class
 			@watch.url = @watch.url or @url
 
 			unless @watch.selector or @watch.lasttar or @watch.execute
-				ui.warning "No selector in [watch]. Removing watch."
+				@context\warning "No selector in [watch]. Removing watch."
 				@watch = nil
 
 		@dirname = recipe.dirname
@@ -407,7 +407,7 @@ class
 		module = @context.modules[@context.packageManager]
 
 		unless module and module.package
-			ui.error "Could not set targets. Wrong package manager module?"
+			@context\error "Could not set targets. Wrong package manager module?"
 			return nil
 
 		for package in *@packages
@@ -484,25 +484,25 @@ class
 				module.alterRecipe package, recipe
 
 		if module
-			ui.debug "Distribution: #{module.name}"
+			@context\debug "Distribution: #{module.name}"
 
 			if module.autosplits
-				ui.debug "Trying module '#{module.name}'."
+				@context\debug "Trying module '#{module.name}'."
 				newPackages = module.autosplits @
 				newPackages = macro.parse newPackages, macroList @
 
 				for package in *@\parsePackages splits: newPackages
-					ui.debug "Registering automatic package: #{package.name}."
+					@context\debug "Registering automatic package: #{package.name}."
 
 					if not @\hasPackage package.name
 						package.automatic = true
 						@packages[#@packages+1] = package
 					else
-						ui.debug " ... package already exists."
+						@context\debug " ... package already exists."
 		else
-			ui.warning "No module found for this distribution: " ..
+			@context\warning "No module found for this distribution: " ..
 				"'#{distribution}'."
-			ui.warning "Your package is unlikely to comply to " ..
+			@context\warning "Your package is unlikely to comply to " ..
 				"your OS’ packaging guidelines."
 
 	--- @hidden
@@ -578,7 +578,7 @@ class
 				return true
 
 			if attributes.modification < @recipeAttributes.modification
-				ui.info "Recipe is newer than packages."
+				@context\info "Recipe is newer than packages."
 				return true
 
 		false
@@ -588,7 +588,7 @@ class
 	--
 	-- @return nil
 	checkDependencies: =>
-		ui.info "Checking dependencies…"
+		@context\info "Checking dependencies…"
 
 		deps = {}
 		for atom in *@buildDependencies
@@ -598,7 +598,7 @@ class
 			unless @context\isAtomInstalled atom
 				-- FIXME: Check the configuration to make sure it’s tolerated.
 				--        If it isn’t, at least ask interactively.
-				ui.detail "Installing missing dependency: #{atom.name}"
+				@context\detail "Installing missing dependency: #{atom.name}"
 				@\installDependency atom.name
 
 	---
@@ -622,7 +622,7 @@ class
 	--
 	-- @return (boolean) Boolean indicating whether or not the downloads succeeded.
 	download: =>
-		ui.info "Downloading…"
+		@context\info "Downloading…"
 
 		for source in *@sources
 			if (source\download @context) ~= true
@@ -663,17 +663,17 @@ class
 	--- @hidden
 	-- Hidden until clarified semantics and some grooming.
 	extract: =>
-		ui.info "Extracting…"
+		@context\info "Extracting…"
 
 		fs.changeDirectory @\buildingDirectory!, ->
 			for source in *@sources
 				if source.filename\match "%.tar%.[a-z]*$"
-					ui.detail "Extracting '#{source.filename}'."
+					@context\detail "Extracting '#{source.filename}'."
 					os.execute "tar xf " ..
 						"'#{@context.sourcesDirectory}/" ..
 						"#{source.filename}'"
 				else
-					ui.detail "Copying '#{source.filename}'."
+					@context\detail "Copying '#{source.filename}'."
 					-- FIXME: -r was needed for repositories and stuff.
 					--        We need to modularize “extractions”.
 					os.execute "cp -r " ..
@@ -695,7 +695,7 @@ class
 
 		@\extract!
 
-		ui.info "Building…"
+		@context\info "Building…"
 
 		for step, builder in ipairs @buildInstructions
 			success, e = builder\execute!
@@ -704,9 +704,9 @@ class
 				if builder.critical
 					return nil, e
 				elseif e
-					ui.warning e
+					@context\warning e
 
-		ui.info "Doing post-build verifications."
+		@context\info "Doing post-build verifications."
 		@\postBuildHooks!
 
 		true
@@ -717,7 +717,7 @@ class
 		for package in *@packages
 			if package.files
 				if package.automatic and not package\hasFiles!
-					ui.debug "No file detected for #{package.name}. Ignoring."
+					@context\debug "No file detected for #{package.name}. Ignoring."
 					continue
 
 				package\moveFiles!
@@ -734,7 +734,7 @@ class
 	-- @see Recipe\finalize
 	package: =>
 		--- @warning \finalize! must have been called first.
-		ui.info "Packaging…"
+		@context\info "Packaging…"
 		@\split!
 
 		module = @context.modules[@context.packageManager]
@@ -742,7 +742,7 @@ class
 		if module.package
 			for package in *@packages
 				if package.automatic and not package\hasFiles!
-					ui.debug "Not building (empty) automatic package: #{package.name}"
+					@context\debug "Not building (empty) automatic package: #{package.name}"
 					continue
 
 				unless package\package module
@@ -759,8 +759,8 @@ class
 	--
 	-- @return (boolean) Whether removing the files succeeded or not.
 	clean: =>
-		ui.info "Cleaning…"
-		ui.detail "Removing '#{@\buildingDirectory!}'."
+		@context\info "Cleaning…"
+		@context\detail "Removing '#{@\buildingDirectory!}'."
 
 		-- Sort of necessary, considering the directories and files are
 		-- root-owned. And they have to if we want our packages to be valid.
@@ -776,10 +776,10 @@ class
 		e = 0
 
 		unless @name
-			ui.error "no 'name' field"
+			@context\error "no 'name' field"
 			e = e + 1
 		unless @sources
-			ui.error "no 'sources' field"
+			@context\error "no 'sources' field"
 			e = e + 1
 
 		unless @version
@@ -794,41 +794,41 @@ class
 					break
 
 			unless isVersionable
-				ui.error "no 'version' field"
+				@context\error "no 'version' field"
 				e = e + 1
 
 		unless @url
-			ui.warning "no 'url' field"
+			@context\warning "no 'url' field"
 			e = e + 1
 
 		unless @packager
-			ui.warning "no 'packager' field"
+			@context\warning "no 'packager' field"
 			e = e + 1
 
 		unless @watch
-			ui.warning "no 'watch' section"
+			@context\warning "no 'watch' section"
 		else
 			with @watch
 				unless .selector or .lasttar or .execute
-					ui.warning "unusable 'watch', needs a selector, " ..
+					@context\warning "unusable 'watch', needs a selector, " ..
 						"lasttar or execute field"
 
 		for package in *@packages
 			with self = package
-				ui.detail @name
+				@context\detail tostring @name
 				unless @summary
-					ui.warning "no 'summary' field"
+					@context\warning "no 'summary' field"
 					e = e + 1
 				unless @description
-					ui.warning "no 'description' field"
+					@context\warning "no 'description' field"
 					e = e + 1
 
 				unless @options
-					ui.warning "no 'options' field"
+					@context\warning "no 'options' field"
 					e = e + 1
 
 				unless @dependencies
-					ui.warning "no 'dependencies' field"
+					@context\warning "no 'dependencies' field"
 					e = e + 1
 
 		e
@@ -852,17 +852,17 @@ class
 			--        We could switch to https://github.com/msva/lua-htmlparser,
 			--        but there could be issues with Lua 5.1. More testing needed.
 			if @watch.selector
-				ui.debug "Using the “selector” method."
+				@context\debug "Using the “selector” method."
 				p = io.popen "curl -sL '#{@watch.url}' | hxnormalize -x " ..
 					"| hxselect -c '#{@watch.selector}' -s '\n'"
 			elseif @watch.lasttar
-				ui.debug "Using the “lasttar” method."
+				@context\debug "Using the “lasttar” method."
 				p = io.popen "curl -sL '#{@watch.url}' | hxnormalize -x " ..
 					"| hxselect -c 'a' -s '\n' " ..
 					"| grep '#{@watch.lasttar}' " ..
 					"| sed 's&#{@watch.lasttar}&&;s&\\.tar\\..*$&&' | sort -rn"
 			elseif @watch.execute
-				ui.debug "Executing custom script."
+				@context\debug "Executing custom script."
 				p = io.popen @watch.execute
 
 			version = p\read "*line"
@@ -879,11 +879,11 @@ class
 			if @watch.subs
 				for pair in *@watch.subs
 					unless (type pair) == "table" and #pair == 2
-						ui.warning "Invalid substitution. Substitution is not a pair."
+						@context\warning "Invalid substitution. Substitution is not a pair."
 						continue
 
 					unless (type pair[1] == "string") and (type pair[2] == "string")
-						ui.warning "Invalid substitution. Substitution is not a pair of strings."
+						@context\warning "Invalid substitution. Substitution is not a pair of strings."
 
 						continue
 
@@ -901,7 +901,7 @@ class
 			f = if module
 				module.isInstalled
 			else
-				ui.warning "Unable to determine installed dependencies."
+				@context\warning "Unable to determine installed dependencies."
 
 			f or -> false
 
@@ -927,7 +927,7 @@ class
 
 					if success
 						unless depInTree atom
-							ui.debug "Dependency: #{repository}, #{atom}"
+							@context\debug "Dependency: #{repository}, #{atom}"
 							foundOne = true
 							deps[#deps+1] = r
 
@@ -939,10 +939,10 @@ class
 					foundOne = isInstalled @context, atom.name
 
 					if foundOne
-						ui.debug "Dependency: <installed>, #{atom}"
+						@context\debug "Dependency: <installed>, #{atom}"
 
 				unless foundOne
-					ui.warning "Dependency not found: '#{atom.name}'."
+					@context\warning "Dependency not found: '#{atom.name}'."
 
 		depFinder @
 

@@ -6,12 +6,12 @@ ui = require "pkgxx.ui"
 	-- FIXME: We need to invest a lot of work in updating that configuration.
 	makeRepository: =>
 		unless fs.attributes "repodata"
-			ui.info "Building yum repository."
+			@\info "Building yum repository."
 
 			os.execute "createrepo '.'"
 
 	addToRepository: (package) =>
-		ui.info "Adding '#{package.target}' to repository."
+		@\info "Adding '#{package.target}' to repository."
 
 		os.execute "createrepo --update ."
 }

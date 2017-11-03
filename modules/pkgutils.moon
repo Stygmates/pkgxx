@@ -6,7 +6,7 @@ fs = require "pkgxx.fs"
 	package:
 		target: => "#{@name}##{@version}-#{@release}.pkg.tar.xz"
 		build: =>
-			ui.detail "Building '#{@target}'."
+			@context\detail "Building '#{@target}'."
 			false ~= os.execute "tar cJf '#{@context.packagesDirectory}/#{@target}' '.'"
 
 		install: (filename) ->

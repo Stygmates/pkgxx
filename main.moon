@@ -53,8 +53,9 @@ parser = with argparse "pkgxx", "Packages builder."
 
 args = parser\parse!
 
-ui.setVerbosity ((4 + ((args.verbosity or 0) - (args.quiet or 0))) or
+context.verbosity = ((4 + ((args.verbosity or 0) - (args.quiet or 0))) or
 	context.configuration.verbosity or 4)
+ui.setVerbosity context.verbosity -- FIXME: WIP
 
 if args.architecture
 	context.architecture = args.architecture
@@ -67,8 +68,8 @@ success, recipe = pcall -> context\openRecipe "package.toml"
 
 unless success
 	with reason = recipe
-		ui.error "Could not open recipe."
-		ui.error tostring reason
+		context\error "Could not open recipe."
+		context\error tostring reason
 
 		os.exit 1
 
@@ -81,22 +82,22 @@ elseif args.watch
 		recipe\updateVersion!
 
 	if not recipe.version
-		ui.warning "no sources, no version information"
+		context\warning "no sources, no version information"
 		os.exit 3
 	elseif not recipe.watch
 		if recipe\buildNeeded!
-			ui.warning "no watch, build needed"
+			context\warning "no watch, build needed"
 		else
-			ui.warning "no watch"
+			context\warning "no watch"
 		os.exit 2
 	else
 		upToDate, lastVersion = recipe\isUpToDate!
 
 		if upToDate
-			ui.info "up to date, version is #{lastVersion}"
+			context\info "up to date, version is #{lastVersion}"
 			os.exit 0
 		else
-			ui.warning "outdated recipe, version is #{recipe.version} but should be #{lastVersion}"
+			context\warning "outdated recipe, version is #{recipe.version} but should be #{lastVersion}"
 			os.exit 1
 
 local uid, gid
@@ -112,13 +113,13 @@ with io.popen "id -g"
 unless args.targets or args.lint
 	if uid ~= 0 or gid ~= 0
 		-- I’d sure like to get rid of that warning, though.
-		ui.error "You should build your packages as root."
-		ui.error "Not doing so will result in errors or invalid packages."
+		context\error "You should build your packages as root."
+		context\error "Not doing so will result in errors or invalid packages."
 
 if args.targets
 	if not recipe.version
 		unless recipe\download!
-			ui.error "The download has failed."
+			context\error "The download has failed."
 
 			os.exit 1
 
@@ -126,7 +127,7 @@ if args.targets
 
 	for package in *recipe.packages
 		if ui.getVerbosity! > 3
-			ui.detail package.target
+			context\detail package.target
 		else
 			io.stdout\write package.target, "\n"
 
@@ -142,9 +143,9 @@ else
 	revertTable recipe\depTree!
 
 if #packagesList > 1
-	ui.section "Build list:"
+	context\section "Build list:"
 	for recipe in *packagesList
-		ui.detail "  - " ..
+		context\detail "  - " ..
 			"#{recipe.name}-#{recipe.version or "%"}-#{recipe.release}"
 
 local upToDate
@@ -154,25 +155,25 @@ for recipe in *packagesList
 			recipe\checkDependencies!
 
 		if #packagesList > 1
-			ui.section "Building " ..
+			context\section "Building " ..
 				"#{recipe.name}-#{recipe.version or "%"}-#{recipe.release}."
 
 		if recipe.version and recipe.watch
-			ui.info "Checking if recipe is up to date…"
+			context\info "Checking if recipe is up to date…"
 
 			r, ver, e = recipe\isUpToDate!
 
 			unless r
 				if e
-					ui.warning "Could not check whether this recipe is up to date."
+					context\warning "Could not check whether this recipe is up to date."
 				else
-					ui.warning "A new version was published since this recipe was written!"
-					ui.warning "The version guessed is the following: #{ver}"
+					context\warning "A new version was published since this recipe was written!"
+					context\warning "The version guessed is the following: #{ver}"
 			else
-				ui.detail "Recipe seems up to date."
+				context\detail "Recipe seems up to date."
 
 		unless recipe\download!
-			ui.error "The download has failed."
+			context\error "The download has failed."
 
 			os.exit 1
 
@@ -182,13 +183,13 @@ for recipe in *packagesList
 		-- Development packages might have set their versions by now.
 		if args.force or recipe\buildNeeded!
 			unless recipe\build!
-				ui.error "You may want to look in the logs for more details."
-				ui.error "Log file: #{recipe\getLogFile!}"
+				context\error "You may want to look in the logs for more details."
+				context\error "Log file: #{recipe\getLogFile!}"
 
 				os.exit 1
 
 			unless recipe\package!
-				ui.error "An error occured while assembling the package."
+				context\error "An error occured while assembling the package."
 				context\close!
 
 				os.exit 1
@@ -213,7 +214,7 @@ for recipe in *packagesList
 		upToDate = true
 
 if upToDate
-	ui.info "Everything up to date. Not rebuilding."
+	context\info "Everything up to date. Not rebuilding."
 
 context\close!
 

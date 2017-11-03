@@ -22,9 +22,7 @@ class Context
 	---
 	-- Context constructor.
 	new: () =>
-		@configuration = {
-			verbosity: 4
-		}
+		@verbosity = 4
 
 		home = os.getenv "HOME"
 
@@ -82,6 +80,7 @@ class Context
 		f\close!
 
 		configuration = toml.parse content
+		@configuration = configuration
 
 		@sourcesDirectory  = configuration["sources-directory"] or @sourcesDirectory
 		@packagesDirectory = configuration["packages-directory"] or @packagesDirectory
@@ -107,9 +106,7 @@ class Context
 			if configuration[prefix]
 				@prefixes[prefix] = configuration[prefix]
 
-		@configuration = configuration
-		unless @configuration.verbosity
-			@configuration.verbosity = 4
+		@verbosity = configuration.verbosity or 4
 
 		if configuration.repositories
 			for s in *configuration.repositories
@@ -117,7 +114,7 @@ class Context
 
 		if configuration.collections
 			for name, col in pairs configuration.collections
-				ui.debug "Registering collection '#{name}'."
+				@\debug "Registering collection '#{name}'."
 				@collections[name] = col
 
 	---
@@ -144,7 +141,7 @@ class Context
 					if (not filename\match "%.moon$") and (not filename\match "%.lua$")
 						continue
 
-					ui.debug "Loading module '#{filename}'."
+					@\debug "Loading module '#{filename}'."
 
 					name = filename\gsub "%.moon$", ""
 					name =     name\gsub "%.lua$",  ""
@@ -189,25 +186,25 @@ class Context
 	-- @return nil
 	checkConfiguration: =>
 		if not @modules[@packageManager]
-			ui.warning "No module for the following package manager: " ..
+			@\warning "No module for the following package manager: " ..
 				"'#{@packageManager}'."
 
-			ui.warning "Package manager set to 'pkgutils'."
+			@\warning "Package manager set to 'pkgutils'."
 			@packageManager = "pkgutils"
 
 		if @repositoryManager and not @modules[@repositoryManager]
 			if @repositoryManager == "none"
 				@repositoryManager = nil
 			else
-				ui.warning "No module for the following repository manager: " ..
+				@\warning "No module for the following repository manager: " ..
 					"'#{@repositoryManager}'."
 
 				if @modules[@packageManager].makeRepository
-					ui.warning "Repository manager set to " ..
+					@\warning "Repository manager set to " ..
 						"'#{@packageManager}'."
 					@repositoryManager = @packageManager
 				else
-					ui.warning "No repository will be generated."
+					@\warning "No repository will be generated."
 					@repositoryManager = nil
 
 	---
@@ -264,7 +261,7 @@ class Context
 			fs.changeDirectory @packagesDirectory, ->
 				module @, opt
 		else
-			ui.error "No module to build a repository."
+			@\error "No module to build a repository."
 
 	---
 	-- Adds a package to the context’s repository.
@@ -333,4 +330,29 @@ class Context
 		}
 
 		@prefixes[name] or defaults[name]
+
+	debug: (...) =>
+		if @verbosity >= 6
+			ui.debug io.stdout, ...
+		ui.debug @logFile, ...
+	detail: (...) =>
+		if @verbosity >= 4
+			ui.detail io.stdout, ...
+		ui.detail @logFile, ...
+	info: (...) =>
+		if @verbosity >= 3
+			ui.info io.stdout, ...
+		ui.info @logFile, ...
+	section: (...) =>
+		if @verbosity >= 2
+			ui.section io.stdout, ...
+		ui.section @logFile, ...
+	warning: (...) =>
+		if @verbosity >= 2
+			ui.warning io.stderr, ...
+		ui.warning @logFile, ...
+	error: (...) =>
+		if @verbosity >= 1 -- Aww man, don’t go below that.
+			ui.error io.stderr, ...
+		ui.error @logFile, ...
 

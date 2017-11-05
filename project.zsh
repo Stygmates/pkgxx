@@ -53,6 +53,12 @@ else
 	filename[main]=pkgxx
 fi
 
+for i in doc/*.[0-9].md; do
+	targets+=(${i%.md})
+	type[${i%.md}]=man
+	sources[${i%.md}]="$i"
+done
+
 dist=(
 	**/*.moon
 	# Build system.

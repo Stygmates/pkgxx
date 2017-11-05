@@ -6,6 +6,7 @@ BINDIR := $(PREFIX)/bin
 LIBDIR := $(PREFIX)/lib
 SHAREDIR := $(PREFIX)/share
 INCLUDEDIR := $(PREFIX)/include
+MANDIR := $(SHAREDIR)/man
 LUA_VERSION := 5.1
 
 CC := cc
@@ -16,7 +17,7 @@ LDFLAGS :=
 
 Q := @
 
-all: pkgxx/atom.moon pkgxx/builder.moon pkgxx/class.moon pkgxx/context.moon pkgxx/fs.moon pkgxx/macro.moon pkgxx/module.moon pkgxx/package.moon pkgxx/recipe.moon pkgxx/source.moon pkgxx/ui.moon pkgxx.moon modules/apk.moon modules/apt.moon modules/autotools.moon modules/build.zsh.moon modules/cmake.moon modules/createrepo.moon modules/debian.moon modules/dnf.moon modules/dpkg.moon modules/fedora.moon modules/ftp.moon modules/github.moon modules/git.moon modules/http.moon modules/https.moon modules/make.moon modules/man.moon modules/ownership.moon modules/pacman.moon modules/perl.moon modules/pkgutils.moon modules/reprepro.moon modules/rpm.moon modules/strip.moon modules/ubuntu.moon modules/vim.moon modules/waf.moon main
+all: pkgxx/atom.moon pkgxx/builder.moon pkgxx/class.moon pkgxx/context.moon pkgxx/fs.moon pkgxx/macro.moon pkgxx/module.moon pkgxx/package.moon pkgxx/recipe.moon pkgxx/source.moon pkgxx/ui.moon pkgxx.moon modules/apk.moon modules/apt.moon modules/autotools.moon modules/build.zsh.moon modules/cmake.moon modules/createrepo.moon modules/debian.moon modules/dnf.moon modules/dpkg.moon modules/fedora.moon modules/ftp.moon modules/github.moon modules/git.moon modules/http.moon modules/https.moon modules/make.moon modules/man.moon modules/ownership.moon modules/pacman.moon modules/perl.moon modules/pkgutils.moon modules/reprepro.moon modules/rpm.moon modules/strip.moon modules/ubuntu.moon modules/vim.moon modules/waf.moon main doc/package.toml.5 doc/pkgxx.1 doc/pkgxx.conf.5
 	@:
 
 pkgxx/atom.moon:
@@ -545,6 +546,60 @@ main.uninstall:
 	@echo '[01;37m  RM >    [01;37m$(BINDIR)/pkgxx[00m'
 	$(Q)rm -f '$(DESTDIR)$(BINDIR)/pkgxx'
 
+doc/package.toml.5: doc/package.toml.5.md
+	@echo '[01;32m  MAN >   [01;37mdoc/package.toml.5[00m'
+	$(Q)pandoc -s --from markdown --to man 'doc/package.toml.5.md' -o 'doc/package.toml.5'
+
+
+doc/package.toml.5.install: doc/package.toml.5
+	@echo '[01;31m  IN >    [01;37m$(MANDIR)/man5/package.toml.5[00m'
+	$(Q)mkdir -p '$(DESTDIR)$(MANDIR)/man5'
+	$(Q)install -m0644 doc/package.toml.5 $(DESTDIR)$(MANDIR)/man5/package.toml.5
+
+doc/package.toml.5.clean:
+	@echo '[01;37m  RM >    [01;37mdoc/package.toml.5[00m'
+	$(Q)rm -f doc/package.toml.5
+
+doc/package.toml.5.uninstall:
+	@echo '[01;37m  RM >    [01;37m$(MANDIR)/man5/package.toml.5[00m'
+	$(Q)rm -f '$(DESTDIR)$(MANDIR)/man5/package.toml.5'
+
+doc/pkgxx.1: doc/pkgxx.1.md
+	@echo '[01;32m  MAN >   [01;37mdoc/pkgxx.1[00m'
+	$(Q)pandoc -s --from markdown --to man 'doc/pkgxx.1.md' -o 'doc/pkgxx.1'
+
+
+doc/pkgxx.1.install: doc/pkgxx.1
+	@echo '[01;31m  IN >    [01;37m$(MANDIR)/man1/pkgxx.1[00m'
+	$(Q)mkdir -p '$(DESTDIR)$(MANDIR)/man1'
+	$(Q)install -m0644 doc/pkgxx.1 $(DESTDIR)$(MANDIR)/man1/pkgxx.1
+
+doc/pkgxx.1.clean:
+	@echo '[01;37m  RM >    [01;37mdoc/pkgxx.1[00m'
+	$(Q)rm -f doc/pkgxx.1
+
+doc/pkgxx.1.uninstall:
+	@echo '[01;37m  RM >    [01;37m$(MANDIR)/man1/pkgxx.1[00m'
+	$(Q)rm -f '$(DESTDIR)$(MANDIR)/man1/pkgxx.1'
+
+doc/pkgxx.conf.5: doc/pkgxx.conf.5.md
+	@echo '[01;32m  MAN >   [01;37mdoc/pkgxx.conf.5[00m'
+	$(Q)pandoc -s --from markdown --to man 'doc/pkgxx.conf.5.md' -o 'doc/pkgxx.conf.5'
+
+
+doc/pkgxx.conf.5.install: doc/pkgxx.conf.5
+	@echo '[01;31m  IN >    [01;37m$(MANDIR)/man5/pkgxx.conf.5[00m'
+	$(Q)mkdir -p '$(DESTDIR)$(MANDIR)/man5'
+	$(Q)install -m0644 doc/pkgxx.conf.5 $(DESTDIR)$(MANDIR)/man5/pkgxx.conf.5
+
+doc/pkgxx.conf.5.clean:
+	@echo '[01;37m  RM >    [01;37mdoc/pkgxx.conf.5[00m'
+	$(Q)rm -f doc/pkgxx.conf.5
+
+doc/pkgxx.conf.5.uninstall:
+	@echo '[01;37m  RM >    [01;37m$(MANDIR)/man5/pkgxx.conf.5[00m'
+	$(Q)rm -f '$(DESTDIR)$(MANDIR)/man5/pkgxx.conf.5'
+
 $(DESTDIR)$(PREFIX):
 	@echo '[01;35m  DIR >   [01;37m$(PREFIX)[00m'
 	$(Q)mkdir -p $(DESTDIR)$(PREFIX)
@@ -560,12 +615,15 @@ $(DESTDIR)$(SHAREDIR):
 $(DESTDIR)$(INCLUDEDIR):
 	@echo '[01;35m  DIR >   [01;37m$(INCLUDEDIR)[00m'
 	$(Q)mkdir -p $(DESTDIR)$(INCLUDEDIR)
-install: subdirs.install pkgxx/atom.moon.install pkgxx/builder.moon.install pkgxx/class.moon.install pkgxx/context.moon.install pkgxx/fs.moon.install pkgxx/macro.moon.install pkgxx/module.moon.install pkgxx/package.moon.install pkgxx/recipe.moon.install pkgxx/source.moon.install pkgxx/ui.moon.install pkgxx.moon.install modules/apk.moon.install modules/apt.moon.install modules/autotools.moon.install modules/build.zsh.moon.install modules/cmake.moon.install modules/createrepo.moon.install modules/debian.moon.install modules/dnf.moon.install modules/dpkg.moon.install modules/fedora.moon.install modules/ftp.moon.install modules/github.moon.install modules/git.moon.install modules/http.moon.install modules/https.moon.install modules/make.moon.install modules/man.moon.install modules/ownership.moon.install modules/pacman.moon.install modules/perl.moon.install modules/pkgutils.moon.install modules/reprepro.moon.install modules/rpm.moon.install modules/strip.moon.install modules/ubuntu.moon.install modules/vim.moon.install modules/waf.moon.install main.install
+$(DESTDIR)$(MANDIR):
+	@echo '[01;35m  DIR >   [01;37m$(MANDIR)[00m'
+	$(Q)mkdir -p $(DESTDIR)$(MANDIR)
+install: subdirs.install pkgxx/atom.moon.install pkgxx/builder.moon.install pkgxx/class.moon.install pkgxx/context.moon.install pkgxx/fs.moon.install pkgxx/macro.moon.install pkgxx/module.moon.install pkgxx/package.moon.install pkgxx/recipe.moon.install pkgxx/source.moon.install pkgxx/ui.moon.install pkgxx.moon.install modules/apk.moon.install modules/apt.moon.install modules/autotools.moon.install modules/build.zsh.moon.install modules/cmake.moon.install modules/createrepo.moon.install modules/debian.moon.install modules/dnf.moon.install modules/dpkg.moon.install modules/fedora.moon.install modules/ftp.moon.install modules/github.moon.install modules/git.moon.install modules/http.moon.install modules/https.moon.install modules/make.moon.install modules/man.moon.install modules/ownership.moon.install modules/pacman.moon.install modules/perl.moon.install modules/pkgutils.moon.install modules/reprepro.moon.install modules/rpm.moon.install modules/strip.moon.install modules/ubuntu.moon.install modules/vim.moon.install modules/waf.moon.install main.install doc/package.toml.5.install doc/pkgxx.1.install doc/pkgxx.conf.5.install
 	@:
 
 subdirs.install:
 
-uninstall: subdirs.uninstall pkgxx/atom.moon.uninstall pkgxx/builder.moon.uninstall pkgxx/class.moon.uninstall pkgxx/context.moon.uninstall pkgxx/fs.moon.uninstall pkgxx/macro.moon.uninstall pkgxx/module.moon.uninstall pkgxx/package.moon.uninstall pkgxx/recipe.moon.uninstall pkgxx/source.moon.uninstall pkgxx/ui.moon.uninstall pkgxx.moon.uninstall modules/apk.moon.uninstall modules/apt.moon.uninstall modules/autotools.moon.uninstall modules/build.zsh.moon.uninstall modules/cmake.moon.uninstall modules/createrepo.moon.uninstall modules/debian.moon.uninstall modules/dnf.moon.uninstall modules/dpkg.moon.uninstall modules/fedora.moon.uninstall modules/ftp.moon.uninstall modules/github.moon.uninstall modules/git.moon.uninstall modules/http.moon.uninstall modules/https.moon.uninstall modules/make.moon.uninstall modules/man.moon.uninstall modules/ownership.moon.uninstall modules/pacman.moon.uninstall modules/perl.moon.uninstall modules/pkgutils.moon.uninstall modules/reprepro.moon.uninstall modules/rpm.moon.uninstall modules/strip.moon.uninstall modules/ubuntu.moon.uninstall modules/vim.moon.uninstall modules/waf.moon.uninstall main.uninstall
+uninstall: subdirs.uninstall pkgxx/atom.moon.uninstall pkgxx/builder.moon.uninstall pkgxx/class.moon.uninstall pkgxx/context.moon.uninstall pkgxx/fs.moon.uninstall pkgxx/macro.moon.uninstall pkgxx/module.moon.uninstall pkgxx/package.moon.uninstall pkgxx/recipe.moon.uninstall pkgxx/source.moon.uninstall pkgxx/ui.moon.uninstall pkgxx.moon.uninstall modules/apk.moon.uninstall modules/apt.moon.uninstall modules/autotools.moon.uninstall modules/build.zsh.moon.uninstall modules/cmake.moon.uninstall modules/createrepo.moon.uninstall modules/debian.moon.uninstall modules/dnf.moon.uninstall modules/dpkg.moon.uninstall modules/fedora.moon.uninstall modules/ftp.moon.uninstall modules/github.moon.uninstall modules/git.moon.uninstall modules/http.moon.uninstall modules/https.moon.uninstall modules/make.moon.uninstall modules/man.moon.uninstall modules/ownership.moon.uninstall modules/pacman.moon.uninstall modules/perl.moon.uninstall modules/pkgutils.moon.uninstall modules/reprepro.moon.uninstall modules/rpm.moon.uninstall modules/strip.moon.uninstall modules/ubuntu.moon.uninstall modules/vim.moon.uninstall modules/waf.moon.uninstall main.uninstall doc/package.toml.5.uninstall doc/pkgxx.1.uninstall doc/pkgxx.conf.5.uninstall
 	@:
 
 subdirs.uninstall:
@@ -575,7 +633,7 @@ test: all subdirs subdirs.test
 
 subdirs.test:
 
-clean: pkgxx/atom.moon.clean pkgxx/builder.moon.clean pkgxx/class.moon.clean pkgxx/context.moon.clean pkgxx/fs.moon.clean pkgxx/macro.moon.clean pkgxx/module.moon.clean pkgxx/package.moon.clean pkgxx/recipe.moon.clean pkgxx/source.moon.clean pkgxx/ui.moon.clean pkgxx.moon.clean modules/apk.moon.clean modules/apt.moon.clean modules/autotools.moon.clean modules/build.zsh.moon.clean modules/cmake.moon.clean modules/createrepo.moon.clean modules/debian.moon.clean modules/dnf.moon.clean modules/dpkg.moon.clean modules/fedora.moon.clean modules/ftp.moon.clean modules/github.moon.clean modules/git.moon.clean modules/http.moon.clean modules/https.moon.clean modules/make.moon.clean modules/man.moon.clean modules/ownership.moon.clean modules/pacman.moon.clean modules/perl.moon.clean modules/pkgutils.moon.clean modules/reprepro.moon.clean modules/rpm.moon.clean modules/strip.moon.clean modules/ubuntu.moon.clean modules/vim.moon.clean modules/waf.moon.clean main.clean
+clean: pkgxx/atom.moon.clean pkgxx/builder.moon.clean pkgxx/class.moon.clean pkgxx/context.moon.clean pkgxx/fs.moon.clean pkgxx/macro.moon.clean pkgxx/module.moon.clean pkgxx/package.moon.clean pkgxx/recipe.moon.clean pkgxx/source.moon.clean pkgxx/ui.moon.clean pkgxx.moon.clean modules/apk.moon.clean modules/apt.moon.clean modules/autotools.moon.clean modules/build.zsh.moon.clean modules/cmake.moon.clean modules/createrepo.moon.clean modules/debian.moon.clean modules/dnf.moon.clean modules/dpkg.moon.clean modules/fedora.moon.clean modules/ftp.moon.clean modules/github.moon.clean modules/git.moon.clean modules/http.moon.clean modules/https.moon.clean modules/make.moon.clean modules/man.moon.clean modules/ownership.moon.clean modules/pacman.moon.clean modules/perl.moon.clean modules/pkgutils.moon.clean modules/reprepro.moon.clean modules/rpm.moon.clean modules/strip.moon.clean modules/ubuntu.moon.clean modules/vim.moon.clean modules/waf.moon.clean main.clean doc/package.toml.5.clean doc/pkgxx.1.clean doc/pkgxx.conf.5.clean
 
 distclean: clean
 
@@ -642,6 +700,9 @@ $(PACKAGE)-$(VERSION).tar.gz: distdir
 		$(PACKAGE)-$(VERSION)/doc/css/ldoc.ltp \
 		$(PACKAGE)-$(VERSION)/doc/examples/api_basics.moon \
 		$(PACKAGE)-$(VERSION)/README.md \
+		$(PACKAGE)-$(VERSION)/doc/package.toml.5.md \
+		$(PACKAGE)-$(VERSION)/doc/pkgxx.1.md \
+		$(PACKAGE)-$(VERSION)/doc/pkgxx.conf.5.md \
 		$(PACKAGE)-$(VERSION)/main.moon
 
 dist-xz: $(PACKAGE)-$(VERSION).tar.xz
@@ -700,6 +761,9 @@ $(PACKAGE)-$(VERSION).tar.xz: distdir
 		$(PACKAGE)-$(VERSION)/doc/css/ldoc.ltp \
 		$(PACKAGE)-$(VERSION)/doc/examples/api_basics.moon \
 		$(PACKAGE)-$(VERSION)/README.md \
+		$(PACKAGE)-$(VERSION)/doc/package.toml.5.md \
+		$(PACKAGE)-$(VERSION)/doc/pkgxx.1.md \
+		$(PACKAGE)-$(VERSION)/doc/pkgxx.conf.5.md \
 		$(PACKAGE)-$(VERSION)/main.moon
 
 dist-bz2: $(PACKAGE)-$(VERSION).tar.bz2
@@ -758,6 +822,9 @@ $(PACKAGE)-$(VERSION).tar.bz2: distdir
 		$(PACKAGE)-$(VERSION)/doc/css/ldoc.ltp \
 		$(PACKAGE)-$(VERSION)/doc/examples/api_basics.moon \
 		$(PACKAGE)-$(VERSION)/README.md \
+		$(PACKAGE)-$(VERSION)/doc/package.toml.5.md \
+		$(PACKAGE)-$(VERSION)/doc/pkgxx.1.md \
+		$(PACKAGE)-$(VERSION)/doc/pkgxx.conf.5.md \
 		$(PACKAGE)-$(VERSION)/main.moon
 
 help:
@@ -781,10 +848,14 @@ help:
 	@echo '    - [01;34mLIBDIR        [37m ${LIBDIR}[00m'
 	@echo '    - [01;34mSHAREDIR      [37m ${SHAREDIR}[00m'
 	@echo '    - [01;34mINCLUDEDIR    [37m ${INCLUDEDIR}[00m'
+	@echo '    - [01;34mMANDIR        [37m ${MANDIR}[00m'
 	@echo '    - [01;34mLUA_VERSION   [37m ${LUA_VERSION}[00m'
 	@echo ''
 	@echo '[01;37mProject targets: [00m'
 	@echo '    - [01;33mmain          [37m script[00m'
+	@echo '    - [01;33mdoc/package.toml.5[37m man[00m'
+	@echo '    - [01;33mdoc/pkgxx.1   [37m man[00m'
+	@echo '    - [01;33mdoc/pkgxx.conf.5[37m man[00m'
 	@echo ''
 	@echo '[01;37mMakefile options:[00m'
 	@echo '    - gnu:           false'

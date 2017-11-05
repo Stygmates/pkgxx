@@ -38,8 +38,7 @@ class Context
 		@packagesDirectory = "#{home}"
 		@buildingDirectory = "/tmp/pkgxx-#{pid}-#{@randomKey}"
 
-		fs.mkdir "/var/log/pkgxx"
-		@logFilePath = "/var/log/pkgxx/#{pid}-#{@randomKey}.log"
+		@\setLogFile "/var/log/pkgxx/#{pid}-#{@randomKey}.log"
 
 		@collections = {}
 
@@ -60,8 +59,6 @@ class Context
 		p\close!
 
 		fs.mkdir @buildingDirectory
-
-		@logFile = io.open @logFilePath, "w"
 
 		@\loadModules!
 
@@ -179,6 +176,31 @@ class Context
 
 		if module.name and not @modules[module.name]
 			@modules[module.name] = module
+
+	setLogFile: (path) =>
+		@logFilePath = path
+		if path
+			dirname = path\gsub("/[^/]*$", "")
+			fs.mkdir dirname
+
+			@logFile = io.open @logFilePath, "w"
+
+		unless @logFile
+			@logFilePath = nil
+			@logFile =
+				write: =>
+				close: =>
+
+			return nil, "could not open create logs directory"
+		else
+			return @logFile, @logFilePath
+
+	moveLogFile: (newPath) =>
+		unless @logFilePath
+			return
+
+		if fs.execute context:self, "mv '#{@logFilePath}' '#{newPath}'"
+			@logFilePath = newPath
 
 	---
 	-- Prints warnings on stderr if important configuration elements are missing.

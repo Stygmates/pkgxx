@@ -13,6 +13,11 @@ ui = require "pkgxx.ui"
 
 context = pkgxx.newContext config
 
+unless context.logFilePath
+	context\setLogFile "#{os.getenv "HOME"}/.local/share/pkgxx/logs/#{math.random 9999}"
+unless context.logFilePath
+	context\warning "Could not open logs file."
+
 context\importConfiguration "/etc/pkgxx.conf"
 
 context\checkConfiguration!

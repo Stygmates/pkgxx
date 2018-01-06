@@ -27,7 +27,7 @@ before_install:
     - export PATH=$PATH:$PWD/lua_install/bin
 
 script:
-    - LUA_PATH="./.?.lua;;" busted --verbose -o coveralls.busted
+    - LUA_PATH="./.?.lua;;" busted --verbose
 
 cache:
     directories:

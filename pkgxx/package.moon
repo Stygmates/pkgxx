@@ -189,7 +189,6 @@ Class "Package",
 		module = @context.modules[distribution]
 
 		if module
-			@context\debug "Distribution: #{module.name}"
 			if module.autosplits
 				@context\debug "Trying module '#{module.name}'."
 				newPackages = module.autosplits @

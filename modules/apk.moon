@@ -14,7 +14,7 @@ getSize = ->
 	size
 
 makeRepository = =>
-	@\info "Building 'apk' repository."
+	@context\info "Building 'apk' repository."
 
 	index = "#{@context.packagesDirectory}/#{@context.architecture}/APKINDEX.tar.gz"
 
@@ -68,7 +68,7 @@ makeRepository = =>
 
 			@context.modules.pacman._genPkginfo @, size
 
-			@\detail "Building '#{@target}'."
+			@context\detail "Building '#{@target}'."
 			fs.mkdir @context.packagesDirectory .. "/" ..
 				@context.architecture
 			fs.execute @, [[

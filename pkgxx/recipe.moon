@@ -275,14 +275,23 @@ class
 		-- @attribute packages
 		@packages = @\parsePackages recipe or self
 
-		os = package.os
-		if os and os[distribution]
-			buildDeps = os[distribution].buildDependencies
+		os = recipe.os
+		if os and os[@context.distribution]
+			distributionRules = os[@context.distribution]
+			buildDeps = distributionRules.buildDependencies
+
 			if buildDeps
 				@buildDependencies = [Atom(str) for str in *buildDeps]
 
+			if distributionRules.configure
+				@buildInstructions[1]\setInstructions distributionRules.configure
+			if distributionRules.build
+				@buildInstructions[2]\setInstructions distributionRules.build
+			if distributionRules.install
+				@buildInstructions[3]\setInstructions distributionRules.install
+
 			for package in *@packages
-				package\import os[distribution]
+				package\import os[@context.distribution]
 
 		@\finalize!
 

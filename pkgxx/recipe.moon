@@ -9,6 +9,11 @@ Source = require "pkgxx.source"
 Atom = require "pkgxx.atom"
 Package = require "pkgxx.package"
 Builder = require "pkgxx.builder"
+Constraint = require "pkgxx.constraint"
+
+{:map} = require "pkgxx.utils"
+
+{:split} = require "split"
 
 macroList = =>
 	l = {
@@ -88,6 +93,12 @@ class
 				recipe: self
 			}
 		}
+
+		-- FIXME: There for compatibility reasons with modules. Should be removed in the future.
+		@recipe = {}
+		@recipeAttributes = {}
+
+		@sources = {}
 
 	---
 	-- Name of the recipe.
@@ -295,6 +306,132 @@ class
 
 		@\finalize!
 
+	importSpec: (filename = "package.spec" using nil) =>
+		file, reason = io.open filename, "r"
+
+		unless file
+			return nil, reason
+
+		spec, reason = require("pkgxx.spec").parse file\read "*all"
+
+		unless spec
+			return nil, reason
+
+		spec, reason = spec\evaluate!
+
+		unless spec
+			return nil, reason
+
+		@recipeAttributes = fs.attributes filename
+
+		-- CAUTION: Area of intense metaprogramming.
+		with recipe = self
+			string = (f) ->
+				=>
+					if @.type != "declaration"
+						.context\error "“#{@.variable}” must be a string!"
+						return false
+
+					f @.value
+
+			array = (f) ->
+				=>
+					if @.type == "declaration"
+						-- Splitting and trimming.
+						f map split(@.value, ","), => @\gsub("^%s*", "")\gsub("%s*$", "")
+					elseif @.type == "list declaration"
+						f @.values
+					else
+						.context\error "“#{@.variable}” must be an array of values!"
+						return false
+
+			getKey = => switch @.type
+				when "declaration", "list declaration"
+					@.variable
+				when "section"
+					@.title
+
+			fields = {
+				"name":                string =>  .name = @
+				"version":             string =>  .version = @
+				"release":             string =>  .release = tonumber @ -- FIXME: assert != nil
+				"packager":            string =>  .packager = @
+				"maintainer":          string =>  .maintainer = @
+				"url":                 string =>  .url = @
+				"class":               string =>  .class = @
+				"source":              string =>  .sources = {Source.fromString @}
+				"sources":             array  =>  .sources = map @, Source.fromString
+				"dependencies":        array  =>  .dependencies = map @, Atom
+				"build-dependencies":  array  =>  .buildDependencies = map @, Atom
+				"options":             array  =>  .options = @
+				"flags":               array  =>  .context\warning "“flags” is an unimplemented property."
+				"flavors":             array  =>  .context\warning "“flavors” is an unimplemented property."
+				"slot":                string =>  .context\warning "“slot” is an unimplemented property."
+				"versions":            array  =>  .context\warning "“versions” is an unimplemented property."
+			}
+
+			sections = {
+				"split": =>       .context\warning "“splits” is not properly handled in spec-files at the moment."
+				"configure": =>   .buildInstructions[1]\setInstructions @.content
+				"build": =>       .buildInstructions[2]\setInstructions @.content
+				"install": =>     .buildInstructions[3]\setInstructions @.content
+				"watch": =>
+					-- FIXME: It’s time to have a dedicated Watch class.
+					section = spec.parse(@.content)\evaluate!
+
+					watch = {}
+
+					watchFields =
+						url:      string => watch.url = @
+						selector: string => watch.selector = @
+						lasttar:  string => watch.lasttar = @
+						execute:  string => watch.execute = @
+						subs:     array  => watch.subs = @
+
+					for element in *section
+						if element.type == "declaration" or element.type == "list declaration"
+							unless watchFields[element.variable]
+								continue
+
+							watchFields[element.variable] element
+
+					.watch = watch
+
+				"constraint": =>
+					.constraints or= {} -- FIXME: Move to .new.
+					Constraint @.content
+					success, constraint = pcall -> Constraint @.content
+
+					if success
+						table.insert .constraints, constraint
+					else
+						.context\error constraint
+			}
+
+			things = {
+				"declaration": fields
+				"list declaration": fields
+				"section": sections
+			}
+
+			for element in *spec
+				key = getKey element
+
+				continue unless key
+
+				list = things[element.type]
+
+				unless list[key]
+					.context\debug "[Recipe\\importSpec] unrecognized #{element.type} in spec: “#{key}”"
+					continue
+
+				r = list[key] element
+
+				if r == false
+					return nil, "An error occured while reading the spec file."
+
+		@\finalize!
+
 	---
 	-- Adds sources to the Recipe.
 	--
@@ -308,8 +445,6 @@ class
 	addSource: (source) =>
 		if type(source) == "string"
 			source = Source.fromString source
-
-		@sources or= {}
 
 		for s in *@sources
 			if s.filename == source.filename
@@ -484,16 +619,16 @@ class
 	-- Hidden until semantics clarification and lots of grooming.
 	applyDistributionRules: (recipe) =>
 		distribution = @context.distribution
-		module = @context.modules[distribution] or {}
+		module = @context.modules[distribution]
 
 		@\applyDistributionDiffs recipe, distribution
 
-		for package in *@packages
-			if module.alterRecipe
-				module.alterRecipe package, recipe
-
 		if module
 			@context\debug "Distribution: #{module.name}"
+
+			for package in *@packages
+				if module.alterRecipe
+					module.alterRecipe package, recipe
 
 			if module.autosplits
 				@context\debug "Trying module '#{module.name}'."
@@ -869,7 +1004,8 @@ class
 				p = io.popen "curl -sL '#{@watch.url}' | hxnormalize -x " ..
 					"| hxselect -c 'a' -s '\n' " ..
 					"| grep '#{@watch.lasttar}' " ..
-					"| sed 's&#{@watch.lasttar}&&;s&\\.tar\\..*$&&' | sort -rn"
+					-- FIXME +V is a gnu extension.
+					"| sed 's&#{@watch.lasttar}&&;s&\\.tar\\..*$&&' | sort -rV"
 			elseif @watch.execute
 				@context\debug "Executing custom script."
 				p = io.popen @watch.execute

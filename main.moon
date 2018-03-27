@@ -72,6 +72,9 @@ if args.collection
 success, recipe = pcall -> context\openRecipe "package.toml"
 
 unless success
+	success, recipe = pcall -> context\openRecipe "package.spec"
+
+unless success
 	with reason = recipe
 		context\error "Could not open recipe."
 		context\error tostring reason

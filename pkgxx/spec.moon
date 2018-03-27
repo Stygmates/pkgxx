@@ -2,9 +2,25 @@
 
 lpeg = require "lpeg"
 
+{:map} = require "pkgxx.utils"
+
 {:P, :S, :R} = lpeg
 
-parse = (text) ->
+_M = {}
+
+_M.Declaration = class
+	new: (variable, value) =>
+		@type = "declaration"
+		@variable = variable
+		@value = value
+
+_M.ListDeclaration = class
+	new: (variable, values) =>
+		@type = "list declaration"
+		@variable = variable
+		@values = values
+
+_M.parse = (text) ->
 	state = {
 		position: 0
 	}
@@ -63,7 +79,56 @@ parse = (text) ->
 	a, e = Grammar\match text
 	unless a
 		error "syntax error", 2
-	a
 
-{:parse}
+	setmetatable a, __index: _M
+
+_M.getVariable = (identifier) =>
+	for element in *@
+		switch element.type
+			when "declaration"
+				if identifier == element.variable
+					return element.value
+
+_M.evaluate = (ast) ->
+	@ = setmetatable {}, __index: _M
+
+	for element in *ast
+		success, newElement = pcall -> switch element.type
+			when "comment"
+				nil
+			when "declaration"
+				_M.Declaration element.variable,
+					element.value\gsub "%%{([^%%]*)}", (identifier) ->
+						substitution = @\getVariable identifier
+
+						unless substitution
+							error {"variable not declared beforehand: #{identifier}"}, 0
+
+						substitution
+			when "list declaration"
+				_M.ListDeclaration element.variable,
+					map element.values, (value) ->
+						value\gsub "%%{([^%%]*)}", (identifier) ->
+							substitution = @\getVariable identifier
+
+							unless substitution
+								error {"variable not declared beforehand: #{identifier}"}, 0
+
+							substitution
+			when "section"
+				element.content = element.content\gsub "%%{([^%%]*)}", (identifier) ->
+					@\getVariable identifier
+
+		if success
+			if newElement
+				table.insert self, newElement
+		else
+			if type(newElement) == "table"
+				return nil, newElement[1]
+			else
+				error newElement, 0
+
+	@
+
+_M
 

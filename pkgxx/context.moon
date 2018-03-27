@@ -21,8 +21,10 @@ loadstring = loadstring or load
 class Context
 	---
 	-- Context constructor.
-	new: () =>
-		@verbosity = 4
+	new: (arg) =>
+		arg or= {}
+
+		@verbosity = arg.verbosity or 4
 
 		home = os.getenv "HOME"
 
@@ -103,7 +105,8 @@ class Context
 			if configuration[prefix]
 				@prefixes[prefix] = configuration[prefix]
 
-		@verbosity = configuration.verbosity or 4
+		if configuration.verbosity
+			@verbosity = configuration.verbosity
 
 		if configuration.repositories
 			for s in *configuration.repositories
@@ -247,7 +250,10 @@ class Context
 	-- @warning This method is deprecated. Use newRecipe instead.
 	openRecipe: (filename = "package.toml") =>
 		with @\newRecipe @
-			\importTOML filename
+			if filename\match "%.toml$"
+				\importTOML filename
+			else
+				\importSpec filename
 			\finalize!
 
 	---

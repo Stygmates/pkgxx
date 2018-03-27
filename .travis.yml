@@ -19,6 +19,7 @@ install:
     - luarocks install busted
     - luarocks install luacov-coveralls
     - luarocks install luajson # For .coveralls.
+    - luarocks install split
     - (cd .coveralls; make)
 
 before_install:

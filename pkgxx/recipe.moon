@@ -353,8 +353,9 @@ class
 				@flavor = @flavors[1]
 
 			spec, reason = spec\evaluate {
-				version: @version,
+				version: @version
 				flavor: @flavor
+				pkg: @\packagingDirectory!
 			}
 
 			unless spec

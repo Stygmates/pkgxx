@@ -11,14 +11,14 @@ url:      https://www.gnu.org/software/hello/
 flavors: nls, minimal
 
 @configure
-	cd hello-2.10
+	cd hello-%{version}
 	./configure
 
 @build
-	cd hello-2.10
+	cd hello-%{version}
 	make
 
 @install
-	cd hello-2.10
+	cd hello-%{version}
 	make DESTDIR="$PKG" install
 

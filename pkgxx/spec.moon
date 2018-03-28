@@ -89,7 +89,7 @@ _M.getVariable = (identifier) =>
 				if identifier == element.variable
 					return element.value
 
-_M.evaluate = (ast) ->
+_M.evaluate = (ast, preDefinitions) ->
 	@ = setmetatable {}, __index: _M
 
 	for element in *ast
@@ -99,7 +99,7 @@ _M.evaluate = (ast) ->
 			when "declaration"
 				_M.Declaration element.variable,
 					element.value\gsub "%%{([^%%]*)}", (identifier) ->
-						substitution = @\getVariable identifier
+						substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
 						unless substitution
 							error {"variable not declared beforehand: #{identifier}"}, 0
@@ -109,7 +109,7 @@ _M.evaluate = (ast) ->
 				_M.ListDeclaration element.variable,
 					map element.values, (value) ->
 						value\gsub "%%{([^%%]*)}", (identifier) ->
-							substitution = @\getVariable identifier
+							substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
 							unless substitution
 								error {"variable not declared beforehand: #{identifier}"}, 0

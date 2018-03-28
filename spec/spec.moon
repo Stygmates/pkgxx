@@ -92,6 +92,15 @@ describe "spec.eval", ->
 			assert.are.same nil, @
 			assert.is.string reason
 
+	it "expands pre-defined variables", ->
+		content = file "spec/spec/06-broken-macro.spec"
+
+		result = spec.parse(content)\evaluate {baz: "baz"}
+
+		for element in *result
+			if element.variable == "foo"
+				assert.are.same "bar-baz", element.value
+
 	it "gets versions and flavors before evaluation", ->
 		openRecipe =>
 			assert.are.same {"2.10", "2.9", "2.8", "2.7", "2.6"}, @versions

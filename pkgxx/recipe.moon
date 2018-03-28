@@ -347,7 +347,15 @@ class
 			unless spec
 				return nil, reason
 
-			spec, reason = spec\evaluate!
+			if @versions and not @version
+				@version = @versions[1]
+			if @flavors and not @flavor
+				@flavor = @flavors[1]
+
+			spec, reason = spec\evaluate {
+				version: @version,
+				flavor: @flavor
+			}
 
 			unless spec
 				return nil, reason

@@ -117,7 +117,12 @@ _M.evaluate = (ast, preDefinitions) ->
 							substitution
 			when "section"
 				element.content = element.content\gsub "%%{([^%%]*)}", (identifier) ->
-					@\getVariable identifier
+					substitution = @\getVariable(identifier) or preDefinitions[identifier]
+
+					unless substitution
+						error {"variable not declared beforehand: #{identifier}"}, 0
+
+					substitution
 
 		if success
 			if newElement

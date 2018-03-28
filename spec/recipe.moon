@@ -99,7 +99,7 @@ describe "Recipe", ->
 
 			@\finalize!
 
-			assert.are.same @context.modules.Test.watch!, @watch
+			assert.are.same @context.modules.Test.watch(@), @watch
 
 	it "alters packages to match distribution rules", ->
 		testRecipe =>

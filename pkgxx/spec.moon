@@ -20,6 +20,12 @@ _M.ListDeclaration = class
 		@variable = variable
 		@values = values
 
+_M.Section = class
+	new: (title, content) =>
+		@type = "section"
+		@title = title
+		@content = content
+
 _M.parse = (text) ->
 	state = {
 		position: 0
@@ -116,13 +122,14 @@ _M.evaluate = (ast, preDefinitions) ->
 
 							substitution
 			when "section"
-				element.content = element.content\gsub "%%{([^%%]*)}", (identifier) ->
-					substitution = @\getVariable(identifier) or preDefinitions[identifier]
+				_M.Section element.title,
+					element.content\gsub "%%{([^%%]*)}", (identifier) ->
+						substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
-					unless substitution
-						error {"variable not declared beforehand: #{identifier}"}, 0
+						unless substitution
+							error {"variable not declared beforehand: #{identifier}"}, 0
 
-					substitution
+						substitution
 
 		if success
 			if newElement

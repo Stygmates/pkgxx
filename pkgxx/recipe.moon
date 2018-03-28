@@ -307,23 +307,6 @@ class
 		@\finalize!
 
 	importSpec: (filename = "package.spec" using nil) =>
-		file, reason = io.open filename, "r"
-
-		unless file
-			return nil, reason
-
-		spec, reason = require("pkgxx.spec").parse file\read "*all"
-
-		unless spec
-			return nil, reason
-
-		spec, reason = spec\evaluate!
-
-		unless spec
-			return nil, reason
-
-		@recipeAttributes = fs.attributes filename
-
 		-- CAUTION: Area of intense metaprogramming.
 		with recipe = self
 			string = (f) ->
@@ -344,6 +327,32 @@ class
 					else
 						.context\error "“#{@.variable}” must be an array of values!"
 						return false
+
+			file, reason = io.open filename, "r"
+
+			unless file
+				return nil, reason
+
+			spec, reason = require("pkgxx.spec").parse file\read "*all"
+
+			-- Early acquisition of a few values.
+			do
+				for element in *spec
+					switch element.variable
+						when "versions"
+							@versions = array(=> @) element
+						when "flavors"
+							@flavors = array(=> @) element
+
+			unless spec
+				return nil, reason
+
+			spec, reason = spec\evaluate!
+
+			unless spec
+				return nil, reason
+
+			@recipeAttributes = fs.attributes filename
 
 			getKey = => switch @.type
 				when "declaration", "list declaration"

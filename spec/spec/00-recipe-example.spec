@@ -8,6 +8,8 @@ sources:
 packager: Luka Vandervelden <lukc@upyum.com>
 url:      https://www.gnu.org/software/hello/
 
+flavors: nls, minimal
+
 @configure
 	cd hello-2.10
 	./configure

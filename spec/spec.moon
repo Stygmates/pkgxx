@@ -92,6 +92,11 @@ describe "spec.eval", ->
 			assert.are.same nil, @
 			assert.is.string reason
 
+	it "gets versions and flavors before evaluation", ->
+		openRecipe =>
+			assert.are.same {"2.10", "2.9", "2.8", "2.7", "2.6"}, @versions
+			assert.are.same {"nls", "minimal"}, @flavors
+
 	it "evaluates list modifiers", ->
 		pending "not implemented"
 

@@ -376,18 +376,47 @@ class
 				"packager":            string =>  .packager = @
 				"maintainer":          string =>  .maintainer = @
 				"url":                 string =>  .url = @
+				"summary":             string =>  .summary = @
+				"license":             string =>  .license = @
+				"copyright":           string =>  .copyright = @
+				"description":         string =>  .description = @
 				"class":               string =>  .class = @
 				"source":              string =>  .sources = {Source.fromString @}
 				"sources":             array  =>  .sources = map @, Source.fromString
 				"dependencies":        array  =>  .dependencies = map @, Atom
 				"build-dependencies":  array  =>  .buildDependencies = map @, Atom
+				"conflicts":           array  =>  .conflicts = map @, Atom
+				"provides":            array  =>  .provides = map @, Atom
 				"options":             array  =>  .options = @
 				"flags":               array  =>  .context\warning "“flags” is an unimplemented property."
 				"slot":                string =>  .slot = @
 			}
 
 			sections = {
-				"split": =>       .context\warning "“splits” is not properly handled in spec-files at the moment."
+				"split": =>
+					package = Package origin: recipe
+
+					-- FIXME: A lot of those are redundant with items from “fields”.
+					splitFields =
+						name:          string => package.name = @
+						files:         array  => package.files = @
+						dependencies:  array  => package.dependencies = @
+						conflicts:     array  => package.conflicts = @
+						provides:      array  => package.provides = @
+						options:       array  => package.options = @
+						class:         string => package.class = @
+						summary:       string => package.summary = @
+						description:   string => package.description = @
+						license:       string => package.license = @
+						copyright:     string => package.copyright = @
+
+					for element in *spec.parse(@.content)\evaluate(recipe)
+						unless splitFields[element.variable]
+							continue
+
+						splitFields[element.variable] element
+
+					table.insert .packages, package
 				"configure": =>   .buildInstructions[1]\setInstructions @.content
 				"build": =>       .buildInstructions[2]\setInstructions @.content
 				"install": =>     .buildInstructions[3]\setInstructions @.content

@@ -1,3 +1,7 @@
 
-{name: "Arch"}
+{
+	name: "Arch"
+
+	alterRecipe: =>
+}
 

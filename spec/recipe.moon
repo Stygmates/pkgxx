@@ -5,29 +5,6 @@
 --   - Testing \build and \package WILL be difficult through busted.
 ---
 
-testModule = {
-	name: "test"
-
-	package: {
-		target: =>
-			"#{@name}::#{@version}::#{@release}"
-		build: =>
-		install: (filename) -> false
-	}
-
-	isInstalled: (name) -> false
-
-	watch: =>
-		{
-			url: "."
-			execute: "echo 1.1.1"
-		}
-
-	alterRecipe: =>
-		if @class == "library"
-			@name = "lib" .. @name
-}
-
 testContext = ->
 	pkgxx = require "pkgxx"
 
@@ -35,9 +12,8 @@ testContext = ->
 	--        (pid, architecture, etc.). Providing test values
 	--        would speed up the associated tests. Would be nice.
 	with pkgxx.newContext!
-		\loadModule testModule
-		.packageManager = "test"
-		.distribution = "test"
+		.packageManager = "Test"
+		.distribution = "Test"
 
 		.logFile = io.stderr
 
@@ -123,7 +99,7 @@ describe "Recipe", ->
 
 			@\finalize!
 
-			assert.are.same testModule.watch!, @watch
+			assert.are.same @context.modules.Test.watch!, @watch
 
 	it "alters packages to match distribution rules", ->
 		testRecipe =>

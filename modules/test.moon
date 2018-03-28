@@ -10,10 +10,11 @@
 	isInstalled: (name) -> false
 
 	watch: =>
-		{
-			url: "."
-			execute: "echo 1.1.1"
-		}
+		if @context.packageManager == "test"
+			{
+				url: "."
+				execute: "echo 1.1.1"
+			}
 
 	alterRecipe: =>
 		if @class == "library"

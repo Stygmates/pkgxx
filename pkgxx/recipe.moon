@@ -374,9 +374,7 @@ class
 				"build-dependencies":  array  =>  .buildDependencies = map @, Atom
 				"options":             array  =>  .options = @
 				"flags":               array  =>  .context\warning "“flags” is an unimplemented property."
-				"flavors":             array  =>  .context\warning "“flavors” is an unimplemented property."
 				"slot":                string =>  .slot = @
-				"versions":            array  =>  .context\warning "“versions” is an unimplemented property."
 			}
 
 			sections = {

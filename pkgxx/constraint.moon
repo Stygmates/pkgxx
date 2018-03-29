@@ -25,14 +25,17 @@ class Constraint
 
 			fields = {
 				-- Conditions.
-				"name":                string =>  .name = @
+				"package":             string =>  .package = @
 				"flavor":              string =>  .flavor = @
 				"class":               string =>  .class = @
 				"os":                  string =>  .os = @
 
 				-- Carried values.
+				"name":                string =>  .name = @
 				"dependencies":        array  =>  .dependencies = map @, Atom
 				"build-dependencies":  array  =>  .buildDependencies = map @, Atom
+				"provides":            array  =>  .provides = map @, Atom
+				"conflicts":           array  =>  .conflicts = map @, Atom
 				"options":             array  =>  .options = @
 				"files":               array  =>  .files = @
 			}
@@ -54,10 +57,25 @@ class Constraint
 
 				fields[key] element
 
+	appliesTo: (package, context) =>
+		if @package and @package != package.identifier
+			return false
+
+		if @os and context.distribution and @os != context.distribution
+			return false
+
+		if @class and package.class != @class
+			return false
+
+		if @flavor and package.flavor != @flavor
+			return false
+
+		true
+
 	__tostring: =>
 		s = {}
 
-		for key in *{"name", "flavor", "class", "os", "dependencies", "buildDependencies", "options", "files"}
+		for key in *{"package", "flavor", "class", "os", "name", "dependencies", "buildDependencies", "options", "files"}
 			if @[key]
 				table.insert s, "#{key}=\"#{@[key]}\""
 

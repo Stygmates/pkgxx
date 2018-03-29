@@ -370,7 +370,9 @@ class
 					@.title
 
 			fields = {
-				"name":                string =>  .name = @
+				"name":                string =>
+				                                  .name = @
+				                                  .identifier = @
 				"version":             string =>  .version = @
 				"release":             string =>  .release = tonumber @ -- FIXME: assert != nil
 				"packager":            string =>  .packager = @
@@ -398,7 +400,9 @@ class
 
 					-- FIXME: A lot of those are redundant with items from “fields”.
 					splitFields =
-						name:          string => package.name = @
+						name:          string =>
+						                         package.name = @
+						                         package.identifier = @
 						files:         array  => package.files = @
 						dependencies:  array  => package.dependencies = @
 						conflicts:     array  => package.conflicts = @
@@ -600,7 +604,7 @@ class
 			return nil
 
 		for package in *@packages
-			package.target = module.package.target package
+			package\updateTarget @context
 
 		@target = @packages[1].target
 
@@ -913,9 +917,9 @@ class
 
 		-- FIXME: A bit hacky. We need packaging directories and fake roots
 		--        to be different.
-		fs.remove @\packagingDirectory @packages[1].name
+		fs.remove @\packagingDirectory @packages[1].identifier
 		fs.execute @, "mv '#{@\packagingDirectory!}' " ..
-			"'#{@\packagingDirectory @packages[1].name}'"
+			"'#{@\packagingDirectory @packages[1].identifier}'"
 
 	---
 	-- Creates packages from the built software.
@@ -930,6 +934,8 @@ class
 
 		if module.package
 			for package in *@packages
+				package = package\createConstrainedPackage @
+
 				if package.automatic and not package\hasFiles!
 					@context\debug "Not building (empty) automatic package: #{package.name}"
 					continue

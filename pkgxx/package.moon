@@ -6,6 +6,8 @@ macro = require "pkgxx.macro"
 Class = require "pkgxx.class"
 Atom = require "pkgxx.atom"
 
+local Package
+
 ---
 -- Package described and built from a Recipe.
 --
@@ -15,7 +17,7 @@ Atom = require "pkgxx.atom"
 -- @see Recipe
 -- @see Atom
 ---
-Class "Package",
+Package = Class "Package",
 	---
 	-- Constructor.
 	--
@@ -31,9 +33,9 @@ Class "Package",
 	--
 	-- @param arg (table) Array of named parameters.
 	__init: (arg) =>
-		--- @fixme Constructor’s documentation is in the wrong place because LDoc is broken.
 		@origin = arg.origin
 		@name = arg.name
+		@identifier = arg.identifier or arg.name
 
 		@dependencies = {}
 		@conflicts = {}
@@ -217,6 +219,43 @@ Class "Package",
 				@@.import package, os[distribution]
 
 	---
+	-- Creates a new Package that hase the same properties and on
+	-- which a Recipe’s set of constraints have been applied (if
+	-- relevant).
+	--
+	-- FIXME: May not be practical to generate distro or arch-specific
+	--        sets of packages. Pass a context in args? Pass os and
+	--        stuff directly?
+	createConstrainedPackage: (recipe) =>
+		keys = {
+			"name", "dependencies", "buildDependencies",
+			"provides", "conflicts", "options",
+			"files"
+		}
+
+		package = Package @
+
+		for constraint in *recipe.constraints
+			if constraint\appliesTo @, recipe.context
+				if constraint.name
+					for key in *keys
+						if constraint[key]
+							package[key] = constraint[key]
+
+		package\updateTarget recipe.context
+
+		package
+
+	updateTarget: (context) =>
+		-- We’re assuming it exists at this point.
+		-- Recipe\setTargets should have made the check already.
+		module = @context.modules[@context.packageManager]
+
+		@target = module.package.target @
+
+		@target
+
+	---
 	-- Prepares files for splits, by moving them from the main packaging directory to those of their respective splits.
 	-- @issue Should be renamed. That name is not representative of what it does in any way.
 	-- @hidden
@@ -257,7 +296,7 @@ Class "Package",
 	-- @return (string) The directory this package will be built in.
 	-- @see Recipe\packagingDirectory
 	packagingDirectory: =>
-		@origin\packagingDirectory @name
+		@origin\packagingDirectory @identifier
 
 	---
 	-- Checks the Package possesses any specific option.
@@ -307,7 +346,9 @@ Class "Package",
 	-- Package can be transformed to a string for debug operations.
 	__tostring: =>
 		if @version
-			"<pkgxx:Package: #{@name}-#{@version}-#{@release}>"
+			"<pkgxx:Package: #{@identifier}-#{@version}-#{@release}>"
 		else
-			"<pkgxx:Package: #{@name}-[devel]-#{@release}>"
+			"<pkgxx:Package: #{@identifier}-[devel]-#{@release}>"
+
+Package
 

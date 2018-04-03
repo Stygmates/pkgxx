@@ -310,7 +310,7 @@ class
 
 		@\finalize!
 
-	importSpec: (filename = "package.spec" using nil) =>
+	importSpec: (filename = "package.spec", version = nil, flavor = nil using nil) =>
 		-- CAUTION: Area of intense metaprogramming.
 		with recipe = self
 			string = (f) ->
@@ -351,9 +351,20 @@ class
 			unless spec
 				return nil, reason
 
-			if @versions and not @version
+			if version
+				if has version, @versions
+					@version = version
+				else
+					error "requested version is not specified in recipe", 0
+			elseif not @version
 				@version = @versions[1]
-			if @flavors and not @flavor
+
+			if flavor
+				if has flavor, @flavors
+					@flavor = flavor
+				else
+					error "requested flavor is not specified in recipe", 0
+			elseif not @flavor
 				@flavor = @flavors[1]
 
 			spec, reason = spec\evaluate {
@@ -363,7 +374,7 @@ class
 			}
 
 			unless spec
-				return nil, reason
+				error reason
 
 			@recipeAttributes = fs.attributes filename
 

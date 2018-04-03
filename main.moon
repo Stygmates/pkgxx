@@ -45,6 +45,14 @@ parser = with argparse "pkgxx", "Packages builder."
 	\flag "-L --list-versions", "Print the recipe’s versions and exit."
 	\flag "-F --list-flavors", "Print the recipe’s flavors and exit."
 
+	with \flag "-z --package-version"
+		\target "package-version"
+		\args 1
+
+	with \flag "-f --flavor"
+		\target "flavor"
+		\args 1
+
 	with \option "-c --collection"
 		\target "collection"
 		\args 1
@@ -82,7 +90,8 @@ if args.collection
 success, recipe = pcall -> context\openRecipe "package.toml"
 
 unless success
-	success, recipe = pcall -> context\openRecipe "package.spec"
+	success, recipe = pcall -> context\openRecipe "package.spec",
+		args["package-version"], args["flavor"]
 
 unless success
 	with reason = recipe

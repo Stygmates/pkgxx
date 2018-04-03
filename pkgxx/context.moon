@@ -248,12 +248,12 @@ class Context
 	-- @see Recipe
 	--
 	-- @warning This method is deprecated. Use newRecipe instead.
-	openRecipe: (filename = "package.toml") =>
+	openRecipe: (filename = "package.toml", version = nil, flavor = nil) =>
 		with @\newRecipe @
 			if filename\match "%.toml$"
 				\importTOML filename
 			else
-				\importSpec filename
+				\importSpec filename, version, flavor
 			\finalize!
 
 	---

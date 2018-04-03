@@ -1,6 +1,6 @@
 
 package=pkgxx
-version=0.2.0
+version="$(grep "^version = " main.moon | head -n 1 | cut -d \" -f 2)"
 
 variables=(LUA_VERSION 5.1)
 
@@ -64,7 +64,7 @@ dist=(
 	# Build system.
 	project.zsh Makefile
 	# Documentation.
-	config.ld doc/css/ldoc.{css,ltp}
+	doc/css/ldoc.{css,ltp}
 	doc/examples/*.moon
 	README.md
 )

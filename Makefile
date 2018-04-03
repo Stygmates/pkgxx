@@ -1,5 +1,5 @@
 PACKAGE = 'pkgxx'
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 
 PREFIX := /usr/local
 BINDIR := $(PREFIX)/bin
@@ -766,7 +766,6 @@ $(PACKAGE)-$(VERSION).tar.gz: distdir
 		$(PACKAGE)-$(VERSION)/spec/spec.moon \
 		$(PACKAGE)-$(VERSION)/project.zsh \
 		$(PACKAGE)-$(VERSION)/Makefile \
-		$(PACKAGE)-$(VERSION)/config.ld \
 		$(PACKAGE)-$(VERSION)/doc/css/ldoc.css \
 		$(PACKAGE)-$(VERSION)/doc/css/ldoc.ltp \
 		$(PACKAGE)-$(VERSION)/doc/examples/api_basics.moon \
@@ -834,7 +833,6 @@ $(PACKAGE)-$(VERSION).tar.xz: distdir
 		$(PACKAGE)-$(VERSION)/spec/spec.moon \
 		$(PACKAGE)-$(VERSION)/project.zsh \
 		$(PACKAGE)-$(VERSION)/Makefile \
-		$(PACKAGE)-$(VERSION)/config.ld \
 		$(PACKAGE)-$(VERSION)/doc/css/ldoc.css \
 		$(PACKAGE)-$(VERSION)/doc/css/ldoc.ltp \
 		$(PACKAGE)-$(VERSION)/doc/examples/api_basics.moon \
@@ -902,7 +900,6 @@ $(PACKAGE)-$(VERSION).tar.bz2: distdir
 		$(PACKAGE)-$(VERSION)/spec/spec.moon \
 		$(PACKAGE)-$(VERSION)/project.zsh \
 		$(PACKAGE)-$(VERSION)/Makefile \
-		$(PACKAGE)-$(VERSION)/config.ld \
 		$(PACKAGE)-$(VERSION)/doc/css/ldoc.css \
 		$(PACKAGE)-$(VERSION)/doc/css/ldoc.ltp \
 		$(PACKAGE)-$(VERSION)/doc/examples/api_basics.moon \
@@ -913,7 +910,7 @@ $(PACKAGE)-$(VERSION).tar.bz2: distdir
 		$(PACKAGE)-$(VERSION)/main.moon
 
 help:
-	@echo '[01;37m :: pkgxx-0.2.0[00m'
+	@echo '[01;37m :: pkgxx-0.3.0[00m'
 	@echo ''
 	@echo '[01;37mGeneric targets:[00m'
 	@echo '[00m    - [01;32mhelp          [37m Prints this help message.[00m'

@@ -73,6 +73,8 @@ class
 			}
 		}
 
+		@constraints = {}
+
 		@buildInstructions = {
 			Builder {
 				name: "configure"
@@ -447,8 +449,6 @@ class
 					.watch = watch
 
 				"constraint": =>
-					.constraints or= {} -- FIXME: Move to .new.
-					Constraint @.content
 					success, constraint = pcall -> Constraint @.content
 
 					if success

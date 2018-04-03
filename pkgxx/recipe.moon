@@ -374,7 +374,7 @@ class
 			}
 
 			unless spec
-				error reason
+				return nil, reason
 
 			@recipeAttributes = fs.attributes filename
 
@@ -406,7 +406,13 @@ class
 				"provides":            array  =>  .provides = map @, Atom
 				"options":             array  =>  .options = @
 				"flags":               array  =>  .context\warning "“flags” is an unimplemented property."
-				"slot":                string =>  .slot = @
+				"slot":                string =>
+					if not has @, {"major", "minor"}
+						.context\error "“slot” is not “major” or “minor”"
+
+						return false
+
+					.slot = @
 			}
 
 			sections = {
@@ -561,6 +567,11 @@ class
 						if watch
 							-- FIXME: Maybe we could do some additionnal checks.
 							@watch = watch
+
+		-- Slots \o/ (for package managers that don’t support it)
+		if @slot
+			for package in *@packages
+				package\applySlot!
 
 		@\applyDistributionRules @recipe or self
 

@@ -110,6 +110,9 @@ buildDeb = =>
 		install: (filename) =>
 			fs.execute context: self, "dpkg -i '#{filename}'"
 
+		handleSlot: (version) =>
+			@name = @name .. "-" .. version
+
 	isInstalled: (name) =>
 		fs.execute context: self, "dpkg -l | cut -d ' ' -f 3 | grep -q '^#{name}$'"
 }

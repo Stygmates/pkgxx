@@ -97,6 +97,8 @@ genPkginfo = (size) =>
 				".PKGINFO *"
 		install: (filename) =>
 			fs.execute context: self, "pacman -U '#{filename}'"
+		handleSlot: (version) =>
+			@name = @name .. "-" .. version
 	isInstalled: (name) =>
 		fs.execute context: self, "pacman -Q '#{name}'"
 	installDependency: (name) =>

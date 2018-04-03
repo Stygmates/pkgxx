@@ -235,6 +235,7 @@ Package = Class "Package",
 
 		package = Package @
 
+		-- Generic constraints.
 		for constraint in *recipe.constraints
 			if constraint\appliesTo @, recipe.context
 				if constraint.name
@@ -245,6 +246,22 @@ Package = Class "Package",
 		package\updateTarget recipe.context
 
 		package
+
+	applySlot: =>
+		pattern = switch @slot
+			when "major"
+				"%d"
+			when "minor"
+				"%d%.%d"
+			else -- Should probably not happen.
+				@slot
+
+		slotVersion = @version\match pattern
+
+		packageManager = @context.modules[@context.packageManager]
+
+		if packageManager.package.handleSlot
+			packageManager.package.handleSlot @, slotVersion
 
 	updateTarget: (context) =>
 		-- We’re assuming it exists at this point.

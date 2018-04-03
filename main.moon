@@ -42,6 +42,9 @@ parser = with argparse "pkgxx", "Packages builder."
 
 	\flag "-d --deps", "Check and install dependencies before building"
 
+	\flag "-L --list-versions", "Print the recipe’s versions and exit."
+	\flag "-F --list-flavors", "Print the recipe’s flavors and exit."
+
 	with \option "-c --collection"
 		\target "collection"
 		\args 1
@@ -92,6 +95,20 @@ if args.lint
 	count = recipe\lint!
 	context\close!
 	os.exit count
+elseif args.list_versions
+	os.exit if #recipe.versions > 0
+		print version for version in *recipe.versions
+		0
+	else
+		print "recipe has no flavor"
+		1
+elseif args.list_flavors
+	os.exit if #recipe.flavors > 0
+		print flavor for flavor in *recipe.flavors
+		0
+	else
+		print "recipe has no flavor"
+		1
 elseif args.watch
 	if not recipe.version
 		recipe\updateVersion!

@@ -102,6 +102,8 @@ class
 
 		@sources = {}
 
+		@versions = {}
+		@flavors = {}
 	---
 	-- Name of the recipe.
 	--

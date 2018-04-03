@@ -1,5 +1,7 @@
 #!/usr/bin/env moon
 
+version = "0.3.0"
+
 ---
 -- pkgxx’ executable
 -- @script pkgxx
@@ -11,18 +13,9 @@ argparse = require "argparse"
 pkgxx = require "pkgxx"
 ui = require "pkgxx.ui"
 
-context = pkgxx.newContext config
-
-unless context.logFilePath
-	context\setLogFile "#{os.getenv "HOME"}/.local/share/pkgxx/logs/#{math.random 9999}"
-unless context.logFilePath
-	context\warning "Could not open logs file."
-
-context\importConfiguration "/etc/pkgxx.conf"
-
-context\checkConfiguration!
-
 parser = with argparse "pkgxx", "Packages builder."
+	\flag "-V --version"
+
 	with \argument "recipe",
 		"Path to the recipe of the package to build."
 		\args "?"
@@ -57,6 +50,20 @@ parser = with argparse "pkgxx", "Packages builder."
 	\flag "-f --force", "Force rebuild and repository inclusion."
 
 args = parser\parse!
+
+if args.version
+	print "pkgxx #{version}"
+	os.exit 0
+
+context = with pkgxx.newContext config
+	unless .logFilePath
+		\setLogFile "#{os.getenv "HOME"}/.local/share/pkgxx/logs/#{math.random 9999}"
+	unless .logFilePath
+		\warning "Could not open logs file."
+
+	\importConfiguration "/etc/pkgxx.conf"
+
+	\checkConfiguration!
 
 context.verbosity = ((4 + ((args.verbosity or 0) - (args.quiet or 0))) or
 	context.configuration.verbosity or 4)

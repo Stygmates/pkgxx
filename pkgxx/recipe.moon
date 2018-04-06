@@ -884,7 +884,7 @@ class
 
 		fs.changeDirectory @\buildingDirectory!, ->
 			for source in *@sources
-				if source.filename\match "%.tar%.[a-z]*$"
+				if source.filename\match "%.tar%.[a-z0-9]*$"
 					@context\detail "Extracting '#{source.filename}'."
 					os.execute "tar xf " ..
 						"'#{@context.sourcesDirectory}/" ..

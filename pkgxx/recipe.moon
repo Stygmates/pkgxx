@@ -660,16 +660,19 @@ class
 		packages = {}
 
 		packages[1] = Package
+			name: @name
 			origin: @
 
 		packages[1]\import recipe
 
 		if recipe.splits
-			for packageName, data in pairs recipe.splits
+			for _, data in ipairs recipe.splits
 				-- Packages will need much more data than this.
 				-- FIXME: Package!? Target!?
+				print data.name
 				package = Package
-					name: packageName
+					name: data.name
+					identifier: data.name
 					origin: @
 					os: data.os
 					files: data.files
@@ -705,17 +708,13 @@ class
 
 			if module.autosplits
 				@context\debug "Trying module '#{module.name}'."
-				newPackages = module.autosplits @
-				newPackages = macro.parse newPackages, macroList @
-
-				for package in *@\parsePackages splits: newPackages
-					@context\debug "Registering automatic package: #{package.name}."
-
-					if not @\hasPackage package.name
-						package.automatic = true
-						@packages[#@packages+1] = package
-					else
-						@context\debug " ... package already exists."
+				for data in *module.autosplits @
+					if not @\hasPackage data.name
+						@context\debug "Registering automatic package: #{package.name}."
+						table.insert @packages, Package with data
+							.files = macro.parse (.files or {}), macroList @
+							.automatic = true
+							.origin = @
 		else
 			@context\warning "No module found for this distribution: " ..
 				"'#{distribution}'."

@@ -37,6 +37,8 @@ Package = Class "Package",
 		@name = arg.name
 		@identifier = arg.identifier or arg.name
 
+		@automatic = arg.automatic or false
+
 		@dependencies = {}
 		@conflicts = {}
 		@provides = {}

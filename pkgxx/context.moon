@@ -100,7 +100,7 @@ class Context
 			if configuration[variable]
 				@exports[variable] = configuration[variable]
 
-		@prefixes = {}
+		@prefixes = [p for p in *@prefixes] -- Cloning.
 		for prefix in *@prefixes
 			if configuration[prefix]
 				@prefixes[prefix] = configuration[prefix]

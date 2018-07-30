@@ -371,11 +371,15 @@ class
 			elseif not @flavor
 				@flavor = @flavors[1]
 
-			spec, reason = spec\evaluate {
+			variables =
 				version: @version
 				flavor: @flavor
 				pkg: @\packagingDirectory!
-			}
+
+			for prefix in *@context.prefixes
+				variables[prefix] = @context\getPrefix prefix
+
+			spec, reason = spec\evaluate variables
 
 			unless spec
 				return nil, reason

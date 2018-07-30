@@ -17,7 +17,7 @@ LDFLAGS :=
 
 Q := @
 
-all: pkgxx/atom.moon pkgxx/builder.moon pkgxx/class.moon pkgxx/constraint.moon pkgxx/context.moon pkgxx/fs.moon pkgxx/macro.moon pkgxx/module.moon pkgxx/package.moon pkgxx/recipe.moon pkgxx/source.moon pkgxx/spec.moon pkgxx/ui.moon pkgxx/utils.moon pkgxx.moon modules/apk.moon modules/apt.moon modules/arch.moon modules/autotools.moon modules/build.zsh.moon modules/cmake.moon modules/createrepo.moon modules/debian.moon modules/dnf.moon modules/dpkg.moon modules/fedora.moon modules/ftp.moon modules/github.moon modules/git.moon modules/http.moon modules/https.moon modules/make.moon modules/man.moon modules/ownership.moon modules/pacman.moon modules/perl.moon modules/pkgutils.moon modules/reprepro.moon modules/rpm.moon modules/strip.moon modules/test.moon modules/ubuntu.moon modules/vim.moon modules/waf.moon main doc/package.toml.5 doc/pkgxx.1 doc/pkgxx.conf.5
+all: pkgxx/atom.moon pkgxx/builder.moon pkgxx/class.moon pkgxx/constraint.moon pkgxx/context.moon pkgxx/fs.moon pkgxx/macro.moon pkgxx/module.moon pkgxx/package.moon pkgxx/recipe.moon pkgxx/source.moon pkgxx/spec.moon pkgxx/ui.moon pkgxx/utils.moon pkgxx/watch.moon pkgxx.moon modules/apk.moon modules/apt.moon modules/arch.moon modules/autotools.moon modules/build.zsh.moon modules/cmake.moon modules/createrepo.moon modules/debian.moon modules/dnf.moon modules/dpkg.moon modules/fedora.moon modules/ftp.moon modules/github.moon modules/git.moon modules/http.moon modules/https.moon modules/make.moon modules/man.moon modules/ownership.moon modules/pacman.moon modules/perl.moon modules/pkgutils.moon modules/reprepro.moon modules/rpm.moon modules/strip.moon modules/test.moon modules/ubuntu.moon modules/vim.moon modules/waf.moon main doc/package.toml.5 doc/pkgxx.1 doc/pkgxx.conf.5
 
 pkgxx/atom.moon:
 
@@ -200,6 +200,19 @@ pkgxx/utils.moon.clean:
 pkgxx/utils.moon.uninstall:
 	@echo '[01;37m  RM >    [01;37m$(SHAREDIR)/lua/$(LUA_VERSION)/pkgxx/utils.moon[00m'
 	$(Q)rm -f '$(DESTDIR)$(SHAREDIR)/lua/$(LUA_VERSION)/pkgxx/utils.moon'
+
+pkgxx/watch.moon:
+
+pkgxx/watch.moon.install: pkgxx/watch.moon
+	@echo '[01;31m  IN >    [01;37m$(SHAREDIR)/lua/$(LUA_VERSION)/pkgxx/watch.moon[00m'
+	$(Q)mkdir -p '$(DESTDIR)$(SHAREDIR)/lua/$(LUA_VERSION)/pkgxx'
+	$(Q)install -m0755 pkgxx/watch.moon $(DESTDIR)$(SHAREDIR)/lua/$(LUA_VERSION)/pkgxx/watch.moon
+
+pkgxx/watch.moon.clean:
+
+pkgxx/watch.moon.uninstall:
+	@echo '[01;37m  RM >    [01;37m$(SHAREDIR)/lua/$(LUA_VERSION)/pkgxx/watch.moon[00m'
+	$(Q)rm -f '$(DESTDIR)$(SHAREDIR)/lua/$(LUA_VERSION)/pkgxx/watch.moon'
 
 pkgxx.moon:
 
@@ -682,12 +695,12 @@ $(DESTDIR)$(INCLUDEDIR):
 $(DESTDIR)$(MANDIR):
 	@echo '[01;35m  DIR >   [01;37m$(MANDIR)[00m'
 	$(Q)mkdir -p $(DESTDIR)$(MANDIR)
-install: subdirs.install pkgxx/atom.moon.install pkgxx/builder.moon.install pkgxx/class.moon.install pkgxx/constraint.moon.install pkgxx/context.moon.install pkgxx/fs.moon.install pkgxx/macro.moon.install pkgxx/module.moon.install pkgxx/package.moon.install pkgxx/recipe.moon.install pkgxx/source.moon.install pkgxx/spec.moon.install pkgxx/ui.moon.install pkgxx/utils.moon.install pkgxx.moon.install modules/apk.moon.install modules/apt.moon.install modules/arch.moon.install modules/autotools.moon.install modules/build.zsh.moon.install modules/cmake.moon.install modules/createrepo.moon.install modules/debian.moon.install modules/dnf.moon.install modules/dpkg.moon.install modules/fedora.moon.install modules/ftp.moon.install modules/github.moon.install modules/git.moon.install modules/http.moon.install modules/https.moon.install modules/make.moon.install modules/man.moon.install modules/ownership.moon.install modules/pacman.moon.install modules/perl.moon.install modules/pkgutils.moon.install modules/reprepro.moon.install modules/rpm.moon.install modules/strip.moon.install modules/test.moon.install modules/ubuntu.moon.install modules/vim.moon.install modules/waf.moon.install main.install doc/package.toml.5.install doc/pkgxx.1.install doc/pkgxx.conf.5.install
+install: subdirs.install pkgxx/atom.moon.install pkgxx/builder.moon.install pkgxx/class.moon.install pkgxx/constraint.moon.install pkgxx/context.moon.install pkgxx/fs.moon.install pkgxx/macro.moon.install pkgxx/module.moon.install pkgxx/package.moon.install pkgxx/recipe.moon.install pkgxx/source.moon.install pkgxx/spec.moon.install pkgxx/ui.moon.install pkgxx/utils.moon.install pkgxx/watch.moon.install pkgxx.moon.install modules/apk.moon.install modules/apt.moon.install modules/arch.moon.install modules/autotools.moon.install modules/build.zsh.moon.install modules/cmake.moon.install modules/createrepo.moon.install modules/debian.moon.install modules/dnf.moon.install modules/dpkg.moon.install modules/fedora.moon.install modules/ftp.moon.install modules/github.moon.install modules/git.moon.install modules/http.moon.install modules/https.moon.install modules/make.moon.install modules/man.moon.install modules/ownership.moon.install modules/pacman.moon.install modules/perl.moon.install modules/pkgutils.moon.install modules/reprepro.moon.install modules/rpm.moon.install modules/strip.moon.install modules/test.moon.install modules/ubuntu.moon.install modules/vim.moon.install modules/waf.moon.install main.install doc/package.toml.5.install doc/pkgxx.1.install doc/pkgxx.conf.5.install
 	@:
 
 subdirs.install:
 
-uninstall: subdirs.uninstall pkgxx/atom.moon.uninstall pkgxx/builder.moon.uninstall pkgxx/class.moon.uninstall pkgxx/constraint.moon.uninstall pkgxx/context.moon.uninstall pkgxx/fs.moon.uninstall pkgxx/macro.moon.uninstall pkgxx/module.moon.uninstall pkgxx/package.moon.uninstall pkgxx/recipe.moon.uninstall pkgxx/source.moon.uninstall pkgxx/spec.moon.uninstall pkgxx/ui.moon.uninstall pkgxx/utils.moon.uninstall pkgxx.moon.uninstall modules/apk.moon.uninstall modules/apt.moon.uninstall modules/arch.moon.uninstall modules/autotools.moon.uninstall modules/build.zsh.moon.uninstall modules/cmake.moon.uninstall modules/createrepo.moon.uninstall modules/debian.moon.uninstall modules/dnf.moon.uninstall modules/dpkg.moon.uninstall modules/fedora.moon.uninstall modules/ftp.moon.uninstall modules/github.moon.uninstall modules/git.moon.uninstall modules/http.moon.uninstall modules/https.moon.uninstall modules/make.moon.uninstall modules/man.moon.uninstall modules/ownership.moon.uninstall modules/pacman.moon.uninstall modules/perl.moon.uninstall modules/pkgutils.moon.uninstall modules/reprepro.moon.uninstall modules/rpm.moon.uninstall modules/strip.moon.uninstall modules/test.moon.uninstall modules/ubuntu.moon.uninstall modules/vim.moon.uninstall modules/waf.moon.uninstall main.uninstall doc/package.toml.5.uninstall doc/pkgxx.1.uninstall doc/pkgxx.conf.5.uninstall
+uninstall: subdirs.uninstall pkgxx/atom.moon.uninstall pkgxx/builder.moon.uninstall pkgxx/class.moon.uninstall pkgxx/constraint.moon.uninstall pkgxx/context.moon.uninstall pkgxx/fs.moon.uninstall pkgxx/macro.moon.uninstall pkgxx/module.moon.uninstall pkgxx/package.moon.uninstall pkgxx/recipe.moon.uninstall pkgxx/source.moon.uninstall pkgxx/spec.moon.uninstall pkgxx/ui.moon.uninstall pkgxx/utils.moon.uninstall pkgxx/watch.moon.uninstall pkgxx.moon.uninstall modules/apk.moon.uninstall modules/apt.moon.uninstall modules/arch.moon.uninstall modules/autotools.moon.uninstall modules/build.zsh.moon.uninstall modules/cmake.moon.uninstall modules/createrepo.moon.uninstall modules/debian.moon.uninstall modules/dnf.moon.uninstall modules/dpkg.moon.uninstall modules/fedora.moon.uninstall modules/ftp.moon.uninstall modules/github.moon.uninstall modules/git.moon.uninstall modules/http.moon.uninstall modules/https.moon.uninstall modules/make.moon.uninstall modules/man.moon.uninstall modules/ownership.moon.uninstall modules/pacman.moon.uninstall modules/perl.moon.uninstall modules/pkgutils.moon.uninstall modules/reprepro.moon.uninstall modules/rpm.moon.uninstall modules/strip.moon.uninstall modules/test.moon.uninstall modules/ubuntu.moon.uninstall modules/vim.moon.uninstall modules/waf.moon.uninstall main.uninstall doc/package.toml.5.uninstall doc/pkgxx.1.uninstall doc/pkgxx.conf.5.uninstall
 	@:
 
 subdirs.uninstall:
@@ -697,7 +710,7 @@ test: all subdirs subdirs.test
 
 subdirs.test:
 
-clean: pkgxx/atom.moon.clean pkgxx/builder.moon.clean pkgxx/class.moon.clean pkgxx/constraint.moon.clean pkgxx/context.moon.clean pkgxx/fs.moon.clean pkgxx/macro.moon.clean pkgxx/module.moon.clean pkgxx/package.moon.clean pkgxx/recipe.moon.clean pkgxx/source.moon.clean pkgxx/spec.moon.clean pkgxx/ui.moon.clean pkgxx/utils.moon.clean pkgxx.moon.clean modules/apk.moon.clean modules/apt.moon.clean modules/arch.moon.clean modules/autotools.moon.clean modules/build.zsh.moon.clean modules/cmake.moon.clean modules/createrepo.moon.clean modules/debian.moon.clean modules/dnf.moon.clean modules/dpkg.moon.clean modules/fedora.moon.clean modules/ftp.moon.clean modules/github.moon.clean modules/git.moon.clean modules/http.moon.clean modules/https.moon.clean modules/make.moon.clean modules/man.moon.clean modules/ownership.moon.clean modules/pacman.moon.clean modules/perl.moon.clean modules/pkgutils.moon.clean modules/reprepro.moon.clean modules/rpm.moon.clean modules/strip.moon.clean modules/test.moon.clean modules/ubuntu.moon.clean modules/vim.moon.clean modules/waf.moon.clean main.clean doc/package.toml.5.clean doc/pkgxx.1.clean doc/pkgxx.conf.5.clean
+clean: pkgxx/atom.moon.clean pkgxx/builder.moon.clean pkgxx/class.moon.clean pkgxx/constraint.moon.clean pkgxx/context.moon.clean pkgxx/fs.moon.clean pkgxx/macro.moon.clean pkgxx/module.moon.clean pkgxx/package.moon.clean pkgxx/recipe.moon.clean pkgxx/source.moon.clean pkgxx/spec.moon.clean pkgxx/ui.moon.clean pkgxx/utils.moon.clean pkgxx/watch.moon.clean pkgxx.moon.clean modules/apk.moon.clean modules/apt.moon.clean modules/arch.moon.clean modules/autotools.moon.clean modules/build.zsh.moon.clean modules/cmake.moon.clean modules/createrepo.moon.clean modules/debian.moon.clean modules/dnf.moon.clean modules/dpkg.moon.clean modules/fedora.moon.clean modules/ftp.moon.clean modules/github.moon.clean modules/git.moon.clean modules/http.moon.clean modules/https.moon.clean modules/make.moon.clean modules/man.moon.clean modules/ownership.moon.clean modules/pacman.moon.clean modules/perl.moon.clean modules/pkgutils.moon.clean modules/reprepro.moon.clean modules/rpm.moon.clean modules/strip.moon.clean modules/test.moon.clean modules/ubuntu.moon.clean modules/vim.moon.clean modules/waf.moon.clean main.clean doc/package.toml.5.clean doc/pkgxx.1.clean doc/pkgxx.conf.5.clean
 
 distclean: clean
 
@@ -758,6 +771,7 @@ $(PACKAGE)-$(VERSION).tar.gz: distdir
 		$(PACKAGE)-$(VERSION)/pkgxx/spec.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/ui.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/utils.moon \
+		$(PACKAGE)-$(VERSION)/pkgxx/watch.moon \
 		$(PACKAGE)-$(VERSION)/spec/atom.moon \
 		$(PACKAGE)-$(VERSION)/spec/macro.moon \
 		$(PACKAGE)-$(VERSION)/spec/modules.moon \
@@ -825,6 +839,7 @@ $(PACKAGE)-$(VERSION).tar.xz: distdir
 		$(PACKAGE)-$(VERSION)/pkgxx/spec.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/ui.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/utils.moon \
+		$(PACKAGE)-$(VERSION)/pkgxx/watch.moon \
 		$(PACKAGE)-$(VERSION)/spec/atom.moon \
 		$(PACKAGE)-$(VERSION)/spec/macro.moon \
 		$(PACKAGE)-$(VERSION)/spec/modules.moon \
@@ -892,6 +907,7 @@ $(PACKAGE)-$(VERSION).tar.bz2: distdir
 		$(PACKAGE)-$(VERSION)/pkgxx/spec.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/ui.moon \
 		$(PACKAGE)-$(VERSION)/pkgxx/utils.moon \
+		$(PACKAGE)-$(VERSION)/pkgxx/watch.moon \
 		$(PACKAGE)-$(VERSION)/spec/atom.moon \
 		$(PACKAGE)-$(VERSION)/spec/macro.moon \
 		$(PACKAGE)-$(VERSION)/spec/modules.moon \

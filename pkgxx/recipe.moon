@@ -102,6 +102,8 @@ class
 
 		@sources = {}
 
+		@buildDependencies = {}
+
 		@versions = {}
 		@flavors = {}
 	---
@@ -465,7 +467,13 @@ class
 
 							watchFields[element.variable] element
 
-					.watch = watch
+					.watch, error = require("pkgxx.watch").fromSpec watch
+
+					for warning in *.watch.warnings
+						.context\warning warning
+
+					unless .watch
+						.context\error error
 
 				"constraint": =>
 					success, constraint = pcall -> Constraint @.content
@@ -687,9 +695,13 @@ class
 
 	--- @hidden
 	-- Hidden until semantics clarification and lots of grooming.
+	-- FIXME: Review and test intensively. Shouldn’t more Constraints
+	--        types be checked?
 	applyDistributionDiffs: (recipe, distribution) =>
-		if recipe.os and recipe.os[distribution]
-			@packages[1]\import recipe.os[distribution]
+		if recipe.os
+			for name, content in pairs recipe.os
+				table.insert @constraints, Constraint with content
+					.os = name
 
 	--- @hidden
 	-- Hidden until semantics clarification and lots of grooming.
@@ -1062,53 +1074,8 @@ class
 	-- @return (false, string) Recipe is outdated. Returns the latest version available.
 	isUpToDate: =>
 		if @watch
-			local p
-			-- FIXME: We need to abstract those curl calls.
-			-- FIXME: sort -n is a GNU extension.
-			-- FIXME: hx* come from the html-xml-utils from the w3c. That’s
-			--        an unusual external dependency we’d better get rid of.
-			--        We could switch to https://github.com/msva/lua-htmlparser,
-			--        but there could be issues with Lua 5.1. More testing needed.
-			if @watch.selector
-				@context\debug "Using the “selector” method."
-				p = io.popen "curl -sL '#{@watch.url}' | hxnormalize -x " ..
-					"| hxselect -c '#{@watch.selector}' -s '\n'"
-			elseif @watch.lasttar
-				@context\debug "Using the “lasttar” method."
-				p = io.popen "curl -sL '#{@watch.url}' | hxnormalize -x " ..
-					"| hxselect -c 'a' -s '\n' " ..
-					"| grep '#{@watch.lasttar}' " ..
-					-- FIXME +V is a gnu extension.
-					"| sed 's&#{@watch.lasttar}&&;s&\\.tar\\..*$&&' | sort -rV"
-			elseif @watch.execute
-				@context\debug "Executing custom script."
-				p = io.popen @watch.execute
-
-			version = p\read "*line"
-			success, _, r = p\close!
-
-			-- 5.1 compatibility sucks.
-			unless (r and r == 0 or success) and version
-				return nil, nil, "could not check", "child process failed"
-
-			if version
-				version = version\gsub "^%s*", ""
-				version = version\gsub "%s*$", ""
-
-			if @watch.subs
-				for pair in *@watch.subs
-					unless (type pair) == "table" and #pair == 2
-						@context\warning "Invalid substitution. Substitution is not a pair."
-						continue
-
-					unless (type pair[1] == "string") and (type pair[2] == "string")
-						@context\warning "Invalid substitution. Substitution is not a pair of strings."
-
-						continue
-
-					version = version\gsub pair[1], pair[2]
-
-			return version == @version, version
+			latestVersion = @watch\getLatestVersion @context
+		(@watch\isUpToDate @) if @watch
 
 	---
 	-- Generates a dependency tree for the recipe.

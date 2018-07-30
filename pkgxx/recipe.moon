@@ -102,6 +102,7 @@ class
 
 		@sources = {}
 
+		@dependencies = {}
 		@buildDependencies = {}
 
 		@versions = {}

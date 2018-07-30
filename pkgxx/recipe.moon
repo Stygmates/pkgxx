@@ -101,6 +101,7 @@ class
 		@recipeAttributes = {}
 
 		@sources = {}
+		@options = {}
 
 		@dependencies = {}
 		@buildDependencies = {}

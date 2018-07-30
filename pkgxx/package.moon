@@ -39,13 +39,13 @@ Package = Class "Package",
 
 		@automatic = arg.automatic or false
 
-		@dependencies = {}
-		@conflicts = {}
-		@provides = {}
+		@dependencies = @origin.dependencies
+		@conflicts = @origin.conflicts
+		@provides = @origin.provides
 
-		@groups = {}
+		@groups = @origin.groups
 
-		@options = {}
+		@options = @origin.options
 
 		@files = arg.files or {}
 

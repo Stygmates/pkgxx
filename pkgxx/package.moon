@@ -240,10 +240,9 @@ Package = Class "Package",
 		-- Generic constraints.
 		for constraint in *recipe.constraints
 			if constraint\appliesTo @, recipe.context
-				if constraint.name
-					for key in *keys
-						if constraint[key]
-							package[key] = constraint[key]
+				for key in *keys
+					if constraint[key]
+						package[key] = constraint[key]
 
 		package\updateTarget recipe.context
 

@@ -106,6 +106,10 @@ describe "spec.eval", ->
 			assert.are.same {"2.10", "2.9", "2.8", "2.7", "2.6"}, @versions
 			assert.are.same {"nls", "minimal"}, @flavors
 
+	it "evaluates default prefixes variable", ->
+		-- FIXME: Check stuff like %{bindir} or %{sharedir}. If one works, the others should work too.
+		pending "not implemented"
+
 	it "evaluates list modifiers", ->
 		pending "not implemented"
 

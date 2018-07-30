@@ -108,7 +108,7 @@ _M.evaluate = (ast, preDefinitions) ->
 						substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
 						unless substitution
-							error {"variable not declared beforehand: #{identifier}"}, 0
+							error "variable not declared beforehand: #{identifier}"
 
 						substitution
 			when "list declaration"
@@ -118,7 +118,7 @@ _M.evaluate = (ast, preDefinitions) ->
 							substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
 							unless substitution
-								error {"variable not declared beforehand: #{identifier}"}, 0
+								error "variable not declared beforehand: #{identifier}"
 
 							substitution
 			when "section"
@@ -127,7 +127,7 @@ _M.evaluate = (ast, preDefinitions) ->
 						substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
 						unless substitution
-							error {"variable not declared beforehand: #{identifier}"}, 0
+							error "variable not declared beforehand: #{identifier}"
 
 						substitution
 

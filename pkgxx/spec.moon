@@ -99,6 +99,8 @@ _M.evaluate = (ast, preDefinitions) ->
 	@ = setmetatable {}, __index: _M
 
 	for element in *ast
+		local expected_error
+
 		success, newElement = pcall -> switch element.type
 			when "comment"
 				nil
@@ -108,7 +110,8 @@ _M.evaluate = (ast, preDefinitions) ->
 						substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
 						unless substitution
-							error "variable not declared beforehand: #{identifier}"
+							expected_error = "variable not declared beforehand: #{identifier}"
+							error!
 
 						substitution
 			when "list declaration"
@@ -118,7 +121,8 @@ _M.evaluate = (ast, preDefinitions) ->
 							substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
 							unless substitution
-								error "variable not declared beforehand: #{identifier}"
+								expected_error = "variable not declared beforehand: #{identifier}"
+								error!
 
 							substitution
 			when "section"
@@ -127,7 +131,8 @@ _M.evaluate = (ast, preDefinitions) ->
 						substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
 						unless substitution
-							error "variable not declared beforehand: #{identifier}"
+							expected_error = "variable not declared beforehand: #{identifier}"
+							error!
 
 						substitution
 
@@ -135,8 +140,8 @@ _M.evaluate = (ast, preDefinitions) ->
 			if newElement
 				table.insert self, newElement
 		else
-			if type(newElement) == "table"
-				return nil, newElement[1]
+			if expected_error
+				return nil, expected_error
 			else
 				error newElement, 0
 

@@ -37,6 +37,8 @@ Package = Class "Package",
 		@name = arg.name
 		@identifier = arg.identifier or arg.name
 
+		@class = "binary"
+
 		@automatic = arg.automatic or false
 
 		@dependencies = @origin.dependencies

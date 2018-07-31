@@ -398,7 +398,9 @@ class
 				                                  .identifier = @
 				"version":             string =>  .version = @
 				"release":             string =>  .release = tonumber @ -- FIXME: assert != nil
-				"packager":            string =>  .packager = @
+				"packager":            string =>
+				                                  .packager = @
+				                                  .maintainer = @ unless .maintainer
 				"maintainer":          string =>  .maintainer = @
 				"url":                 string =>  .url = @
 				"summary":             string =>  .summary = @

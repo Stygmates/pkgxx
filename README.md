@@ -68,7 +68,7 @@ context = with pkgxx.newContext!
 	.packagesDirectory = pwd
 	.sourcesDirectory =  pwd
 
-recipe = with context\openRecipe "package.toml"
+recipe = with context\openRecipe "package.spec"
 	\download!
 	\build!
 	\package!
@@ -76,7 +76,7 @@ recipe = with context\openRecipe "package.toml"
 context\close!
 ```
 
-## package.toml example
+## package.spec example
 
 `package.spec` is the WIP recipe format for pkg++.
 

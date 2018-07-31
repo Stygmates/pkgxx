@@ -78,22 +78,39 @@ context\close!
 
 ## package.toml example
 
-`package.toml` is the WIP recipe format for pkg++.
+`package.spec` is the WIP recipe format for pkg++.
 
 Work will be invested to support multiple recipe formats in the future.
 
-```toml
-summary =     "GNU compression utility"
-url =         "http://www.gzip.org/"
-packager =    "Luka Vandervelden <lukc@upyum.com>"
+```spec
+name:     hello
+version:  2.10
+source:   https://ftp.gnu.org/gnu/hello/hello-%{version}.tar.gz
 
-name =    "gzip"
-version = "1.6"
-release = 1
-sources = [ "http://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.xz" ]
+packager: Luka Vandervelden <lukc@upyum.com>
+url:      https://www.gnu.org/software/hello/
 
-dependencies = ["zlib"]
-build-dependencies = ["zlib-devel"]
+dependencies:
+- gettext
+- ncurses
+
+@configure
+	cd hello-%{version}
+	./configure
+
+@build
+	cd hello-%{version}
+	make
+
+@install
+	cd hello-%{version}
+	make DESTDIR="%{pkg}" install
+
+# Optionnal section to watch for upstream updates!
+@watch
+	url: https://ftp.gnu.org/gnu/hello/
+	lasttar: hello-
+
 ```
 
 ## Dependencies

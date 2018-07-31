@@ -120,6 +120,5 @@ dependencies:
   - [lua-argparse](https://github.com/mpeterv/argparse)
   - [luafilesystem](https://github.com/keplerproject/luafilesystem)
   - [build.zsh](https://github.com/Lukc/build.zsh)
-  - [lua-process](https://github.com/mah0x211/lua-process)
   - [lua-split](https://github.com/moteus/lua-split)
 

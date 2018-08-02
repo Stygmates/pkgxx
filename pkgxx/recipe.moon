@@ -409,6 +409,7 @@ class
 				"description":         string =>  .description = @
 				"class":               string =>  .class = @
 				"source":              string =>  .sources = {Source.fromString @}
+				"dirname":             string =>  .dirname = @
 				"sources":             array  =>  .sources = map @, Source.fromString
 				"dependencies":        array  =>  .dependencies = map @, Atom
 				"build-dependencies":  array  =>  .buildDependencies = map @, Atom

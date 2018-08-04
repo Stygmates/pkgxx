@@ -103,8 +103,12 @@ class
 		@sources = {}
 		@options = {}
 
+		@groups = {}
+
 		@dependencies = {}
 		@buildDependencies = {}
+		@conflicts = {}
+		@provides = {}
 
 		@versions = {}
 		@flavors = {}

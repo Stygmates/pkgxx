@@ -122,3 +122,7 @@ dependencies:
   - [build.zsh](https://github.com/Lukc/build.zsh)
   - [lua-split](https://github.com/moteus/lua-split)
 
+  - wget (any implementation that supports -O will work at the moment)
+
+  - [pandoc](http://pandoc.org) is required to build the manpages of the project.
+

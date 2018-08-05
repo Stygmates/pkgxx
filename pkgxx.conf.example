@@ -1,18 +1,118 @@
 
-distribution = "Debian"
-package-manager = "dpkg"
-repository-manager = "reprepro"
+---
+-- MAIN CONFIGURATION
+---
 
-# Usefull options for reprepro.
-distribution-codename = "jessie"
+with context
+	-- The distribution for which your packages are built.
+	-- This influences automated packages splitting and naming.
+	.distribution = "Unknown"
 
-builder = "Someone <some@one.example>"
+	-- The package manager format of the packages you want to produce.
+	.packageManager = "pkgutils"
 
-#repositories = [
-#	"/usr/recipes"
-#]
+	-- The tool that will be used to build and update your packages
+	-- repository. If you need no repository, you can set it to “nil”.
+	--.repositoryManager = "reprepro"
 
-[collections.test]
-	provider = "Lukc"
-	prefix = "/opt/Lukc/test"
+	-- The tool used to fetch and install dependencies before building
+	-- packages. If none, the .packageManager will be used, if able.
+	--.dependenciesManager = "apt"
+
+	-- Location of the directory in which packages will be stored.
+	-- If any, the repository will also be built and updated there.
+	.packagesDirectory = "/srv/pkg"
+
+
+	-- Directory in which the softwares’ sources will be downloaded in
+	-- and stored.
+	.sourcesDirectory = "/srv/src"
+
+	-- The default verbosity level of pkg++. 1 is the most verbose,
+	-- 6 is the least verbose.
+	--.verbosity = 4
+
+	-- This tells reprepro the codename of the distribution you are
+	-- building packages for. If you are not building for dpkg-based
+	-- distributions, you won’t need this.
+	--.configuration["distribution-codename"] = "jessie"
+
+	-- The name of the “builder” of the packages. Usually, this
+	-- is the name of the buildbot and the contact email of its
+	-- maintainer. Used mostly on Alpine.
+	.builder = "Someone <some@one.example>"
+
+	-- The description of your repository, if any. Some kinds of 
+	-- repositories have their descriptions embedded and displayed
+	-- within their package managers, like apk.
+	.repositoryDescription = "pkg++ test repository"
+
+	-- What compression algorithm to use when building packages,
+	-- if those packages can have multiple ones.
+	--.compressionMethod = "gz"
+
+---
+-- ENVIRONMENT VARIABLES
+---
+
+with environment
+	.MAKEFLAGS = "-j2"
+	.CFLAGS    = "-O2 -fPIC"
+	.CXXFLAGS  = "#{.CFLAGS}"
+	.LDFLAGS   = ""
+
+
+---
+-- PREFIXES CONFIGURATION
+---
+
+--with prefixes
+--	.prefix   = "/usr"
+--	.bindir   = "/usr/bin"
+--	.sharedir = "/usr/share"
+--	.infodir  = "/usr/share/info"
+--	.mandir   = "/usr/share/man"
+--	.docdir   = "/usr/share/doc"
+--	.libdir   = "/usr/lib"
+--	.libexecdir = "/usr/libexec"
+--	.includedir = "/usr/include"
+--	.confdir  = "/etc"
+--	.statedir = "/var"
+--	.opt      = "/opt"
+
+---
+-- EXPERIMENTAL FEATURES
+---
+
+--with context
+	-- This is a list of directories where pkg++ should look for
+	-- recipes when looking for dependencies.
+	-- This feature has been implemented as a proof of concept and
+	-- not maintained since, and is probably broken.
+	--.repositories = {
+	--	"/usr/recipes"
+	--}
+
+	-- This defines a “packages collection”. pkg++ will attempt to
+	-- adapt otherwhise generic recipes to build them in a collection
+	-- when used with the `-c <name>` switch.
+	-- This feature has been implemented as a proof of concept and
+	-- not maintained since, and is probably broken.
+	--table.insert .collections, {
+	--	provider: "Username"
+	--	prefix: "/opt/username-collection"
+	--}
+
+---
+-- SCRIPTING AND OVERLOADING
+---
+
+-- It is possible to overload several pkg++ methods from the configuration
+-- itself. The following is an example that changes the format of
+-- the “info” messages.
+--with context
+--	.info = (...) =>
+--		io.stdout "<info>#{table.concat {...}, " "}</info>"
+
+-- vim: syntax=moon :
 

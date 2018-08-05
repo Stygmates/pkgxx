@@ -5,6 +5,8 @@ toml = require "toml"
 ui = require "pkgxx.ui"
 fs = require "pkgxx.fs"
 
+{:setfenv} = require "moonscript.util"
+
 Recipe = require "pkgxx.recipe"
 Module = require "pkgxx.module"
 
@@ -45,6 +47,7 @@ class Context
 		@collections = {}
 
 		@compressionMethod = "gz"
+		@prefixes = [p for p in *@prefixes] -- Cloning.
 
 		-- Array of strings that contain the pathnames of the repositories
 		-- in which pkg++ could look for dependencies.
@@ -52,7 +55,7 @@ class Context
 
 		-- An associative array of stuff to export when running
 		-- external commands in order to build softwares.
-		@exports = {}
+		@environment = {}
 
 		-- Setting default architecture based on the machine’s real
 		-- architecture.
@@ -70,52 +73,24 @@ class Context
 	-- @param filename (string) Path to a configuration file to load instead of the default one.
 	-- @return nil
 	importConfiguration: (filename) =>
-		f = io.open filename
+		chunk, reason = moonscript.loadfile filename
 
-		unless f
-			return nil, "file couldn’t be opened"
+		unless chunk
+			reason = reason\gsub "Failed to parse:", "#{filename}: syntax error"
 
-		content = f\read "*all"
-		f\close!
+			error reason, 0
 
-		configuration = toml.parse content
-		@configuration = configuration
+		environment = with {}
+			for k, v in pairs _G
+				[k] = v
 
-		@sourcesDirectory  = configuration["sources-directory"] or @sourcesDirectory
-		@packagesDirectory = configuration["packages-directory"] or @packagesDirectory
+			.context = self
+			.prefixes = @prefixes
+			.environment = @environment
 
-		@builder = configuration["builder"]
+		setfenv chunk, environment
 
-		@distribution = configuration["distribution"]
-		@packageManager = configuration["package-manager"]
-		@repositoryManager = configuration["repository-manager"]
-		@dependenciesManager = configuration["dependencies-manager"]
-
-		@repositoryDescription = configuration["repository-description"]
-
-		for variable in *{
-			"CFLAGS", "CPPFLAGS", "CXXFLAGS", "FFLAGS", "LDFLAGS",
-			"MAKEFLAGS"
-		}
-			if configuration[variable]
-				@exports[variable] = configuration[variable]
-
-		@prefixes = [p for p in *@prefixes] -- Cloning.
-		for prefix in *@prefixes
-			if configuration[prefix]
-				@prefixes[prefix] = configuration[prefix]
-
-		if configuration.verbosity
-			@verbosity = configuration.verbosity
-
-		if configuration.repositories
-			for s in *configuration.repositories
-				@repositories[#@repositories+1] = s
-
-		if configuration.collections
-			for name, col in pairs configuration.collections
-				@\debug "Registering collection '#{name}'."
-				@collections[name] = col
+		chunk!
 
 	---
 	-- Loads the default pkg++ modules, installed in the system directories.

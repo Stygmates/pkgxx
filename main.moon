@@ -72,7 +72,11 @@ context = with pkgxx.newContext config
 	unless .logFilePath
 		\warning "Could not open logs file."
 
-	\importConfiguration "/etc/pkgxx.conf"
+	success, error = pcall -> \importConfiguration "/etc/pkgxx.conf"
+
+	unless success
+		\error error
+		os.exit 1
 
 	\checkConfiguration!
 

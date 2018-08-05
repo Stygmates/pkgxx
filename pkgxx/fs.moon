@@ -57,7 +57,7 @@ unpack = unpack or table.unpack
 	execute: (arg) =>
 		exports = ""
 
-		for key, value in pairs @context.exports
+		for key, value in pairs @context.environment
 			exports = exports .. "export #{key}='#{value}'\n"
 
 		verbosity = ui.getVerbosity!

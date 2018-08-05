@@ -31,9 +31,9 @@ Class "Builder",
 				code = table.concat @instructions, "\n"
 				code = "set -x\n#{code}"
 
-				-> return fs.execute self, code
+				-> return fs.execute self, code, print_return: true
 			when "string"
-				-> return fs.execute self, @instructions
+				-> return fs.execute self, @instructions, print_return: true
 			when "function"
 				-> return @instructions @recipe
 			when "nil"

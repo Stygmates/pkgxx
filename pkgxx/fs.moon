@@ -54,7 +54,9 @@ unpack = unpack or table.unpack
 
 	---
 	-- FIXME: Move to Context.
-	execute: (arg) =>
+	execute: (arg, opt) =>
+		opt or= {}
+
 		exports = ""
 
 		for key, value in pairs @context.environment
@@ -87,7 +89,8 @@ unpack = unpack or table.unpack
 				status = status / 256
 
 		if status != 0
-			io.stderr\write "Last command returned #{status}\n"
+			if opt.print_return
+				io.stderr\write "Last command returned #{status}\n"
 			false, status
 		else
 			true, 0

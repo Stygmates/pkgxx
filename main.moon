@@ -78,7 +78,8 @@ context = with pkgxx.newContext config
 		\error error
 		os.exit 1
 
-	\checkConfiguration!
+	unless \checkConfiguration!
+		os.exit 1
 
 context.verbosity = ((4 + ((args.verbosity or 0) - (args.quiet or 0))) or
 	context.configuration.verbosity or 4)

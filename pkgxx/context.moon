@@ -28,8 +28,6 @@ class Context
 
 		@verbosity = arg.verbosity or 4
 
-		home = os.getenv "HOME"
-
 		pid = -666 -- Default value if /proc is unavailable.
 		stat = io.open "/proc/self/stat", "r"
 		if stat
@@ -38,8 +36,10 @@ class Context
 
 		@randomKey = math.random 0, 65535
 
-		@sourcesDirectory  = "#{home}"
-		@packagesDirectory = "#{home}"
+		-- Those two should be set to strings in the configuration.
+		@sourcesDirectory  = nil
+		@packagesDirectory = nil
+
 		@buildingDirectory = "/tmp/pkgxx-#{pid}-#{@randomKey}"
 
 		@\setLogFile "/var/log/pkgxx/#{pid}-#{@randomKey}.log"
@@ -185,27 +185,29 @@ class Context
 	--
 	-- @return nil
 	checkConfiguration: =>
-		if not @modules[@packageManager]
-			@\warning "No module for the following package manager: " ..
-				"'#{@packageManager}'."
+		checks = {}
+		Check = (arg) -> table.insert checks, arg
 
-			@\warning "Package manager set to 'pkgutils'."
-			@packageManager = "pkgutils"
+		Check
+			message:  "context.packagesDirectory is not set"
+			function: => type(@packagesDirectory) == "string"
+		Check
+			message:  "context.sourcesDirectory is not set"
+			function: => type(@sourcesDirectory) == "string"
+		Check
+			message:  "context.packageManager does not designate a package manager backend"
+			function: => @modules[@packageManager] != nil
+		Check
+			message:  "context.repositoryManager does not designate a repository manager backend"
+			function: => (not @repositoryManager) or @modules[@repositoryManager] != nil
 
-		if @repositoryManager and not @modules[@repositoryManager]
-			if @repositoryManager == "none"
-				@repositoryManager = nil
-			else
-				@\warning "No module for the following repository manager: " ..
-					"'#{@repositoryManager}'."
+		failures = 0
+		for check in *checks
+			unless check.function self
+				@\error check.message
+				failures += 1
 
-				if @modules[@packageManager].makeRepository
-					@\warning "Repository manager set to " ..
-						"'#{@packageManager}'."
-					@repositoryManager = @packageManager
-				else
-					@\warning "No repository will be generated."
-					@repositoryManager = nil
+		failures == 0
 
 	---
 	-- Creates a new empty Recipe object.

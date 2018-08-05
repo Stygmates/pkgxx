@@ -92,11 +92,11 @@ if args.collection
 	print "Building in the following collection: #{args.collection}"
 	context.collection = args.collection
 
-success, recipe = pcall -> context\openRecipe "package.toml"
+success, recipe = pcall -> context\openRecipe "package.spec",
+	args["package-version"], args["flavor"]
 
 unless success
-	success, recipe = pcall -> context\openRecipe "package.spec",
-		args["package-version"], args["flavor"]
+	success, recipe = pcall -> context\openRecipe "package.toml"
 
 unless success
 	with reason = recipe

@@ -228,12 +228,12 @@ class
 		file, reason = io.open filename, "r"
 
 		unless file
-			error reason, 0
+			return nil, reason
 
 		recipe, reason = toml.parse (file\read "*all"), {strict: false}
 
 		unless recipe
-			error reason, 0
+			return nil, reason
 
 		swapKeys recipe, "build-dependencies", "buildDependencies"
 

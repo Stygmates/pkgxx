@@ -92,18 +92,16 @@ if args.collection
 	print "Building in the following collection: #{args.collection}"
 	context.collection = args.collection
 
-success, recipe = pcall -> context\openRecipe "package.spec",
+recipe, reason = context\openRecipe "package.spec",
 	args["package-version"], args["flavor"]
 
-unless success
-	success, recipe = pcall -> context\openRecipe "package.toml"
+unless recipe
+	recipe, reason = context\openRecipe "package.toml"
 
-unless success
-	with reason = recipe
-		context\error "Could not open recipe."
-		context\error tostring reason
+unless recipe
+	context\error "Could not open recipe: #{tostring reason}."
 
-		os.exit 1
+	os.exit 1
 
 if args.lint
 	count = recipe\lint!

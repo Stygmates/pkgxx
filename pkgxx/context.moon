@@ -227,11 +227,15 @@ class Context
 	-- @warning This method is deprecated. Use newRecipe instead.
 	openRecipe: (filename = "package.toml", version = nil, flavor = nil) =>
 		with @\newRecipe @
-			if filename\match "%.toml$"
+			success, reason = if filename\match "%.toml$"
 				\importTOML filename
 			else
 				\importSpec filename, version, flavor
-			\finalize!
+
+			if success
+				\finalize!
+			else
+				return nil, reason
 
 	---
 	-- Asks the package manager whether a given package Atom is installed.

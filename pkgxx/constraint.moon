@@ -51,8 +51,9 @@ class Constraint
 				continue unless key
 
 				unless fields[key]
-					-- FIXME: No access to recipe right now…
-					--recipe.context\debug "[Recipe\\importSpec] unrecognized #{element.type} in section #{element.title} of spec: ”#{key}”."
+					recipe.context\debug "[Recipe\\importSpec] custom #{element.type} in section #{element.title} of spec: ”#{key}”."
+					@recipe or= {}
+					@recipe[key] = element.value or element.values
 					continue
 
 				fields[key] element

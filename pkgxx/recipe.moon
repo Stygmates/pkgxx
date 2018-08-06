@@ -409,6 +409,8 @@ class
 				"class":               string =>  .class = @
 				"source":              string =>  .sources = {Source.fromString @}
 				"dirname":             string =>  .dirname = @
+				"versions":            array  =>  .versions = @ -- May have been parsed already.
+				"flavors":             array  =>  .flavors = @  -- May have been parsed already.
 				"sources":             array  =>  .sources = map @, Source.fromString
 				"dependencies":        array  =>  .dependencies = map @, Atom
 				"build-dependencies":  array  =>  .buildDependencies = map @, Atom

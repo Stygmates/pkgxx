@@ -172,13 +172,6 @@ Package = Class "Package",
 					if constraint[key]
 						package[key] = constraint[key]
 
-				if constraint.recipe
-					-- Cloning to avoid contaminating origin.recipe.
-					package.recipe = {k,v for k,v in pairs package.recipe}
-
-					for k,v in pairs (constraint.recipe or {})
-						package.recipe[k] = v
-
 		package\updateTarget recipe.context
 
 		package

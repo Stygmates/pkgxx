@@ -66,7 +66,7 @@ unpack = unpack or table.unpack
 
 		arg = "set -e -x\n#{exports}\n#{arg}"
 
-		arg = "sh -c \"#{arg\gsub("\\$", "\\$")\gsub("\\", "\\\\")\gsub("\"", "\\\"")}\""
+		arg = "sh -c \"#{arg\gsub("\\$", "\\$")\gsub("\\", "\\\\")\gsub("\"", "\\\"")\gsub("%$", "\\$")}\""
 
 		@context.logFile\flush!
 		if verbosity >= 5

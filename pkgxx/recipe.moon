@@ -91,8 +91,13 @@ class
 			}
 		}
 
-		-- FIXME: There for compatibility reasons with modules. Should be removed in the future.
+		-- A generic container to pass arbitrary data to modules.
+		-- Unknown properties will be stored here, and modules will be
+		-- able to access them.
 		@recipe = {}
+
+		-- FIXME: This is kept for compatibility reasons with modules.
+		--        Should be removed in the future.
 		@recipeAttributes = {}
 
 		@sources = {}
@@ -409,6 +414,8 @@ class
 				"class":               string =>  .class = @
 				"source":              string =>  .sources = {Source.fromString @}
 				"dirname":             string =>  .dirname = @
+				"versions":            array  =>  .versions = @ -- May have been parsed already.
+				"flavors":             array  =>  .flavors = @  -- May have been parsed already.
 				"sources":             array  =>  .sources = map @, Source.fromString
 				"dependencies":        array  =>  .dependencies = map @, Atom
 				"build-dependencies":  array  =>  .buildDependencies = map @, Atom
@@ -506,7 +513,14 @@ class
 				list = things[element.type]
 
 				unless list[key]
-					.context\debug "[Recipe\\importSpec] unrecognized #{element.type} in spec: “#{key}”"
+					switch element.type
+						when "declaration"
+							@recipe[key] = element.value
+						when "list declaration"
+							@recipe[key] = element.values
+						else
+							.context\debug "[Recipe\\importSpec] unrecognized #{element.type} in spec: “#{key}”"
+
 					continue
 
 				r = list[key] element

@@ -106,7 +106,7 @@ _M.evaluate = (ast, preDefinitions) ->
 				nil
 			when "declaration"
 				_M.Declaration element.variable,
-					element.value\gsub "%%{([^%%]*)}", (identifier) ->
+					element.value\gsub "%%{([^%%}]*)}", (identifier) ->
 						substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
 						unless substitution
@@ -117,7 +117,7 @@ _M.evaluate = (ast, preDefinitions) ->
 			when "list declaration"
 				_M.ListDeclaration element.variable,
 					map element.values, (value) ->
-						value\gsub "%%{([^%%]*)}", (identifier) ->
+						value\gsub "%%{([^%%}]*)}", (identifier) ->
 							substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
 							unless substitution
@@ -127,7 +127,7 @@ _M.evaluate = (ast, preDefinitions) ->
 							substitution
 			when "section"
 				_M.Section element.title,
-					element.content\gsub "%%{([^%%]*)}", (identifier) ->
+					element.content\gsub "%%{([^%%}]*)}", (identifier) ->
 						substitution = @\getVariable(identifier) or preDefinitions[identifier]
 
 						unless substitution

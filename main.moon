@@ -95,7 +95,7 @@ if args.collection
 recipe, reason = context\openRecipe "package.spec",
 	args["package-version"], args["flavor"]
 
-unless recipe
+if recipe == nil and reason == "package.spec: No such file or directory"
 	recipe, reason = context\openRecipe "package.toml"
 
 unless recipe

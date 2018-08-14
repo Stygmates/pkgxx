@@ -2,7 +2,7 @@
 package=pkgxx
 version="$(grep "^version = " main.moon | head -n 1 | cut -d \" -f 2)"
 
-variables=(LUA_VERSION 5.1)
+variables=(LUA_VERSION 5.3)
 
 # Valid values: moon, script. Set to “moon” to compile to Lua.
 moon=script
